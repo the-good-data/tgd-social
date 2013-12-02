@@ -1,0 +1,36 @@
+name        = The Good Data - Open Atrium Radix
+description = The Good Data theme based on Open Atrium Radix
+screenshot  = screenshot.png
+core        = 7.x
+
+; Base - Radix
+base theme  = oa_radix
+
+; Regions
+regions[help]         = Help
+regions[navigation]   = Navigation
+regions[menu]         = Menu
+regions[content]      = Content
+regions[footer]       = Footer
+regions[primarytabs]  = Primary tabs
+
+; Panels
+;plugins[panels][layouts] = panels/layouts
+;plugins[panels][styles] = panels/styles
+
+; CSS - General
+;stylesheets[all][]     = assets/stylesheets/screen.css
+;stylesheets[all][]     = assets/stylesheets/font-awesome.min.css
+;stylesheets[print][]   = assets/stylesheets/print.css
+stylesheets[all][]     = assets/stylesheets/tgd.css
+stylesheets[all][]     = assets/stylesheets/webfonts.css
+
+; CSS - Conditional
+;stylesheets-conditional[IE 7][all][] = assets/stylesheets/ie7.css
+;stylesheets-conditional[IE 8][all][] = assets/stylesheets/ie8.css
+
+; Javascript
+;scripts[] = assets/javascripts/script.js
+scripts[] = assets/javascripts/colors.js
+
+
