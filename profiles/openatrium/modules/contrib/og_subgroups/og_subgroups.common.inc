@@ -100,6 +100,10 @@ function og_subgroups_get_users_group($entity_type = 'node', $entity = NULL, $st
     return $cache[$entity_type][$id][$state_identifier];
   }
   $cache[$entity_type][$id][$state_identifier] = array();
+  
+  // PostgreSQL fix
+  $id = is_numeric($id) ? $id : 0; 
+  
   $query = new EntityFieldQuery();
   $query
   ->entityCondition('entity_type', 'og_membership', '=')
@@ -148,6 +152,10 @@ function og_subgroups_get_associated_entities($entity_type, $entity, $fields = a
     return $cache[$entity_type][$id];
   }
   $cache[$entity_type][$id] = array();
+  
+  // PostgreSQL fix
+  $id = is_numeric($id) ? $id : 0; 
+  
   $query = new EntityFieldQuery();
   $query
   ->entityCondition('entity_type', 'og_membership', '=')
