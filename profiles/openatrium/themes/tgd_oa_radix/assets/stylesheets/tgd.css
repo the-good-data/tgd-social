@@ -137,3 +137,48 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 #recent-documents-table-long .views-field-created{
     width : 20%;
 }
+
+/* Colorizer */
+
+#data-space-pane .pane-title{
+    background-color: #f8a497;
+}
+
+#corporate-space-pane .pane-title{
+    background-color: #bfdaec;
+}
+
+#users-space-pane .pane-title{
+    background-color: #baebc5;
+}
+
+#product-space-pane .pane-title{
+    background-color: #fde6b0;
+}
+
+#oa-navbar .panel-panel .pane-oa-navigation.corporate-space-colorizer,
+body #footer.corporate-space-colorizer{
+    background-color: #88c5ec;
+    border-bottom: 1px solid #88c5ec;
+    border-top: 1px solid #88c5ec;    
+}
+#oa-navbar .panel-panel .pane-oa-navigation.data-space-colorizer,
+body #footer.data-space-colorizer{
+    background-color: #ed664f;
+    border-bottom: 1px solid #ed664f;
+    border-top: 1px solid #ed664f;    
+}
+
+#oa-navbar .panel-panel .pane-oa-navigation.product-space-colorizer,
+body #footer.product-space-colorizer{
+    background-color: #fdc43b;
+    border-bottom: 1px solid #fdc43b;
+    border-top: 1px solid #fdc43b;    
+}
+
+#oa-navbar .panel-panel .pane-oa-navigation.users-space-colorizer,
+body #footer.users-space-colorizer{
+    background-color: #6fbd7f ;
+    border-bottom: 1px solid #6fbd7f;
+    border-top: 1px solid #6fbd7f;    
+}
