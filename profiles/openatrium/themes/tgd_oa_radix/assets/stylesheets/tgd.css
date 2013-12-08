@@ -139,7 +139,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 }
 
 /* Colorizer */
-
+/*
 #data-space-pane .pane-title{
     background-color: #f8a497;
 }
@@ -155,6 +155,7 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 #product-space-pane .pane-title{
     background-color: #fde6b0;
 }
+*/
 
 #oa-navbar .panel-panel .pane-oa-navigation.corporate-space-colorizer,
 body #footer.corporate-space-colorizer{
@@ -179,13 +180,13 @@ body #footer.product-space-colorizer{
     border-bottom: 1px solid #E8604C;
     border-top: 1px solid #E8604C;  }
 
-#oa-navbar .panel-panel .pane-oa-navigation.product-space-colorizer,
-body #footer.product-space-colorizer{
-    background-color: #E8604C;
-    background-image: url(../images/background-red.png);
+#oa-navbar .panel-panel .pane-oa-navigation.users-space-colorizer,
+body #footer.users-space-colorizer{
+    background-color: #7FBA77;
+    background-image: url(../images/background-green.png);
     background-position-y: -2px; 
-    border-bottom: 1px solid #E8604C;
-    border-top: 1px solid #E8604C;  }
+    border-bottom: 1px solid #7FBA77;
+    border-top: 1px solid #7FBA77;  }
 
 #oa-navbar .panel-panel .pane-oa-navigation.default-space-colorizer,
 body #footer.default-space-colorizer{

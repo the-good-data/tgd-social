@@ -20,7 +20,7 @@ jQuery(function(){
     }
     
     // change logo
-    var logo = jQuery('<img src="profiles/openatrium/themes/tgd_oa_radix/assets/images/logo.png"/>');
+    var logo = jQuery('<img src="http://manage.thegooddata.org/profiles/openatrium/themes/tgd_oa_radix/assets/images/logo.png"/>');
     
     jQuery(".oa-menu-banner img.oa-site-banner-img").attr({"width":"0px", "height": "0px"}).after(logo);
 });
