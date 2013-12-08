@@ -139,36 +139,52 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 }
 
 /* Colorizer */
-/*
+.pane-title > a,
+.pane-title > a:hover,
+.pane-title > a:active,
+.pane-title > a:visited{
+   color: white;
+   font-weight: bold;
+}
+
 #data-space-pane .pane-title{
-    background-color: #f8a497;
+    background-color: #FCC636;
 }
 
 #corporate-space-pane .pane-title{
-    background-color: #bfdaec;
+    background-color: #9ACBEE;
 }
 
 #users-space-pane .pane-title{
-    background-color: #baebc5;
+    background-color: #7FBA77;
 }
 
 #product-space-pane .pane-title{
-    background-color: #fde6b0;
+    background-color: #E8604C;
 }
-*/
+
+#data-space-pane .pane-title,
+#corporate-space-pane .pane-title,
+#users-space-pane .pane-title,
+#product-space-pane .pane-title{
+    border-radius :2px 2px 0 0;
+}
+
 
 #oa-navbar .panel-panel .pane-oa-navigation.corporate-space-colorizer,
 body #footer.corporate-space-colorizer{
     background-color: #9ACBEE;
     background-image: url(../images/background-blue.png);
     background-position-y: -2px;
+    background-position-x: -2px;
     border-bottom: 1px solid #9ACBEE;
     border-top: 1px solid #9ACBEE;  }
 #oa-navbar .panel-panel .pane-oa-navigation.data-space-colorizer,
 body #footer.data-space-colorizer{
     background-color: #FCC636;
     background-image: url(../images/background-yellow.png);
-    background-position-y: -2px;  
+    background-position-y: -2px;
+    background-position-x: -2px;
     border-bottom: 1px solid #FCC636;
     border-top: 1px solid #FCC636;  }
 
@@ -176,7 +192,8 @@ body #footer.data-space-colorizer{
 body #footer.product-space-colorizer{
     background-color: #E8604C;
     background-image: url(../images/background-red.png);
-    background-position-y: -2px; 
+    background-position-y: -2px;
+    background-position-x: -2px;
     border-bottom: 1px solid #E8604C;
     border-top: 1px solid #E8604C;  }
 
@@ -185,6 +202,7 @@ body #footer.users-space-colorizer{
     background-color: #7FBA77;
     background-image: url(../images/background-green.png);
     background-position-y: -2px; 
+    background-position-x: -2px;
     border-bottom: 1px solid #7FBA77;
     border-top: 1px solid #7FBA77;  }
 
@@ -193,6 +211,7 @@ body #footer.default-space-colorizer{
     background-color: #00557E ;
     background-image: url(../images/background-blue-dark.png);
     background-position-y: -2px;
+    background-position-x: -2px;
     border-bottom: 1px solid #00557E;
     border-top: 1px solid #00557E;    
 }

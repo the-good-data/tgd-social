@@ -1,8 +1,4 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 jQuery(function(){
     
     var target = null;
@@ -19,8 +15,4 @@ jQuery(function(){
         jQuery("body #footer").addClass(target + "-space-colorizer").css("border-bottom", "none");
     }
     
-    // change logo
-    var logo = jQuery('<img src="http://manage.thegooddata.org/profiles/openatrium/themes/tgd_oa_radix/assets/images/logo.png"/>');
-    
-    jQuery(".oa-menu-banner img.oa-site-banner-img").attr({"width":"0px", "height": "0px"}).after(logo);
 });
