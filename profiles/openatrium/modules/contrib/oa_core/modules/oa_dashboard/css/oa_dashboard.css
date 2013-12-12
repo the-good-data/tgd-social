@@ -96,7 +96,9 @@ width: 100%;
 #oa-navbar .more-link {
 	font-size: 12px;
 }
-
+#oa-navbar .moscone-flipped-container {
+  margin-bottom: 0;
+}
 /**************/
 /* User badge */
 /**************/
@@ -130,4 +132,15 @@ width: 100%;
 }
 .navbar-inverse #toolbar-menu-button {
   color: #999;
+}
+
+/* Space Menu */
+.oa-space-menu ul.nav {
+  display: inline-block;
+  float: none;
+}
+
+.oa-space-menu img {
+  max-height: 36px;
+  width: auto;
 }

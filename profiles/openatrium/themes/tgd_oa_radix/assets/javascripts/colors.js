@@ -6,7 +6,7 @@ jQuery(function(){
             .html()
             .toLowerCase();
 
-    if (target =="spaces"){
+    if (target =="spaces" || target =="areas"){
         
         jQuery("#oa-navbar .panel-panel .pane-oa-navigation").addClass("default-space-colorizer").css("border-top", "none");
         jQuery("body #footer").addClass("default-space-colorizer").css("border-bottom", "none");                

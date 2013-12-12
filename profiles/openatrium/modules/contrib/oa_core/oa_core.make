@@ -41,15 +41,6 @@ projects[panelizer][patch][1992106] = http://drupal.org/files/1992106_panelizer_
 projects[panelizer][patch][1982654] = http://drupal.org/files/1982654-panelizer-dontaskmethatagain-2.patch
 projects[panelizer][patch][2022541] = http://drupal.org/files/2022541-panelizer-node-page-unpublished-1.patch
 
-; Override panopoly_core.make: 1.0
-; Update Entity Reference to work with Devel Generate (#1852112)
-projects[entityreference][type] = module
-projects[entityreference][subdir] = contrib
-projects[entityreference][download][type] = git
-projects[entityreference][download][url] = http://git.drupal.org/project/entityreference.git
-projects[entityreference][download][branch] = 7.x-1.x
-projects[entityreference][download][revision] = 1c176da
-
 ; Override panopoly_core.make: 1143ee2
 ; Patch FAPE to fix warnings (#1846156)
 projects[fape][type] = module
@@ -62,7 +53,13 @@ projects[fape][patch][1846156] = http://drupal.org/files/fape-1846156-5.patch
 
 ; Override panopoly_widgets.make: 5418cbe
 projects[media_youtube][subdir] = contrib
-projects[media_youtube][version] = 2.0-rc3
+projects[media_youtube][version] = 2.0-rc4
+
+; Override panopoly_widgets.make: 2319170
+projects[media][subdir] = contrib
+projects[media][download][type] = git
+projects[media][download][revision] = 4a88319
+projects[media][download][branch] = 7.x-2.x
 
 ; Override panopoly_core.make: 72f3d17
 ; Update token to allow disabling of empty token errors during test runs
@@ -71,14 +68,14 @@ projects[token][subdir] = contrib
 projects[token][download][type] = git
 projects[token][download][url] = http://git.drupal.org/project/token.git
 projects[token][download][branch] = 7.x-1.x
-projects[token][version] = 1.5
+projects[token][download][revision] = 72f3d17
 projects[token][patch][1999298] = http://drupal.org/files/1999298-disable-test-warnings.patch
 
 ; Fix undefined did bug and installation issues.
 projects[defaultconfig][subdir] = contrib
-projects[defaultconfig][version] = 1.0-alpha9
 projects[defaultconfig][download][type] = git
 projects[defaultconfig][download][branch] = 7.x-1.x
+projects[defaultconfig][download][revision] = 0e837db
 projects[defaultconfig][patch][2042799] = http://drupal.org/files/default_config_delete_only_if_overriden.patch
 projects[defaultconfig][patch][2043307] = http://drupal.org/files/defaultconfig_include_features_file.patch
 projects[defaultconfig][patch][2008178] = http://drupal.org/files/defaultconfig-rebuild-filters-2008178-4_0.patch
@@ -96,18 +93,28 @@ projects[views][version] = 3.7
 projects[views][subdir] = contrib
 projects[views][download][type] = git
 projects[views][download][branch] = 7.x-3.x
+projects[views][download][revision] = 80d968
 projects[views][patch][1979926] = http://drupal.org/files/1979926-views-reset_fetch_data-2.patch
 projects[views][patch][1735096] = http://drupal.org/files/1735096-views-mltiple-instance-exposed-form-8.patch
 
 ; ************ End Panopoly Overrides ************
 ; ************************************************
 
+; Features Override
+projects[features_override][version] = 2.0-rc1
+projects[features_override][subdir] = contrib
+projects[features_override][type] = module
+
+; Diff
+projects[diff][subdir] = contrib
+projects[diff][version] = 3.2
+
 ; Message
 projects[message][subdir] = contrib
-projects[message][version] = 1.8
 projects[message][download][type] = git
 projects[message][download][url] = http://git.drupal.org/project/message.git
 projects[message][download][branch] = 7.x-1.x
+projects[message][download][revision] = 27d43e2b
 projects[message][patch][2046591] = http://drupal.org/files/message-token_replace-2046591-1.patch
 projects[message][patch][2040735] = http://drupal.org/files/message.target_bundles.2040735-3.patch
 
@@ -117,12 +124,12 @@ projects[message_notify][version] = 2.5
 
 ; Message Subscribe
 projects[message_subscribe][subdir] = contrib
-projects[message_subscribe][version] = 1.0-alpha5
+projects[message_subscribe][version] = 1.0-rc1
 projects[message_subscribe][patch][2094129] = http://drupal.org/files/message_subscribe_empty_array_2094129_1.patch
 
 ; Message Digest
 projects[message_digest][subdir] = contrib
-projects[message_digest][version] = 1.0-beta1
+projects[message_digest][version] = 1.0-beta4
 
 ; Flag
 projects[flag][subdir] = contrib
@@ -133,6 +140,11 @@ projects[flag][download][branch] = 7.x-2.x
 projects[flag][download][revision] = e37c2475
 projects[flag][patch][471212] = http://drupal.org/files/471212-14-flag-all-bundles.patch
 projects[flag][patch][2027091] = http://drupal.org/files/flag_hook_flag_default_flags_alter.patch
+
+; Trash Flag
+projects[trash_flag][type] = module
+projects[trash_flag][subdir] = contrib
+projects[trash_flag][version] = 1.0-beta1
 
 ; MimeMail
 projects[mimemail][type] = module
@@ -151,11 +163,14 @@ projects[realname][version] = 1.1
 
 ; Chosen
 projects[chosen][subdir] = contrib
-projects[chosen][version] = 2.0-alpha2
+projects[chosen][download][type] = git
+projects[chosen][download][branch] = 7.x-2.x
+projects[chosen][download][revision] = c48c8a
 
-libraries[chosen][download][type]    = git
-libraries[chosen][download][url]     = https://github.com/harvesthq/chosen.git
-libraries[chosen][download][tag]     = v0.9.15
+libraries[chosen][download][type] = "get"
+libraries[chosen][download][url] = "https://github.com/harvesthq/chosen/releases/download/1.0.0/chosen_v1.0.0.zip"
+libraries[chosen][directory_name] = "chosen"
+libraries[chosen][destination] = "libraries"
 
 ; Twitter Bootstrap UI
 ;; Currently removed Twitter Bootstrap because of license issue:
@@ -182,6 +197,11 @@ projects[feeds][download][url] = http://git.drupal.org/project/feeds.git
 projects[feeds][download][branch] = 7.x-2.x
 projects[feeds][download][revision] = 7e6679d
 
+; Job Scheduler
+projects[job_scheduler][subdir] = contrib
+projects[job_scheduler][version] = 2.0-alpha3
+
+; SimplePie library used by Feeds
 libraries[simplepie][download][type] = file
 libraries[simplepie][download][url] = http://simplepie.org/downloads/simplepie_1.3.1.compiled.php
 libraries[simplepie][download][filename] = simplepie.compiled.php
@@ -195,6 +215,7 @@ projects[command_buttons][version] = 1.0-beta1
 projects[contextual_tabs][subdir] = contrib
 projects[contextual_tabs][version] = 1.0-beta1
 
+; Panels Custom Error
 projects[panels_customerror][type] = module
 projects[panels_customerror][subdir] = contrib
 projects[panels_customerror][version] = 1.0-beta1
@@ -213,10 +234,10 @@ projects[reference_option_limit][subdir] = contrib
 projects[reference_option_limit][download][type] = git
 projects[reference_option_limit][download][url] = http://git.drupal.org/project/reference_option_limit.git
 projects[reference_option_limit][download][branch] = 7.x-1.x
-projects[reference_option_limit][download][revision] = 74bee91
+projects[reference_option_limit][download][revision] = 0ea5303
 projects[reference_option_limit][type] = module
-projects[reference_option_limit][patch][1986532] = http://drupal.org/files/1986532_reference_option_limit_og-2.patch
-projects[reference_option_limit][patch][1986526] = http://drupal.org/files/1986526_reference_option_limit_3.patch
+projects[reference_option_limit][patch][1986532] = http://drupal.org/files/1986532_reference_option_limit_og-5.patch
+projects[reference_option_limit][patch][1986526] = http://drupal.org/files/1986526_reference_option_limit_12.patch
 
 ; Views Load More
 projects[views_load_more][subdir] = contrib
@@ -225,26 +246,28 @@ projects[views_load_more][download][url] = http://git.drupal.org/project/views_l
 projects[views_load_more][download][branch] = 7.x-1.x
 projects[views_load_more][download][revision] = 28de384
 
-; Trash Flag
-projects[trash_flag][type] = module
-projects[trash_flag][subdir] = contrib
-projects[trash_flag][version] = 1.0-beta1
-
 ; Jquery Update
 projects[jquery_update][subdir] = contrib
-projects[jquery_update][version] = 2.3
 projects[jquery_update][download][type] = git
 projects[jquery_update][download][branch] = 7.x-2.x
+projects[jquery_update][download][revision] = 65eecb0
 projects[jquery_update][patch][1448490] = http://drupal.org/files/jquery_update-fixes-states-js-1448490.patch
 
 ; Colorizer
 projects[colorizer][subdir] = contrib
-projects[colorizer][version] = 1.0-beta1
+projects[colorizer][version] = 1.0-beta3
 
 ; OA Responsive Regions
 projects[oa_responsive_regions][subdir] = contrib
 projects[oa_responsive_regions][version] = 1.0-beta1
 
+; Mail System
+projects[mailsystem][subdir] = contrib
+projects[mailsystem][version] = 2.34
+
+; HTML Mail
+projects[htmlmail][subdir] = contrib
+projects[htmlmail][version] = 2.65
 
 ; ##### Organic Groups related #####
 ; Organic Groups
@@ -252,15 +275,11 @@ projects[og][download][type] = git
 projects[og][subdir] = contrib
 projects[og][download][url] = http://git.drupal.org/project/og.git
 projects[og][download][branch] = 7.x-2.x
-projects[og][download][revision] = 6c0afff
+projects[og][download][revision] = 8bdb48
 
 ; Organic Groups Vocabulary
 projects[og_vocab][subdir] = contrib
-projects[og_vocab][version] = 1.1
-projects[og_vocab][download][type] = git
-projects[og_vocab][download][branch] = 7.x-1.x
-projects[og_vocab][download][revision] = bd5b341
-projects[og_vocab][patch][1985316] = http://drupal.org/files/1985316-og_vocab-menu_get_item-1.patch
+projects[og_vocab][version] = 1.2
 
 ; OG Session Context
 projects[og_session_context][type] = module
@@ -285,4 +304,4 @@ projects[og_variables][version] = 1.0-beta1
 ; Bootstrap Tour
 projects[bootstrap_tour][type] = module
 projects[bootstrap_tour][subdir] = contrib
-projects[bootstrap_tour][version] = 1.0-beta2
+projects[bootstrap_tour][version] = 1.0-beta6

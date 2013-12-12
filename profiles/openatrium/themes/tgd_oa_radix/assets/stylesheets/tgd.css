@@ -175,16 +175,14 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 body #footer.corporate-space-colorizer{
     background-color: #9ACBEE;
     background-image: url(../images/background-blue.png);
-    background-position-y: -2px;
-    background-position-x: -2px;
+    background-position: -2px -2px;
     border-bottom: 1px solid #9ACBEE;
     border-top: 1px solid #9ACBEE;  }
 #oa-navbar .panel-panel .pane-oa-navigation.data-space-colorizer,
 body #footer.data-space-colorizer{
     background-color: #FCC636;
     background-image: url(../images/background-yellow.png);
-    background-position-y: -2px;
-    background-position-x: -2px;
+    background-position: -2px -2px;
     border-bottom: 1px solid #FCC636;
     border-top: 1px solid #FCC636;  }
 
@@ -192,8 +190,7 @@ body #footer.data-space-colorizer{
 body #footer.product-space-colorizer{
     background-color: #E8604C;
     background-image: url(../images/background-red.png);
-    background-position-y: -2px;
-    background-position-x: -2px;
+    background-position: -2px -2px;
     border-bottom: 1px solid #E8604C;
     border-top: 1px solid #E8604C;  }
 
@@ -201,8 +198,7 @@ body #footer.product-space-colorizer{
 body #footer.users-space-colorizer{
     background-color: #7FBA77;
     background-image: url(../images/background-green.png);
-    background-position-y: -2px; 
-    background-position-x: -2px;
+    background-position: -2px -2px;
     border-bottom: 1px solid #7FBA77;
     border-top: 1px solid #7FBA77;  }
 
@@ -210,8 +206,17 @@ body #footer.users-space-colorizer{
 body #footer.default-space-colorizer{
     background-color: #00557E ;
     background-image: url(../images/background-blue-dark.png);
-    background-position-y: -2px;
-    background-position-x: -2px;
+    background-position: -2px -2px;
     border-bottom: 1px solid #00557E;
     border-top: 1px solid #00557E;    
+}
+
+#footer p{
+    color: white;
+    text-align: right;
+    font-size: 15px;
+}
+
+#footer p > a{
+    color: white;
 }
