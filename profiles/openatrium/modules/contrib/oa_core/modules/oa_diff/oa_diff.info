@@ -1,0 +1,15 @@
+name = Open Atrium Diff
+description = Provides Diff tokens for notification messages.
+package = Open Atrium
+core = 7.x
+php = 5.1
+
+dependencies[] = token
+dependencies[] = diff
+
+; Information added by drupal.org packaging script on 2013-10-23
+version = "7.x-2.0"
+core = "7.x"
+project = "oa_core"
+datestamp = "1382550931"
+
