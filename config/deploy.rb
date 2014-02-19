@@ -16,7 +16,7 @@ set :application, "tgd_openatrium"
 set :domain,      "thegooddata.org"
 set :deploy_to,   "/usr/share/nginx/tgd_openatrium/"
 
-set :repository,  "git@github.com:the-good-data/tgd-social.git"
+set :repository,  "git@github.com:thegooddata/social.git"
 set :scm,         :git
 
 role :web,        "main.#{domain}"                         # Your HTTP server, Apache/etc
