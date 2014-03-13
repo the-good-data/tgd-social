@@ -25,14 +25,17 @@ role :db,         "main.#{domain}", :primary => true       # This is where Rails
 
 set  :keep_releases,  10
 
-#before "deploy:finalize_update", "deploy:move_TGD_to_current"
-#after "deploy:update_code", "deploy:rename_main_file"
+after "deploy:restart", "deploy:default_site_symlink"
 
 namespace :deploy do
   
   task :rename_main_file do
     run "mv #{release_path}/protected/config/main.prod.php #{release_path}/protected/config/main.php"
     run "mv #{release_path}/protected/config/local_config.prod.php #{release_path}/protected/config/local_config.php"
+  end
+  
+  task :default_site_symlink do
+    run "ln -nfs #{shared_path}/default #{release_path}/#{current}/sites/"
   end
   
 end
