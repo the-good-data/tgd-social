@@ -22,15 +22,18 @@ $plugin = array(
  */
 function oa_home_default_render($subtype, $conf, $args, $context = NULL) {
   global $user;
-  drupal_add_css(drupal_get_path('module', 'oa_home') . '/oa_home_default.css');
-  drupal_add_css('http://fonts.googleapis.com/css?family=Roboto:300,400,100,700,500', array('type' => 'external'));
-  drupal_add_css('http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700', array('type' => 'external'));
-  drupal_add_css('http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,700', array('type' => 'external'));
+  if (!empty($conf)) {
+    // $conf is empty during popup previews, so don't load css
+    drupal_add_css(drupal_get_path('module', 'oa_home') . '/oa_home_default.css');
+    drupal_add_css('http://fonts.googleapis.com/css?family=Roboto:300,400,100,700,500', array('type' => 'external'));
+    drupal_add_css('http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700', array('type' => 'external'));
+    drupal_add_css('http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,700', array('type' => 'external'));
+  }
   $block = new stdClass();
   $block->title = '';
   $vars = array();
   if (!$user->uid) {
-    $login_block = block_load('user','login');
+    $login_block = block_load('user', 'login');
     $vars['login'] = _block_get_renderable_array(_block_render_blocks(array($login_block)));
   }
   else {

@@ -21,7 +21,7 @@ class MessageDigest extends MessageNotifierBase {
       'timestamp' => $message->timestamp,
     );
     // This will only have a value if the message is not a message_subscribe message.
-    $mid = $message->mid;
+    $mid = isset($message->mid) ? $message->mid : NULL;
 
     // Our $message is a cloned copy of the original $message with the mid field removed to
     // prevent overwriting (this happens in message_subscribe) so we need to fetch the mid manually.
@@ -72,11 +72,16 @@ class MessageDigest extends MessageNotifierBase {
         $gid = 0;
       }
       $account = user_load($row->receiver);
-      if (!empty($account->data['digest_grouping']) && $account->data['digest_grouping'] == 'global') {
-        // Allow users to group all groups together in the same digest.
-        $gid = 0;
+      $context = array(
+        'account' => $account,  // reference only
+        'data' => $row,
+        'gid' => $gid,  // set this to zero to aggregate group content
+        'plugin' => $this->plugin, // reference only
+      );
+      drupal_alter('message_digest_aggregate', $context);
+      if (!empty($context['data']->mid)) {
+        $message_groups[$context['data']->receiver][$context['gid']][] = $context['data']->mid;
       }
-      $message_groups[$row->receiver][$row->gid][] = $row->mid;
     }
     return $message_groups;
   }
@@ -85,19 +90,28 @@ class MessageDigest extends MessageNotifierBase {
    * Given an array of mids, build the full message content for them
    * and combine them into one blob of email content.
    */
-  public function format($digest) {
+  public function format($digest, $view_modes) {
     $output_array = array();
     foreach ($digest as $mid) {
       $message = message_load($mid);
-      $build = $message->view();
-      $build += array(
-        '#theme' => 'message',
-        '#entity' => $message,
-        '#view_mode' => 'message_notify_email_subject', // @TODO: Default to the "Email Subject" view mode but use the Message Digest view mode if it is customized.
-      );
-      $output_array[] = drupal_render($build);
+      if (empty($message) || !is_object($message)) {
+        continue;
+      }
+      $rows = array();
+      foreach ($view_modes as $view_mode_name => $view_mode) {
+        $content = $message->buildContent($view_mode_name);
+        $rows[$view_mode_name] = render($content);
+      }
+      $output_array[] = theme('message_digest_row', array(
+        'rows' => $rows,
+        'plugin' => $this->plugin,
+        'message' => $message,
+      ));
     }
-    return implode('<hr />', $output_array); // @TODO: Use a theme function + template for this.
+    return theme('message_digest', array(
+      'messages' => $output_array,
+      'plugin' => $this->plugin,
+    ));
   }
 
   /**

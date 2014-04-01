@@ -9,7 +9,22 @@
  * Implements hook_install().
  */
 function openatrium_install() {
+  // set the default theme
+  _openatrium_set_up_theme();
+  // update admin and member permissions
+  oa_adminrole_update_roles();
+  // rebuild content permissions for first time
   node_access_rebuild();
+}
+
+/**
+ * Set the default theme.
+ */
+function _openatrium_set_up_theme() {
+  $theme = 'oa_radix';
+  theme_enable(array($theme));
+  variable_set('theme_default', $theme);
+  theme_disable(array('responsive_bartik', 'bartik'));
 }
 
 /**

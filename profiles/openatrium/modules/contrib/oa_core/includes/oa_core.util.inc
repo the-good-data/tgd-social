@@ -53,6 +53,21 @@ function oa_core_get_space_context($from_session = FALSE) {
 }
 
 /**
+ * Returns the current space id context
+ * Returns zero if on the site home page
+ * @param  boolean $from_session only use the context stored in $SESSION
+ * @return int Space ID
+ */
+function oa_core_get_space_home_context() {
+  $space_id = oa_core_get_space_context();
+  $node = menu_get_object();
+  if (drupal_is_front_page() && !(isset($node) && ($node->type == OA_SPACE_TYPE))) {
+    return 0;  // front page, not a space page
+  }
+  return $space_id;
+}
+
+/**
  * Returns the current section id context
  * @return int Section ID
  */
@@ -419,7 +434,7 @@ function oa_core_get_group_users_for_space($space_id, $group_id) {
  * Return a list of space ids that a user belongs to.
  */
 function oa_core_get_user_spaces($uid) {
-  if ($groups = og_get_entity_groups('user')) {
+  if ($groups = og_get_entity_groups('user', $uid)) {
     return !empty($groups['node']) ? $groups['node'] : array();
   }
   return array();
@@ -500,4 +515,49 @@ function oa_core_entity_build_display($entity, $id, $space) {
   }
 
   return $display;
+}
+
+/**
+ * Return vocabularies assigned to a specific content type
+ */
+function oa_core_get_entity_vocabs($entity_type, $bundle) {
+  $vocabs = array();
+  $fields = field_info_instances($entity_type, $bundle);
+  foreach ($fields as $field_name => $field) {
+    $info = field_info_field($field_name);
+    // handle normal taxonomy_term_reference fields
+    if ($info['type'] == 'taxonomy_term_reference') {
+      foreach ($info['settings']['allowed_values'] as $value) {
+        if (!empty($value['vocabulary'])) {
+          $vocabs[$value['vocabulary']] = $value['vocabulary'];
+        }
+      }
+    }
+    // also handle entityreference fields pointing to taxonomy
+    elseif (($info['type'] == 'entityreference') && ($info['settings']['target_type'] == 'taxonomy_term')) {
+      if (!empty($info['settings']['handler_settings']['target_bundles'])) {
+        foreach ($info['settings']['handler_settings']['target_bundles'] as $value) {
+          $vocabs[$value] = $value;
+        }
+      }
+    }
+  }
+  return $vocabs;
+}
+
+/**
+ * Return terms for a list of vocabularies
+ */
+function oa_core_get_vocab_terms($vocabs) {
+  $options = array();
+  foreach ($vocabs as $vocab) {
+    if ($vocabulary = taxonomy_vocabulary_machine_name_load($vocab)) {
+      if ($terms = taxonomy_get_tree($vocabulary->vid)) {
+        foreach ($terms as $term) {
+          $options[$term->tid] = str_repeat('-', $term->depth) . $term->name;
+        }
+      }
+    }
+  }
+  return $options;
 }

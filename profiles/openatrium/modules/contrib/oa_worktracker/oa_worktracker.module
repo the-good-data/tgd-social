@@ -6,7 +6,21 @@
  */
 
 include_once 'oa_worktracker.features.inc';
-include_once 'oa_worktracker.defaultconfig.user_permission.inc';
+
+/**
+ * Denotes that we want to be able to assign to inherited users.
+ */
+define('OA_WORKTRACKER_ASSIGN_TO_INHERITED_USERS', 'inherited');
+
+/**
+ * Denotes that we want to be able to assign to local users only.
+ */
+define('OA_WORKTRACKER_ASSIGN_TO_ONLY_LOCAL_USERS', 'local');
+
+/**
+ * Denotes that we want to be able to assign to any users.
+ */
+define('OA_WORKTRACKER_ASSIGN_TO_ANY_USERS', 'any');
 
 /**
  * Implements hook_apps_app_info().
@@ -42,6 +56,15 @@ function oa_worktracker_permission() {
       'description' => t('Configure settings for the Open Atrium Work Tracker'),
     ),
   );
+}
+
+/**
+ * Implements ctools_plugin_directory().
+ */
+function oa_worktracker_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'entityreference') {
+    return 'plugins/entityreference_' . $plugin_type;
+  }
 }
 
 /**
@@ -113,14 +136,23 @@ function oa_worktracker_form_oa_worktracker_task_node_form_alter(&$form, &$form_
   $langcode = $form['language']['#value'];
 
   // Remove sections that can't take Task nodes.
-  _oa_worktracker_check_section_options($form['oa_section_ref'][$form['language']['#value']]['#options']);
+  if (!empty($form['oa_section_ref'][$langcode]['#options'])) {
+    _oa_worktracker_check_section_options($form['oa_section_ref'][$langcode]['#options']);
+  }
 
-  // Set the default values for 'Priority', 'Status' and 'Type'
-  foreach (array('priority', 'task_status', 'task_type') as $name) {
-    $field_name = 'field_oa_worktracker_' . $name;
-    $variable_name = 'oa_worktracker_allowed_values_' . $name;
-    $value = variable_get_value($variable_name);
-    $form[$field_name][$langcode]['#default_value'] = $value['default_value'];
+  if (empty($form['nid']['#value'])) {
+    // Set the default values for 'Priority', 'Status' and 'Type'
+    foreach (array('priority', 'task_status', 'task_type') as $name) {
+      $field_name = 'field_oa_worktracker_' . $name;
+      $variable_name = 'oa_worktracker_allowed_values_' . $name;
+      $value = variable_get_value($variable_name);
+      $form[$field_name][$langcode]['#default_value'] = $value['default_value'];
+    }
+
+    // Remove the 'Comment settings' for new Tasks since Tasks don't make sense
+    // without comments - it makes no sense to be able to disable them! However,
+    // for old Tasks, it may make sense to disable or hide comments.
+    $form['comment_settings']['#access'] = FALSE;
   }
 }
 
@@ -129,6 +161,8 @@ function oa_worktracker_form_oa_worktracker_task_node_form_alter(&$form, &$form_
  */
 function oa_worktracker_form_comment_form_alter(&$form, &$form_state, $form_id) {
   if ($form['#node']->type == 'oa_worktracker_task') {
+    $langcode = $form['language']['#value'];
+
     // If the form is for an authenticated user (not anonymous) then hide the 
     // superfluous 'Your name' field.
     if (!$form['is_anonymous']['#value']) {
@@ -137,12 +171,63 @@ function oa_worktracker_form_comment_form_alter(&$form, &$form_state, $form_id) 
 
     // Rename the attachment field to 'Task attachments' so that users know they
     // are for the task - not the comment.
-    $language_name = $form['#node']->language;
-    $form['comment_alter_field_oa_media'][$language_name]['#title'] = t('Task attachments');
+    $form['comment_alter_field_oa_media'][$langcode]['#title'] = t('Task attachments');
 
     // Remove sections that can't take Task nodes.
-    _oa_worktracker_check_section_options($form['comment_alter_oa_section_ref'][$form['language']['#value']]['#options']);
+    if (!empty($form['comment_alter_oa_section_ref'][$langcode]['#options'])) {
+      _oa_worktracker_check_section_options($form['comment_alter_oa_section_ref'][$langcode]['#options']);
+    }
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function oa_worktracker_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
+  $view = $form_state['view'];
+  if ($view->name == 'oa_worktracker' && $view->current_display == 'task_list') {
+    // Set 'open' as the default if we haven't been submitted yet (the request
+    // method is GET) and 'open' is actually a valid option. This is a hack
+    // around Views issue #1835680: https://drupal.org/node/1835680
+    if ($_SERVER['REQUEST_METHOD'] == 'GET' && empty($form_state['input']['field_oa_worktracker_task_status_value'])) {
+      // @todo: It'd be cool to actually take the default from the view
+      // rather than hard-coding 'open' here. Then we could support the other
+      // fields as well!
+      if (!empty($form['field_oa_worktracker_task_status_value']['#options']['open'])) {
+        $form_state['input']['field_oa_worktracker_task_status_value'] = array(
+          'open' => 'open',
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function oa_worktracker_node_view($node, $view_mode, $langcode) {
+  if ($view_mode == 'full') {
+    $name = theme('username', array('account' => $node));
+    $date = format_date($node->created);
+    $node->content['oa_worktracker_submitted'] = array(
+      '#markup' => '<div class="submitted">' . t('Submitted by !username on !datetime', array('!username' => $name, '!datetime' => $date)) . '</div>',
+    );
+  }
+}
+
+/**
+ * Implemets hook_field_extra_fields().
+ */
+function oa_worktracker_field_extra_fields() {
+  $extra = array();
+  $extra['node']['oa_worktracker_task']['display'] = array(
+    'oa_worktracker_submitted' => array(
+      'label' => t('Submitted information'),
+      'description' => t('The author and date that this Task was submitted.'),
+      'weight' => 0,
+    ),
+  );
+  return $extra;
 }
 
 /**
@@ -174,6 +259,12 @@ function oa_worktracker_theme_registry_alter(&$registry) {
  */
 function oa_worktracker_strongarm_alter(&$data) {
   if (isset($data['variable_realm_list_og'])) {
+    // The assigned to settings.
+    if (!in_array('oa_worktracker_assigned_to_users', $data['variable_realm_list_og']->value)) {
+      $data['variable_realm_list_og']->value[] = 'oa_worktracker_assigned_to_users';
+    }
+
+    // The select list values.
     foreach (array('priority', 'task_status', 'task_type') as $name) {
       $full_name = 'oa_worktracker_allowed_values_' . $name;
       if (!in_array($full_name, $data['variable_realm_list_og']->value)) {
@@ -187,7 +278,7 @@ function oa_worktracker_strongarm_alter(&$data) {
  * Form callback for the apps configuration form.
  */
 function oa_worktracker_apps_configure_form($form, &$form_state) {
-  return variable_module_form($form, $form_state, 'oa_worktracker');
+  return variable_group_form($form, $form_state, 'oa_worktracker');
 }
 
 /**
@@ -284,9 +375,12 @@ function oa_worktracker_theme_comment_alter_diff(&$variables) {
   $node_type = $new_node->type;
 
   $rows = array();
-  foreach ($variables['changed_fields'] as $field_name => $field) {
+  foreach ($variables['changed_fields'] as $field_name => $values) {
+    // Support for Comment Alter 1.0-rc3 to ease the transition.
+    $values = !isset($values[0]) ? array($values) : $values;
+
     $row = array();
-    $row[] = $field['name'] . ':';
+    $row[] = empty($values[0]['name']) ? '' : ($values[0]['name'] . ':');
 
     $info = field_info_field($field_name);
     if ($info['type'] == 'file') {
@@ -301,9 +395,11 @@ function oa_worktracker_theme_comment_alter_diff(&$variables) {
       $row[] = _oa_worktracker_file_changes($added, 'add');
     }
     else {
-      $row[] = implode(', ', $field['old']);
-      $row[] = '&raquo;';
-      $row[] = implode(', ', $field['new']);
+      foreach ($values as $value) {
+        $row[] = implode(', ', $value['old']);
+        $row[] = '&raquo;';
+        $row[] = implode(', ', $value['new']);
+      }
     }
     $rows[] = $row;
   }

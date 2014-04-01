@@ -7,9 +7,9 @@ dependencies[] = markdown
 features[features_api][] = api:2
 features[filter][] = markdown
 
-; Information added by drupal.org packaging script on 2013-10-23
-version = "7.x-2.0"
+; Information added by Drupal.org packaging script on 2014-02-26
+version = "7.x-2.15"
 core = "7.x"
 project = "openatrium"
-datestamp = "1382551827"
+datestamp = "1393449045"
 

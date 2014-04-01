@@ -6,22 +6,102 @@
  */
 
 /**
- * Implement hook_install().
+ * Implements hook_install().
  */
 function media_youtube_install() {
-  return array();
-}
+  // Create initial display settings.
+  module_load_include('inc', 'file_entity', 'file_entity.file_api');
+  $default_image_styles = array(
+    'preview' => 'media_thumbnail',
+    'teaser' => 'medium',
+    'full' => 'large',
+  );
 
-/**
- * Implement hook_uninstall().
- */
-function media_youtube_uninstall() {
-  drupal_load('module', 'media_youtube');
+  foreach ($default_image_styles as $view_mode => $image_style) {
+    $existing_display = file_displays_load('image', $view_mode);
 
-  foreach (media_youtube_variable_default() as $variable => $value) {
-    media_youtube_variable_del($variable);
+    if (empty($existing_display)) {
+      $display_name = 'image__' . $view_mode . '__file_image';
+      $display = array(
+        'api_version' => 1,
+        'name' => $display_name,
+        'status' => 1,
+        'weight' => 5,
+        'settings' => array('image_style' => $image_style),
+        'export_type' => NULL,
+      );
+      file_display_save((object) $display);
+    }
   }
-  return array(array('success' => TRUE, 'query' => "Deleted all variables in the Media: YouTube namespace."));
+
+
+  $existing_display = file_displays_load('video', 'default');
+  if (empty($existing_display)) {
+    // Video previews should be displayed using a large filetype icon.
+    $display = array(
+      'api_version' => 1,
+      'name' => 'video__default__media_youtube_video',
+      'weight' => 0,
+      'status' => 1,
+      'settings' => array(
+        'width' => '640',
+        'height' => '390',
+        'theme' => 'dark',
+        'color' => 'red',
+        'autohide' => '2',
+        'autoplay' => 0,
+        'loop' => 0,
+        'showinfo' => 1,
+        'modestbranding' => 0,
+        'rel' => 1,
+        'nocookie' => 0,
+        'protocol_specify' => 0,
+        'protocol' => 'https:',
+        'enablejsapi' => 0,
+        'origin' => '',
+      ),
+    );
+    file_display_save((object) $display);
+
+    $display = array(
+      'api_version' => 1,
+      'name' => 'video__preview__media_youtube_image',
+      'weight' => 0,
+      'status' => 1,
+      'settings' => array(
+        'image_style' => 'media_thumbnail',
+      ),
+    );
+    file_display_save((object) $display);
+
+    $display = array(
+      'api_version' => 1,
+      'name' => 'video__teaser__media_youtube_video',
+      'weight' => 0,
+      'status' => 1,
+      'settings' => array(
+        'width' => '560',
+        'height' => '340',
+        'theme' => 'dark',
+        'color' => 'red',
+        'autohide' => '2',
+        'autoplay' => 0,
+        'loop' => 0,
+        'showinfo' => 1,
+        'modestbranding' => 0,
+        'rel' => 1,
+        'nocookie' => 0,
+        'protocol_specify' => 0,
+        'protocol' => 'https:',
+        'enablejsapi' => 0,
+        'origin' => '',
+      ),
+    );
+    file_display_save((object) $display);
+
+  }
+
+
 }
 
 /**
@@ -165,4 +245,13 @@ function media_youtube_update_7201() {
  */
 function media_youtube_update_7202() {
   // Code removed in response to http://drupal.org/node/1911970.
+}
+
+/**
+ * Remove obsolete variables.
+ */
+function media_youtube_update_7203() {
+  foreach (array('width', 'height', 'autohide', 'autoplay', 'color', 'enablejsapi', 'loop', 'modestbranding', 'nocookie', 'origin', 'protocol', 'protocol_specify', 'rel', 'showinfo', 'theme') as $setting) {
+    variable_del("media_youtube__{$setting}");
+  }
 }

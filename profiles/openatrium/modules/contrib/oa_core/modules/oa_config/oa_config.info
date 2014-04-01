@@ -2,8 +2,6 @@ name = Open Atrium Config
 description = System configuration variables
 core = 7.x
 package = Open Atrium
-version = 7.x-2.0
-project = oa_config
 dependencies[] = chosen
 dependencies[] = ctools
 dependencies[] = strongarm
@@ -11,17 +9,16 @@ features[ctools][] = strongarm:strongarm:1
 features[features_api][] = api:2
 features[variable][] = chosen_jquery_selector
 features[variable][] = chosen_minimum
+features[variable][] = chosen_minimum_multiple
+features[variable][] = chosen_minimum_single
 features[variable][] = file_default_scheme
 features[variable][] = file_entity_file_upload_wizard_skip_scheme
 features[variable][] = og_context_negotiation_group_context
 features[variable][] = og_context_providers_weight_group_context
-features[variable][] = og_group_manager_default_rids_node_oa_group
-features[variable][] = og_group_manager_default_rids_node_oa_space
-project path = profiles/openatrium/modules/contrib/oa_core/modules
 
-; Information added by drupal.org packaging script on 2013-10-23
-version = "7.x-2.0"
+; Information added by Drupal.org packaging script on 2014-02-26
+version = "7.x-2.15"
 core = "7.x"
 project = "oa_core"
-datestamp = "1382550931"
+datestamp = "1393428820"
 

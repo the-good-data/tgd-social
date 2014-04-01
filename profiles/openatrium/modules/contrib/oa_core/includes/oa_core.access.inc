@@ -59,6 +59,19 @@ function oa_core_node_grants($account, $op) {
     return $cache[$account->uid];
   }
 
+  // Handle unpublished content permissions
+  if (user_access('bypass node access') || user_access('view own unpublished content')) {
+    // get a list of unpublished nodes owned by this user
+    $query = db_select('node', 'n');
+    $query->fields('n', array('nid'))
+      ->condition('n.status', 0);
+    if (!user_access('bypass node access')) {
+      // user with bypass access can access all unpublished content
+      $query->condition('n.uid', $account->uid);
+    }
+    $grants[OA_UNPUBLISHED_REALM] = $query->execute()->fetchCol(0);
+  }
+
   // Combine the spaces the user is part of with public spaces.
   $member_spaces = oa_core_get_groups_by_user($account, 'node');
   $spaces = array_merge($member_spaces, oa_core_get_public_spaces());
@@ -117,8 +130,17 @@ function oa_core_node_grants($account, $op) {
 function oa_core_node_access_records($node) {
   $sids = array();
   if ($node->status == 0) {
-    // don't change access for unpublished nodes
-    // keep normal Drupal access (should be set for only Own access)
+    // Drupal doesn't handle grants for unpublished nodes
+    // Grants are needed for Views to work
+    $grants[] = array(
+      'realm' => OA_UNPUBLISHED_REALM,
+      'gid' => $node->nid,
+      'grant_view' => 1,
+      'grant_update' => 0,
+      'grant_delete' => 0,
+      'priority' => 0,
+    );
+    return $grants;
   }
   elseif ($node->type == OA_SECTION_TYPE) {
     if (!oa_core_section_is_public($node)) {
@@ -171,7 +193,7 @@ function oa_core_update_access_records($nodes) {
 function oa_core_node_access($node, $op, $account) {
   $type = is_string($node) ? $node : (is_array($node) ? $node['type'] : $node->type);
 
-  if ($op == 'create' && og_is_group_content_type('node', $type)) {
+  if ($op == 'create' && (($type == OA_SPACE_TYPE) || og_is_group_content_type('node', $type))) {
     // In og.module, og_node_access doesn't handle 'create' because
     // it doesn't have a Group context.
     // Well, in OA2 we *have* a Group context most of the time.
@@ -186,7 +208,9 @@ function oa_core_node_access($node, $op, $account) {
           return NODE_ACCESS_ALLOW;
         }
       }
-      return NODE_ACCESS_DENY;
+      if ($type != OA_SPACE_TYPE) {
+        return NODE_ACCESS_DENY;
+      }
     }
   }
 
@@ -281,6 +305,59 @@ function oa_core_file_entity_access($op, $file, $account) {
   return FILE_ENTITY_ACCESS_IGNORE;
 }
 
+/**
+ * Implements hook_query_media_browser_alter().
+ * Add private file access support to media browser
+ */
+function oa_core_query_media_browser_alter(QueryAlterableInterface $query) {
+
+  if (!user_access('administer nodes') && module_implements('node_grants')) {
+    // first, remove the existing condition from media.media.inc that prevents private files
+    $where =& $query->conditions();
+    foreach ($where as $delta => $condition) {
+      if (isset($condition['value']) && isset($condition['operator']) &&
+        ($condition['value'] == 'private://%') && ($condition['operator'] == 'NOT LIKE')) {
+        unset($where[$delta]);
+        break;
+      }
+    }
+
+    // next, add a proper node_access query restriction
+    $or = db_or();
+    // Ensure that the query is against the file_managed table.
+    $tables = $query->getTables();
+    if (empty($tables['file_managed'])) {
+      throw new Exception(t('Media browser being queried without the file_managed table.'));
+    }
+    $alias = $tables['file_managed']['alias'];
+
+    // get down to which node has the attachment
+    $query->addJoin('LEFT', 'field_data_field_oa_media', 'media_field', "media_field.field_oa_media_fid = $alias.fid AND media_field.entity_type = 'node'");
+    $query->addJoin('LEFT', 'node', 'node', "node.nid = media_field.entity_id");
+    $query->addJoin('LEFT', 'node_access', 'node_access', "node.nid = node_access.nid");
+
+    // this is from views_handler_filter_node_access.inc
+    // cannot just use the addTag('node access') because base table of query is not node
+    $table = 'node_access';
+    $grants = db_or();
+    foreach (node_access_grants('view') as $realm => $gids) {
+      foreach ($gids as $gid) {
+        $grants->condition(db_and()
+          ->condition($table . '.gid', $gid)
+          ->condition($table . '.realm', $realm)
+        );
+      }
+    }
+    $or->condition(db_and()
+      ->condition($grants)
+      ->condition($table . '.grant_view', 1, '>=')
+    );
+
+    // finally, put back the "private" condition as an OR state for public files
+    $or->condition($alias . '.uri', db_like('private://') . '%', 'NOT LIKE');
+    $query->condition($or);
+  }
+}
 
 /**
  * Implements hook_og_membership_insert().

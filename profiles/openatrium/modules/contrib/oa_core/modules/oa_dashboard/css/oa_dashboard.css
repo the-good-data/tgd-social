@@ -20,6 +20,9 @@ ul.oa_toolbar {
 .drupal-navbar .navbar-icon-toggle-vertical {
   display: none;
 }
+.touch .drupal-navbar .navbar-tray-vertical.active {
+  bottom: 0 !important;
+}
 .navbar .oa-navigation .nav {
   display: inline-block;
   float: none;
@@ -96,7 +99,9 @@ width: 100%;
 #oa-navbar .more-link {
 	font-size: 12px;
 }
-
+#oa-navbar .moscone-flipped-container {
+  margin-bottom: 0;
+}
 /**************/
 /* User badge */
 /**************/
@@ -130,4 +135,15 @@ width: 100%;
 }
 .navbar-inverse #toolbar-menu-button {
   color: #999;
+}
+
+/* Space Menu */
+.oa-space-menu ul.nav {
+  display: inline-block;
+  float: none;
+}
+
+.oa-space-menu img {
+  max-height: 36px;
+  width: auto;
 }
