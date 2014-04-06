@@ -35,7 +35,7 @@ namespace :deploy do
   end
   
   task :default_site_symlink do
-    run "ln -nfs #{shared_path}/default #{release_path}/#{current}/sites/"
+    run "ln -nfs #{shared_path}/default #{current_path}/sites/"
   end
   
 end
