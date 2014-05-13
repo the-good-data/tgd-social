@@ -138,14 +138,8 @@ class PanelizerEntityNode extends PanelizerEntityDefault {
     if ($_GET['q'] == 'admin/structure/types' && !empty($page['content']['system_main']['node_table'])) {
       // shortcut
       $table = &$page['content']['system_main']['node_table'];
-
-      // Operations column should always be the last column in header. Increase
-      // its colspan by one to include possible panelizer link.
-      $operationsCol = end($table['#header']);
-      if (!empty($operationsCol['colspan'])) {
-        $operationsColKey = key($table['#header']);
-        $table['#header'][$operationsColKey]['colspan']++;
-      }
+      // Modify the header.
+      $table['#header'][1]['colspan'] = 5;
 
       // Since we can't tell what row a type is for, but we know that they
       // were generated in this order, go through the original types
@@ -182,20 +176,6 @@ class PanelizerEntityNode extends PanelizerEntityDefault {
     if (empty($entity->status)) {
       $vars['classes_array'][] = 'node-unpublished';
     }
-  }
-
-  function render_entity($entity, $view_mode, $langcode = NULL, $args = array(), $address = NULL) {
-    $info = parent::render_entity($entity, $view_mode, $langcode, $args, $address);
-    if (!empty($entity->promote)) {
-      $info['classes_array'][] = 'node-promoted';
-    }
-    if (!empty($entity->sticky)) {
-      $info['classes_array'][] = 'node-sticky';
-    }
-    if (empty($entity->status)) {
-      $info['classes_array'][] = 'node-unpublished';
-    }
-    return $info;
   }
 
   /**
