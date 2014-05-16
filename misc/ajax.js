@@ -134,7 +134,7 @@ Drupal.ajax = function (base, element, element_settings) {
 
   // If there isn't a form, jQuery.ajax() will be used instead, allowing us to
   // bind Ajax to links as well.
-  if (this.element.form) {
+  if (this.element !== undefined && this.element.form) {
     this.form = $(this.element.form);
   }
 

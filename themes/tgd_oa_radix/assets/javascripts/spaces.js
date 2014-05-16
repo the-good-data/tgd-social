@@ -3,6 +3,7 @@
  */
  jQuery(document).ready(function(){
     resizePanes();
+    setBodyPaddingTop()
  });
 
  function resizePanes(){
@@ -16,4 +17,9 @@
 
     panesColumn1.eq(1).height(secondRowHeight);
     panesColumn2.eq(1).height(secondRowHeight);
+ }
+
+ function setBodyPaddingTop() {
+    var navBarHeight = jQuery('#oa-navbar').height();
+    jQuery('body').css('padding-top', navBarHeight);
  }
