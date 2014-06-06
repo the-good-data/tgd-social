@@ -12,20 +12,30 @@ set :user, "tgd"
 #  answer.empty? ? default_user : answer
 #end
 
-set :application, "tgd_openatrium"
+set :application, "openatrium"
 set :domain,      "thegooddata.org"
 set :deploy_to,   "/usr/share/nginx/tgd_openatrium/"
 
 set :repository,  "git@github.com:thegooddata/social.git"
 set :scm,         :git
-
-role :web,        "main.#{domain}"                         # Your HTTP server, Apache/etc
-role :app,        "main.#{domain}"                         # This may be the same as your `Web` server
-role :db,         "main.#{domain}", :primary => true       # This is where Rails migrations will run
+#
+#role :web,        "main.#{domain}"                         # Your HTTP server, Apache/etc
+#role :app,        "main.#{domain}"                         # This may be the same as your `Web` server
+#role :db,         "main.#{domain}", :primary => true       # This is where Rails migrations will run
 
 set  :keep_releases,  10
 
 after "deploy:restart", "deploy:default_site_symlink"
+
+task :production do
+  ssh_options[:port] = 21950
+  role :web,        "lnd-app00.#{domain}"
+  role :app,        "lnd-app00.#{domain}"
+  role :db,         "lnd-app00.#{domain}", :primary => true
+
+  set :deploy_to,   "/srv/openatrium/"
+  set :branch, "master"
+end
 
 namespace :deploy do
   
