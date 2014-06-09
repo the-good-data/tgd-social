@@ -12,6 +12,33 @@
 @tgd-green-dark : darken(@tgd-green, 15%);
 @tgd-green-dark-hover : darken(@tgd-green-dark, 35%);
 
+blue{
+    color: @tgd-blue;
+    dark{
+        color: @tgd-blue-dark;
+    }
+}
+
+red{
+    color: @tgd-red;
+    dark{
+        color: @tgd-red-dark;
+    }
+}
+
+green{
+    color: @tgd-green;
+    dark{
+        color: @tgd-green-dark;
+    }
+}
+
+yellow{
+    color: @tgd-yellow;
+    dark{
+        color: @tgd-yellow-dark;
+    }
+}
 
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video{
     font-family: ProximaNovaSoft-Regular;
@@ -29,22 +56,16 @@ body #main{
     padding: 0 20px;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+    .pane-oa-navigation{
+        background-color: #fff !important;
+    }
 }
 
-/* Dropdown toggle button */
-#oa-navbar .panel-panel .pane-oa-dashboard-oa-breadcrumb ul.oa_toolbar li.btn-group > .dropdown-toggle {
-    background: none repeat scroll 0 0 #50A963;
+/* chevron-right icon */
+.navbar .brand .icon-chevron-right{
+    margin-left: 10px;
 }
 
-#oa-navbar .panel-panel .pane-oa-dashboard-oa-breadcrumb ul.oa_toolbar li.btn-group > .dropdown-toggle:hover {
-    background: none repeat scroll 0 0 #50A963;
-}
-
-#oa-navbar .panel-panel .pane-oa-dashboard-oa-breadcrumb ul.oa_toolbar li.btn-group > .dropdown-toggle .caret {
-    border-left: 6px solid rgba(255, 255, 255, 0);
-    border-right: 6px solid rgba(255, 255, 255, 0);
-    border-top: 6px solid #FFFFFF;
-}
 
 #oa-navbar .panel-panel .pane-oa-dashboard-oa-breadcrumb ul.oa_toolbar li.btn-group:after {
     content: url("../images/menu-divider.png");
@@ -53,145 +74,15 @@ body #main{
     width: 10px;
 }
 
-/* Buttons in the toolbar */
-.btn{
-    -moz-border-bottom-colors: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
-    background-color: #50A963;
-    background-image: none;
-    background-repeat: repeat-x;
-    border-color: #50A963;
-    border-image: none;
-    border-radius: 4px 4px 4px 4px;
-    border-style: solid;
-    border-width: 1px;
-    box-shadow: none;
-    color: #fff;
-    cursor: pointer;
-    display: inline-block;
-    font-size: 14px;
-    line-height: 20px;
-    margin-bottom: 0;
-    padding: 4px 12px;
-    text-align: center;
-    text-shadow: none;
-    vertical-align: middle;
-}
-
-.btn:hover,
-.btn:focus,
-.btn:active, 
-.btn.active, 
-.btn.disabled, 
-.btn[disabled]{
-    background-color: #50A963;
-    color: #fff;
-}
-
-.btn:hover{
-    background-position: 0 -15px;
-    color: #eee;
-    text-decoration: none;
-    transition: background-position 0.1s linear 0s;
-}
-
-.btn:focus{
-    outline: thin dotted #eee;
-    outline-offset: -2px;
-}
-
-.btn.active{
-    background-image: none;
-    box-shadow: none;
-    outline: 0 none;
-}
-
-.btn.disabled{
-    background-image: none;
-    box-shadow: none;
-    cursor: default;
-    opacity: 0.65;
-}
-
-.btn-inverse {
-    background-color: #50A963;
-    background-image: none;
-    border-color: #50A963;
-    color: #FFFFFF;
-    text-shadow: none;
-}
-
-.btn-inverse:hover, .btn-inverse:focus, .btn-inverse:active, .btn-inverse.active, .btn-inverse.disabled, .btn-inverse[disabled] {
-    background-color: #30643b;
-    border-color: #30643B;
-    color: #FFFFFF;
-}
-
-.btn-group.open .btn-inverse.dropdown-toggle {
-    background-color: #30643b;
-}
-
-.btn-group > .btn + .dropdown-toggle, form .btn-group > .button.fake-ok + .dropdown-toggle, form .btn-group > .button.fake-cancel + .dropdown-toggle, #media-browser-tabset .btn-group > a.button + .dropdown-toggle, #media-browser-tabset .btn-group > input.form-submit + .dropdown-toggle, #modal-content .btn-group > .form-submit + .dropdown-toggle, #modal-content .btn-group > #edit-cancel + .dropdown-toggle {
-    box-shadow: 1px 0 0 rgba(255, 255, 255, 0.125) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-    padding-left: 8px;
-    padding-right: 8px;
-}
-
-.pane-oa-toolbar-search .btn-group > .btn:first-child{
-    border-bottom-left-radius: 0px;
-    border-top-left-radius: 0px;
-    margin-left: 0;
-}
-
-.btn-inverse:active, .btn-inverse.active {
-}
-
-.btn-primary .caret, form .button.fake-ok .caret, #media-browser-tabset a.button .caret, #media-browser-tabset input.form-submit .caret, #modal-content .form-submit .caret, #node-edit .form-actions input .caret, .btn-warning .caret, .btn-danger .caret, .btn-info .caret, .btn-success .caret, .btn-inverse .caret {
-    border-bottom-color: #FFFFFF;
-    border-top-color: #FFFFFF;
-}
-
-/* Header background */
-#oa-navbar .panel-panel .pane-oa-navigation.corporate-space-colorizer, body #footer.corporate-space-colorizer,
-#oa-navbar .panel-panel .pane-oa-navigation.data-space-colorizer, body #footer.data-space-colorizer,
-#oa-navbar .panel-panel .pane-oa-navigation.product-space-colorizer, body #footer.product-space-colorizer,
-#oa-navbar .panel-panel .pane-oa-navigation.users-space-colorizer, body #footer.users-space-colorizer,
-#oa-navbar .panel-panel .pane-oa-navigation.default-space-colorizer, body #footer.default-space-colorizer,
-#oa-navbar .panel-panel .pane-oa-navigation, body #footer {
-    background-color: #fff;
-    background-image: none;
-}
-
-body #footer.corporate-space-colorizer,
-body #footer.data-space-colorizer,
-body #footer.product-space-colorizer,
-body #footer.users-space-colorizer,
-body #footer.default-space-colorizer,
+/* Footer */
 body #footer {
-    background-color: #EEE;
     border-top: 1px solid #ccc;
     box-shadow: 0px 4px 5px -5px rgba(0,0,0,0.5) inset;
 }
 
-#oa-navbar .panel-panel .pane-oa-navigation.corporate-space-colorizer,
-#oa-navbar .panel-panel .pane-oa-navigation.data-space-colorizer, 
-#oa-navbar .panel-panel .pane-oa-navigation.product-space-colorizer, 
-#oa-navbar .panel-panel .pane-oa-navigation.users-space-colorizer, 
-#oa-navbar .panel-panel .pane-oa-navigation.default-space-colorizer,
-#oa-navbar .panel-panel .pane-oa-navigation{
-    border-bottom: 0px solid transparent;
-}
-
-
-
-.navbar{
-    margin-bottom: 0;
-}
 
 .navbar-inverse .navbar-inner {
-    background-color: #72BC81;
+    background-color: #999;
     background-image: none;
     background-repeat: repeat-x;
     border-color: #72BC81;
@@ -200,6 +91,28 @@ body #footer {
 .navbar-inverse #toolbar-menu-button, .navbar-inverse #oa-user-badge .user-badge{
     color: #FFF;
 }
+
+.panel-pane {
+    .pane-content{
+        .navbar-inner{
+            background-color: #FAFAFA;
+            background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+            background-repeat: repeat-x;
+            .nav{
+                > li{
+                    > a{
+                        color: #777;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.navbar{
+    margin-bottom: 0;
+}
+
 
 
 #oa-navbar ul.dropdown-menu ul li a:hover, 
@@ -224,18 +137,28 @@ ul.dropdown-menu ul li a.active,
 }
 
 div#panels-ipe-control-container {
-    top: -50px;
-    right: 290px;
+    top: -145px;
+    right: -12px;
     z-index: 1000;
 }
 
-/* Corrects the oa-pane issue TODO: find a fix for IE*/
+/* Corrects the oa-pane issue TODO: find a fix for IE */
 .panel-panel-inner .oa-pane:not(.inner-pane){
     border: 0px;
 }
 
-.oa-pane.inner-pane{
-    box-shadow: 0px 3px 5px -4px rgba(0, 0, 0, 0.5);
+.oa-pane{
+    .pane-open-atrium-news-oa-recent-news{
+        .pane-content{
+            .oa-list{
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+    }
+    &.inner-pane{
+       box-shadow: 0px 3px 5px -4px rgba(0, 0, 0, 0.5);
+    }
 }
 
 /* The following two rules deal with the cases in which there's not enough items in a list view to show a pager. 
@@ -274,7 +197,6 @@ other, for the oa-pane bottom border. */
 
 /* Home page's welcome message */
 #tgd-home-intro{
-    margin-top: 40px;
     font-size: 1.3em;
     line-height: 1.1em;
     text-align:center;
@@ -419,19 +341,23 @@ other, for the oa-pane bottom border. */
 
 
 #data-space-pane .pane-title{
-    background-color: #FCC636;
+    background-color: #FCC636 !important;
+    background-image: none;
 }
 
 #corporate-space-pane .pane-title{
-    background-color: #9ACBEE;
+    background-color: #9ACBEE !important;
+    background-image: none;
 }
 
 #users-space-pane .pane-title{
-    background-color: #7FBA77;
+    background-color: #7FBA77 !important;
+    background-image: none;
 }
 
 #product-space-pane .pane-title{
-    background-color: #E8604C;
+    background-color: #E8604C !important;
+    background-image: none;
 }
 
 #data-space-pane .pane-title,
@@ -494,5 +420,18 @@ other, for the oa-pane bottom border. */
         width: 1170px;
         margin: 0 auto;
         float: none;
+    }
+}
+
+/* task details */
+fieldset{
+    &#node_oa_worktracker_task_form_group_oa_worktracker_task_info{
+        > legend{
+            margin-bottom: 0px;
+        }
+
+        > .fieldset-wrapper{
+            margin-top: 40px;
+        }
     }
 }
