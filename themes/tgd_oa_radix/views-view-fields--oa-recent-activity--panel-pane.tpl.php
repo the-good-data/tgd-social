@@ -39,6 +39,9 @@
       <?php if (($display != 'section_activity') && !empty($field_oa_message_section)): ?>
         <?php print t(' in ') . $field_oa_message_section; ?>
       <?php endif; ?>
+      <?php 
+        if(!empty($fields['term_node_tid']))print('<br/>'.$fields['term_node_tid']->content);
+      ?>
     <?php if (!empty($fields['ops'])) print $fields['ops']->content; ?>
     </div>
   <?php else: ?>
@@ -46,4 +49,5 @@
       <?php print $field_oa_message_text; ?>
     </div>
   <?php endif; ?>
+
 </div>
