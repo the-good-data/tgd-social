@@ -282,10 +282,15 @@ function _user_resource_create($account) {
   // register a new user
   $form_state['values'] = $account;
   // Password may be not available as this callback is used for register as well.
-  $form_state['values']['pass'] = array(
+/*  $form_state['values']['pass'] = array(
     'pass1' => isset($account['pass']) ?: '',
     'pass2' => isset($account['pass']) ?: '',
+  );*/
+  $form_state['values']['pass'] = array(
+    'pass1' => isset($account['pass']) ?$account['pass']: '',
+    'pass2' => isset($account['pass']) ?$account['pass']: '',
   );
+
   $form_state['values']['op'] = variable_get('services_user_create_button_resource_create', t('Create new account'));
 
   // execute the register form
