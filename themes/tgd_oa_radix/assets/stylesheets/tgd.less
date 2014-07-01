@@ -291,14 +291,15 @@ other, for the oa-pane bottom border. */
 .oa-pane .pane-tgd-polls-polls-list .pane-content,
 .oa-pane .pane-open-atrium-news-oa-recent-news .pane-content,
 .oa-pane .pane-oa-worktracker-task-list .pane-content,
-.oa-pane .pane-open-atrium-news-recent-documents-table .pane-content{
+.oa-pane [class*="pane-open-atrium-news"]  .pane-content{
     padding: 0px;
 }
 
 .oa-pane .pane-tgd-polls-polls-list .pane-content table,
 .oa-pane .pane-open-atrium-news-oa-recent-news .pane-content table,
 .oa-pane .pane-oa-worktracker-task-list .pane-content table,
-.oa-pane .pane-open-atrium-news-recent-documents-table .pane-content table{
+.oa-pane [class*="pane-open-atrium-news"] .pane-content table
+{
     margin-bottom: 0px;
 }
 
@@ -469,16 +470,20 @@ fieldset{
 }
 
 
-.field-content > a {
-    background: none repeat scroll 0 0 #999999;
-    border-radius: 10px;
-    color: #FFFFFF;
-    display: inline-block;
-    float: right;
-    font-size: smaller;
-    font-weight: bold;
-    line-height: 1.5em;
-    padding: 2px 10px 0;
+.field-content {
+    &.tag li{
+        background: none repeat scroll 0 0 #999999;
+        border-radius: 10px;
+        color: #FFFFFF;
+        display: inline-block;
+        float: right;
+        font-size: smaller;
+        font-weight: bold;
+        line-height: 1.5em;
+        padding: 2px 10px 0;
+        list-style: none;
+        margin-left: 3px;
+    }
 }
 
 body.oa-login {

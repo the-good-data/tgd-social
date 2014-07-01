@@ -35,8 +35,8 @@ div#panels-ipe-control-container{top:-145px;right:-12px;z-index:1000}
 .oa-pane .pane-open-atrium-discussions-latest-replies{padding-bottom:0}
 .oa-pane .pane-content,.oa-pane .pane-open-atrium-discussions-latest-replies .pane-content{padding-top:0}
 .oa-pane .pane-open-atrium-discussions-latest-replies .pane-content .group-header{margin-top:0}
-.oa-pane .pane-tgd-polls-polls-list .pane-content,.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content,.oa-pane .pane-oa-worktracker-task-list .pane-content,.oa-pane .pane-open-atrium-news-recent-documents-table .pane-content{padding:0}
-.oa-pane .pane-tgd-polls-polls-list .pane-content table,.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content table,.oa-pane .pane-oa-worktracker-task-list .pane-content table,.oa-pane .pane-open-atrium-news-recent-documents-table .pane-content table{margin-bottom:0}
+.oa-pane .pane-tgd-polls-polls-list .pane-content,.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content,.oa-pane .pane-oa-worktracker-task-list .pane-content,.oa-pane [class*="pane-open-atrium-news"] .pane-content{padding:0}
+.oa-pane .pane-tgd-polls-polls-list .pane-content table,.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content table,.oa-pane .pane-oa-worktracker-task-list .pane-content table,.oa-pane [class*="pane-open-atrium-news"] .pane-content table{margin-bottom:0}
 .oa-pane .pane-title{background-color:#fff}
 .oa-pane tr.even,.oa-pane tr.odd{background-color:#fff}
 .oa-pane table thead th{background-color:#fff}
@@ -63,7 +63,7 @@ div#panels-ipe-control-container{top:-145px;right:-12px;z-index:1000}
 .poll>.vote-form>input{margin-top:20px}
 @media (min-width:1200px){.navbar-fixed-top .pane-oa-navigation{width:100%} .navbar-fixed-top .pane-oa-navigation>.pane-content{width:1170px;margin:0 auto} .navbar-fixed-top>div>div>div:nth-of-type(3)>div.panel-panel-inner{width:1170px;margin:0 auto;float:none}}fieldset#node_oa_worktracker_task_form_group_oa_worktracker_task_info>legend{margin-bottom:0}
 fieldset#node_oa_worktracker_task_form_group_oa_worktracker_task_info>.fieldset-wrapper{margin-top:40px}
-.field-content>a{background:none repeat scroll 0 0 #999;border-radius:10px;color:#fff;display:inline-block;float:right;font-size:smaller;font-weight:bold;line-height:1.5em;padding:2px 10px 0}
+.field-content.tag li{background:none repeat scroll 0 0 #999;border-radius:10px;color:#fff;display:inline-block;float:right;font-size:smaller;font-weight:bold;line-height:1.5em;padding:2px 10px 0;list-style:none;margin-left:3px}
 body.oa-login #main-wrapper{background-image:url("../images/fields_sun1.png");background-position:bottom center;background-repeat:no-repeat;background-color:#e7f4fc;margin-left:0;margin-right:0;padding-left:20px;padding-right:20px;min-height:100%}body.oa-login #main-wrapper #main{margin-top:0 !important}
 body.oa-login #user-login-panel .oa-pane{border-color:transparent;top:20px}body.oa-login #user-login-panel .oa-pane .pane-title{background-image:none;background-color:transparent}
 body.oa-login #user-login-panel .oa-pane .panel-pane{top:0;background-color:transparent;border-color:transparent}body.oa-login #user-login-panel .oa-pane .panel-pane h3{float:left;font-size:66px;font-weight:normal;left:-252px;top:5px;position:absolute;text-transform:uppercase;background-image:none;background-color:transparent}
