@@ -37,12 +37,17 @@ task :production do
   set :branch, "master"
 end
 
+task :staging do
+  ssh_options[:port] = 21950
+  role :web,        "lnd-app00-pre.#{domain}"
+  role :app,        "lnd-app00-pre.#{domain}"
+  role :db,         "lnd-app00-pre.#{domain}", :primary => true
+
+  set :deploy_to,   "/srv/openatrium/"
+  set :branch, "develop"
+end
+
 namespace :deploy do
-  
-  task :rename_main_file do
-    run "mv #{release_path}/protected/config/main.prod.php #{release_path}/protected/config/main.php"
-    run "mv #{release_path}/protected/config/local_config.prod.php #{release_path}/protected/config/local_config.php"
-  end
   
   task :default_site_symlink do
     run "ln -nfs #{shared_path}/default #{current_path}/sites/"
