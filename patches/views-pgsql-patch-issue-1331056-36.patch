@@ -1,7 +1,7 @@
-diff --git a/plugins/views_plugin_query_default.inc b/plugins/views_plugin_query_default.inc
-index 030c5ea..a09f13d 100644
---- a/plugins/views_plugin_query_default.inc
-+++ b/plugins/views_plugin_query_default.inc
+diff --git a/sites/all/modules/views/plugins/views_plugin_query_default.inc b/sites/all/modules/views/plugins/views_plugin_query_default.inc
+index 8a15e8d..e0e13e4 100644
+--- a/sites/all/modules/views/plugins/views_plugin_query_default.inc
++++ b/sites/all/modules/views/plugins/views_plugin_query_default.inc
 @@ -1205,7 +1205,9 @@ class views_plugin_query_default extends views_plugin_query {
        }
        // This is a formula, using no tables.
@@ -39,10 +39,10 @@ index 030c5ea..a09f13d 100644
          $base_field_alias = $this->add_field($this->base_table, $this->base_field);
          $this->add_groupby($base_field_alias);
        }
-diff --git a/tests/views_groupby.test b/tests/views_groupby.test
+diff --git a/sites/all/modules/views/tests/views_groupby.test b/sites/all/modules/views/tests/views_groupby.test
 index 718d8dc..943679e 100644
---- a/tests/views_groupby.test
-+++ b/tests/views_groupby.test
+--- a/sites/all/modules/views/tests/views_groupby.test
++++ b/sites/all/modules/views/tests/views_groupby.test
 @@ -108,6 +108,88 @@ class ViewsQueryGroupByTest extends ViewsSqlTest {
    }
  
