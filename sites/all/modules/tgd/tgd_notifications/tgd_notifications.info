@@ -1,0 +1,16 @@
+name = TGD Notifications
+description = Notifications and subscriptions for TGD Social
+core = 7.x
+package = TheGoodData
+version = 7.x-1.0
+project = tgd_notifications
+dependencies[] = features
+dependencies[] = list
+dependencies[] = message_digest
+dependencies[] = oa_messages_digest
+dependencies[] = options
+features[features_api][] = api:2
+features[field_base][] = message_subscribe_email
+features[field_base][] = message_subscribe_email_freq
+features[field_instance][] = user-user-message_subscribe_email
+features[field_instance][] = user-user-message_subscribe_email_freq
