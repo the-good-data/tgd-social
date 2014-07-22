@@ -5,6 +5,13 @@
  */
 
 /**
+ * Implements hook_menu_alter().
+ */
+function tgd_notifications_menu_alter(&$items) {
+  $items['user/%user/settings']['title'] = 'Notifications';
+}
+
+/**
  * Implements hook_message_digest_view_mode_alter().
  */
 function tgd_notifications_message_digest_view_mode_alter(&$context) {
