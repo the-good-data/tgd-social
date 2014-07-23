@@ -2,6 +2,7 @@ default_run_options[:pty] = false
 ssh_options[:config] = false
 ssh_options[:forward_agent] = true
 set :use_sudo, false
+current_branch = `git branch`.match(/\* (\S+)\s/m)[1]
 
 set :user, "tgd"
 
@@ -44,7 +45,9 @@ task :staging do
   role :db,         "lnd-app00-pre.#{domain}", :primary => true
 
   set :deploy_to,   "/srv/openatrium/"
-  set :branch, "develop"
+  
+  set (:branch) { Capistrano::CLI.ui.ask("Choose the branch to deploy (current if blank): ")}
+  set :branch, current_branch if branch.empty?
 end
 
 namespace :deploy do
