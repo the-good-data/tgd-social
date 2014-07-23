@@ -134,7 +134,7 @@ Drupal.ajax = function (base, element, element_settings) {
 
   // If there isn't a form, jQuery.ajax() will be used instead, allowing us to
   // bind Ajax to links as well.
-  if (this.element !== undefined && this.element.form) {
+  if (this.element.form) {
     this.form = $(this.element.form);
   }
 
@@ -616,6 +616,13 @@ Drupal.ajax.prototype.commands = {
       .removeClass('odd even')
       .filter(':even').addClass('odd').end()
       .filter(':odd').addClass('even');
+  },
+
+  /**
+   * Command to update a form's build ID.
+   */
+  updateBuildId: function(ajax, response, status) {
+    $('input[name="form_build_id"][value="' + response['old'] + '"]').val(response['new']);
   }
 };
 

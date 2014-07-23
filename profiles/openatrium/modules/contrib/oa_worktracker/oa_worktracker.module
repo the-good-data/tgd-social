@@ -139,17 +139,41 @@ function oa_worktracker_oa_messages_create_alter(&$wrapper, $context) {
  */
 function _oa_worktracker_check_section_options(&$options) {
   if (module_exists('oa_buttons')) {
+    // TODO: It'd be awesome to cache this somehow for performance!
     foreach (array_keys($options) as $nid) {
       if ($nid === '_none') continue;
 
-      // Make sure this section can take Task nodes
-      // TODO: we need to cache this somehow for performance!
+      // Get all the command buttons for given Section.
       $buttons = array();
       _oa_buttons_get_node_command_buttons(node_load($nid), $buttons);
-      if (!isset($buttons['oa_worktracker_task'])) {
+      
+      // Loop through and make sure this section can take Task nodes.
+      $found = FALSE;
+      foreach ($buttons as $button) {
+        if ($button['value'] == 'oa_worktracker_task') {
+          $found = TRUE;
+          break;
+        }
+      }
+
+      // If not, then we need to remove it from the options.
+      if (!$found) {
         unset($options[$nid]);
       }
     }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function oa_worktracker_module_implements_alter(&$implementations, $hook) {
+  // We need our oa_worktracker_form_oa_worktracker_task_node_form_alter() to
+  // run after save_draft_form_node_form_alter().
+  if ($hook == 'form_alter' && isset($implementations['oa_worktracker'])) {
+    $group = $implementations['oa_worktracker'];
+    unset($implementations['oa_worktracker']);
+    $implementations['oa_worktracker'] = $group;
   }
 }
 
@@ -165,7 +189,7 @@ function oa_worktracker_form_oa_worktracker_task_node_form_alter(&$form, &$form_
   }
 
   if (empty($form['nid']['#value'])) {
-    // Set the default values for 'Priority', 'Status' and 'Type'
+    // Set the default values for 'Priority', 'Status' and 'Type'.
     foreach (array('priority', 'task_status', 'task_type') as $name) {
       $field_name = 'field_oa_worktracker_' . $name;
       $variable_name = 'oa_worktracker_allowed_values_' . $name;
@@ -209,6 +233,10 @@ function oa_worktracker_form_oa_worktracker_task_node_form_alter(&$form, &$form_
         ),
         '#options' => $assigned_to_default,
       );
+
+      // Hide the 'Save as Draft' button because it doesn't do anything sane
+      // in conjunction with the 'Copy for multiple' functionality.
+      $form['actions']['draft']['#access'] = FALSE;
     }
   }
 }
@@ -265,7 +293,7 @@ function oa_worktracker_node_presave($node) {
 function oa_worktracker_node_insert($node) {
   if ($node->type == 'oa_worktracker_task' && !empty($node->oa_worktracker_assigned_to_multiple)) {
     foreach ($node->oa_worktracker_assigned_to_multiple as $uid) {
-      $clone = oa_clone_prepare($node);
+      $clone = oa_clone_prepare($node, NULL, NULL, TRUE);
       $clone->field_oa_worktracker_assigned_to[LANGUAGE_NONE][0]['target_id'] = $uid;
       unset($clone->oa_worktracker_assigned_to_multiple);
       oa_clone_save($clone);
@@ -305,7 +333,7 @@ function oa_worktracker_form_comment_form_alter(&$form, &$form_state, $form_id) 
  */
 function oa_worktracker_form_views_exposed_form_alter(&$form, &$form_state, $form_id) {
   $view = $form_state['view'];
-  if ($view->name == 'oa_worktracker' && $view->current_display == 'task_list') {
+  if ($view->name == 'oa_worktracker' && in_array($view->current_display, array('task_list', 'user_tasks'))) {
     // Set 'open' as the default if we haven't been submitted yet (the request
     // method is GET) and 'open' is actually a valid option. This is a hack
     // around Views issue #1835680: https://drupal.org/node/1835680
@@ -546,12 +574,15 @@ function oa_worktracker_theme_comment_alter_diff(&$variables) {
     }
     $rows[] = $row;
   }
-  drupal_add_css(drupal_get_path('module', 'comment_alter') . '/comment_alter.css');
-  return theme('table', array(
-    '#theme' => 'table__comment_alter__diff',
-    '#rows' => $rows,
-    '#attributes' => array('class' => array('comment-alter-diff')),
-    '#sticky' => FALSE,
-  ));
+
+  if (!empty($rows)) {
+    drupal_add_css(drupal_get_path('module', 'comment_alter') . '/comment_alter.css');
+    return theme('table', array(
+      '#theme' => 'table__comment_alter__diff',
+      '#rows' => $rows,
+      '#attributes' => array('class' => array('comment-alter-diff')),
+      '#sticky' => FALSE,
+    ));
+  }
 }
 

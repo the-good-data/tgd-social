@@ -1,0 +1,27 @@
+<?php
+/**
+ * @file
+ * Drupal needs this blank file.
+ */
+
+/**
+ * Implements hook_message_digest_view_mode_alter().
+ */
+function tgd_notifications_message_digest_view_mode_alter(&$context) {
+  // Check global disable flag.
+  if (!variable_get('oa_messages_notifications', TRUE) || empty($context['messages'])) {
+    return;
+  }
+  // Fix when deliver = FALSE and wrong view mode set in oa_messages_digest module.
+  // that is caused when context 'gid' not properly set (digest for all groups).
+  // @see message_digest_cron();
+  // @see oa_messages_digest_message_digest_view_mode_alter();
+  if (!$context['deliver'] && !$context['gid']) {
+    $context['deliver'] = TRUE;
+  }
+  // Note oa_messages_digest also sets wrong the view modes.
+  if ($context['deliver']) {
+    $context['view_modes'] = $context['plugin']['view_modes'];
+  }
+  // Use theme_message_digest_row and theme_message_digest for further formatting.
+}
