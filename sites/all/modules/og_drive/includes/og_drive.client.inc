@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * @file
@@ -8,7 +8,7 @@
 
 class OgDriveClient {
 
-  // Google_Client. 
+  // Google_Client.
   private $client;
   // OgDriveCredentials.
   private $credentials;
@@ -24,7 +24,7 @@ class OgDriveClient {
     $this->credentials = new OgDriveCredentials($gid);
     // Set credentials for client.
     $this->setClient();
-  } 
+  }
 
   // Set the client properties.
   private function setClient() {
@@ -53,14 +53,14 @@ class OgDriveClient {
   // Get an authorization url with the 'force' aproval prompt setting.
   function getForceAuthUrl() {
     $this->client->setApprovalPrompt('force');
-    return $this->client->createAuthUrl() . '&login_hint=' . urlencode($this->credentials->getAccountEmail()); 
-  } 
+    return $this->client->createAuthUrl() . '&login_hint=' . urlencode($this->credentials->getAccountEmail());
+  }
 
   // Get an array of authentication credentials.
   function authenticate($code) {
     return json_decode($this->client->authenticate($code));
   }
-  
+
   // Getter the credential manager instance.
   function getCredManager() {
     return $this->credentials;
@@ -73,9 +73,9 @@ class OgDriveClient {
   function setAccessToken() {
     // If the access token is expired, refresh it and store the new values.
     if ($this->credentials->tokenIsExpired()) {
-      $this->client->refreshToken($this->credentials->getRefreshToken()); 
+      $this->client->refreshToken($this->credentials->getRefreshToken());
       $token = json_decode($this->client->getAccessToken());
-      $this->credentials->updateAccessToken($token); 
+      $this->credentials->updateAccessToken($token);
     }
     $credentials = $this->credentials->getJsonCredentials();
     $this->client->setAccessToken($credentials);
@@ -113,12 +113,12 @@ class OgDriveClient {
 function og_drive_test_drive() {
   $client = og_drive_get_client();
   og_drive_load_contrib('Google_DriveService');
-  $service = new Google_DriveService($client); 
+  $service = new Google_DriveService($client);
   $file = new Google_DriveFile();
   $file->setTitle('My document');
   $file->setDescription('A test document');
   $file->setMimeType('text/plain');
-  $data = file_get_contents(drupal_get_path('module', 'og_drive') . '/document.txt'); 
+  $data = file_get_contents(drupal_get_path('module', 'og_drive') . '/document.txt');
   $createdFile = $service->files->insert($file, array(
     'data' => $data,
     'mimeType' => 'text/plain',
