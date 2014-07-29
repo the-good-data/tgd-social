@@ -1,0 +1,258 @@
+<?php
+
+// Provide a database table to store the refresh token for each google user account.
+
+function og_drive_schema() {
+  $schema['og_drive_group_settings'] = array(
+    'description' => 'Table to store refresh tokens for google accounts associated to a group.',
+    'fields' => array(
+      'gid' => array(
+        'description' => 'The group ID',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'enabled' => array(
+        'description' => 'On/off switch for the group access to the drive.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 1,
+      ),
+      'file_source' => array(
+        'description' => 'File source for drive content pages.  0 = local, 1 = API call.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'drive_permission_rw' => array(
+        'description' => 'Read or write permission (0 = read only, 1 = read+write).',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'drive_permission_upload' => array(
+        'description' => 'On/off allow upload checkbox value.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+      ),
+      'access_token' => array(
+        'description' => 'The access token to this group\'s drive.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+      'access_token_expiry' => array(
+        'description' => 'the access token expiry timestamp.',
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => true,
+        'default' => 0,
+      ),
+      'refresh_token' => array(
+        'description' => 'The refresh token to this group\'s drive.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+      'id_token' => array(
+        'description' => 'OAuth2 Google user id token',
+        'type' => 'text',
+        'size' => 'big',
+      ),
+      'client_id' => array(
+        'description' => 'The refresh token to this group\'s drive.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+      'client_secret' => array(
+        'description' => 'The refresh token to this group\'s drive.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+      'account_email' => array(
+        'description' => 'Email of associated google account.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+      'code' => array(
+        'description' => 'Authorization code returned by Google.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+      'created' => array(
+        'description' => 'The access token creation timestamp.',
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => true,
+      ),
+      'token_type' => array(
+        'decription' => 'The token type.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+      'authorization_code' => array(
+        'description' => 'The initial authorization code.',
+        'type' => 'text',
+        'size' => 'normal',
+      ),
+    ),
+    'primary key' => array('gid'),
+  );
+  $schema['og_drive_permissions'] = array(
+    'description' => 'Store the permission on each file for each group member',
+    'fields' => array(
+      'gid' => array(
+        'description' => 'The group node id.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'description' => 'The Drupal user id.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),  
+      'fid' => array(
+        'description' => 'The Google drive file id.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'pid' => array(
+        'description' => 'The Google drive permission id for the user.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('gid', 'uid', 'fid'),
+    'indexes' => array(
+      'gid_uid' => array('gid', 'uid'),
+    ),
+  );
+  $schema['og_drive_files'] = array(
+    'description' => 'Store the file ids for a group drive.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The Google drive file id.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'gid' => array(
+        'description' => 'The group node id.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'decription' => 'Drupal user id of who created the file.  Decimal value indicates obtained by sync from drive',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'title' => array(
+        'description' => 'The file title (trunkated to 255 chars)',
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+      'mimeType' => array(
+        'description' => 'The file MIME type',
+        'type' => 'text',
+        'size' => 'normal',        
+      ),
+      'alternateLink' => array(
+        'description' => 'The url to the file, used in links.',
+        'type' => 'text',
+        'size' => 'normal',
+      ),
+      'modifiedDate' => array(
+        'description' => 'The last modified date.',
+        'type' => 'text',
+        'size' => 'normal',
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'gid' => array('gid'),
+    ),
+  );
+  $schema['og_drive_user_value'] = array(
+    'description' => 'Store the email address associated with the group member.',
+    'fields' => array(
+      'uid' => array(
+        'description' => 'The Drupal user id.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'email_address' => array(
+        'description' => 'Email of associated google account with which group drive files will be shared.',
+        'type' => 'text',
+        'size' => 'small',
+      ),
+    ),
+    'primary key' => array('uid'),
+  );
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ * Add a user field in which to store the gmail address used by group members to access shared drive documents.
+ */
+/*
+function og_drive_install() {
+  foreach (og_drive_fields() as $field) {
+    field_create_field($field);
+  }
+  foreach (og_drive_instances() as $instance) {
+    field_create_instance($instance);
+  }
+}
+
+function og_drive_fields() {
+  return array(
+    array(
+      'field_name' => 'user_og_drive_address',
+      'cardinality' => 1,
+      'entity_types' => array('user'),
+      'module' => 'og_drive',
+      'locked' => TRUE,
+      'type' => 'text',
+    ),
+  );
+}
+
+function og_drive_instances() {
+  return array(
+    array(
+      'field_name' => 'user_og_drive_address',
+      'entity_type' => 'user',
+      'label' => t('Google drive email address'),
+      'description' => t('The email address you want to use to access the Google drive shared files in the groups for which you are a member.'),
+      'bundle' => 'user',
+      'widget' => array(
+        'type' => 'text_textfield',
+        'max_length' => 255,
+      ),
+    ),
+  );
+}
+*/
+
+function og_drive_uninstall() {
+/*
+  foreach (og_drive_fields() as $field) {
+    field_delete_field($field['field_name']);
+  }  
+*/
+}

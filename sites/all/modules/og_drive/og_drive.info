@@ -1,0 +1,17 @@
+name = Og drive
+description = "Incorporates Google Drive into Organic Groups."
+core = 7.x
+package = "Organic groups"
+
+dependencies[] = og
+
+files[] = includes/og_drive.client.inc
+files[] = includes/og_drive.credentials.inc
+files[] = includes/og_drive.service.inc
+
+; Information added by Drupal.org packaging script on 2014-03-06
+version = "7.x-1.0-rc4"
+core = "7.x"
+project = "og_drive"
+datestamp = "1394135007"
+

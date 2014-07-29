@@ -1,0 +1,799 @@
+<?php
+
+/**
+ * @file
+ *   og_drive module connects an organic group with a Google drive account.
+ */
+
+// The module expects the Google PHP client API directory to be google-api-php-client.
+// Change this constant if it needs to be elsewhere, such as in the libraries directory.
+define('OG_DRIVE_API_DIR', 'google-api-php-client');
+
+/**
+ * Implements hook_menu().
+ */
+function og_drive_menu() {
+  return array(
+    // Callback url for Google API access redirect URI.
+    'og_drive/endpoint' => array(
+      'page callback' => 'og_drive_endpoint',
+      'access arguments' => array('administer group drive settings'),
+      'title' => 'og_drive endpoint',
+      'type' => MENU_CALLBACK,
+      'file' => 'includes/og_drive.endpoint.inc',       
+    ),
+    // Group node settings reset confirm form.
+    'og_drive_reset/settings/%' => array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('og_drive_group_reset', 2),
+      'access arguments' => array('administer group drive settings'),
+      'file' => 'includes/og_drive.forms.inc', 
+      'type' => MENU_CALLBACK,
+    ),
+    // Group drive delete confirm form.
+    'og_drive_delete/%' => array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('og_drive_group_delete', 1),
+      'access arguments' => array('administer group drive settings'),
+      'file' => 'includes/og_drive.forms.inc', 
+      'type' => MENU_CALLBACK,
+    ),
+    // Add a tab to the node edit page.
+    'node/%node/og-drive-settings' => array(
+      'access callback' => 'og_drive_node_settings_tab_access',
+      'access arguments' => array(1), 
+      'page callback' => 'og_drive_node_settings_tab',
+      'page arguments' => array(1),
+      'title' => 'Google drive settings',
+      'weight' => 5,
+      'type' => MENU_LOCAL_TASK,
+    ),
+    // Add a tab to the node edit page.
+    'node/%node/og-drive-content' => array(
+      'access callback' => 'og_drive_node_content_tab_access',
+      'access arguments' => array(1), 
+      'page callback' => 'og_drive_node_content_tab',
+      'page arguments' => array(1),
+      'title' => 'Google drive content',
+      'weight' => 5,
+      'type' => MENU_LOCAL_TASK,
+    ),
+    // Add tab to user page to manage google drive email account.
+    'user/%user/og-drive-settings' => array(
+      'access callback' => 'og_drive_user_settings_tab_access',
+      'title' => 'Google drive account',
+      'access arguments' => array(1), 
+      'page callback' => 'og_drive_user_settings_tab',
+      'page arguments' => array(1),
+      'weight' => 5,
+      'type' => MENU_LOCAL_TASK,
+    ),
+    // Disable account / delete account email confirm form.
+    'og-drive/confirm-disable-account/%user' => array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('og_drive_disable_account', 2),
+      'access callback' => 'og_drive_user_settings_tab_access', 
+      'access arguments' => array(2),
+      'file' => 'includes/og_drive.forms.inc', 
+      'type' => MENU_CALLBACK,
+    ),
+    // Delete file confirm form.
+    'node/%/delete-drive-file/%' => array(
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('og_drive_delete_file_confirm',1, 3),
+      'access callback' => 'og_drive_allow_delete_files', 
+      'access arguments' => array(1),
+      'file' => 'includes/og_drive.forms.inc', 
+      'type' => MENU_CALLBACK,
+    ), 
+  );
+}
+
+/********************
+ * Access callbacks *
+ ********************/
+
+/**
+ * Access callback.
+ * Test that the user can manage drive accounts for a group, and that the current node is a group node.
+ */
+function og_drive_node_settings_tab_access($node) {
+  // Test that the node is an organic group node.
+  if (! og_is_group('node', $node)) {
+    return FALSE;
+  }
+  // Test the user permission.
+  if (og_user_access('node', $node->nid, 'administer own group drive settings', NULL, FALSE, TRUE) || user_access('administer group drive settings')) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Access callback.
+ * Test that the node is an enabled og drive group and that the user is a member.
+ */
+function og_drive_node_content_tab_access($node) {
+  // Is this a group node.
+  if (! og_is_group('node', $node)) {
+    return FALSE;
+  }
+  // Is the drive status enabled.
+  if (! OgDriveCredentials::groupIsEnabled($node->nid)) {
+    return FALSE;
+  }
+  // Is the drive app authorized.
+  if (! OgDriveCredentials::groupIsAuthorized($node->nid)) {
+    return FALSE;
+  }
+  // Test that the user is a group member or has the 'administer group drive settings' permission.
+  global $user;
+  if (og_user_access('node', $node->nid, 'access group drive content', $user) || user_access('administer group drive settings', $user)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * Access callback.
+ * Test if one of the following condition is true:
+ *   - The user is viewing his own account and is allowed to access drive content.
+ *   - The user has the permission to administer users and administer drive settings.
+ */
+function og_drive_user_settings_tab_access($account) {
+  global $user;
+  // User is viewing own account page.
+  if ($user->uid == $account->uid) {
+    return TRUE;
+  }
+  // User has required administrative privileges.
+  if (user_access('administer users') && user_access('administer group drive settings')) {
+    return TRUE;
+  }
+  return FALSE;  
+}
+
+/**
+ * Test if current user is allowed to delete files from the drive.
+ */
+function og_drive_allow_delete_files($gid) {
+  // Set access value for delete links.
+  if (og_user_access('node', $gid, 'delete drive files', NULL, FALSE, TRUE)) {
+    return TRUE;
+  }
+  if (user_access('administer group drive settings')) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/******************
+ * Page callbacks *
+ ******************/
+
+/**
+ * Page callback.
+ * Add tab to node edit form for google drive settings for a group node.
+ */
+function og_drive_node_settings_tab($node) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
+  return drupal_get_form('og_drive_group_node_settings', $node);
+}
+
+/**
+ * Page callback.
+ * Show the drive page.
+ */
+function og_drive_node_content_tab($node) {
+  global $user;
+  // Show the Google account registering form.
+  if (!$account_address = og_drive_get_user_email($user->uid)) {
+    module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
+    return drupal_get_form('og_drive_register_email', $user, $node->nid);
+  }
+
+  // Show a message to notify the user of his registered account.
+  $content['account_address'] = array(
+    '#markup' => t('Make sure you are connected to your Google account (!account) 
+      to access private drive files.', array('!account' => $account_address)),
+  );
+
+  $creds = new OgDriveCredentials($node->nid);
+  // Get local file data.
+  if($creds->getFileSource() == 0) {
+    $links = og_drive_get_files($node->nid);
+  }
+  // Get file data from drive. 
+  else {
+    $drive = new OgDriveService($node->nid);
+    $links = $drive->getItems();
+  }
+
+  // Display links to each file.
+  $content['links'] = array(
+    '#theme' => 'og_drive_doc_list',
+    '#links' => $links,
+    '#gid' => $node->nid,
+    '#delete_access' => og_drive_allow_delete_files($node->nid),
+  );
+
+  // Show create upload forms.
+  if (og_user_access('node', $node->nid, 'create drive file', $user, FALSE, TRUE) || user_access('administer group drive settings')) {
+    module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
+    $content['create'] = drupal_get_form('og_drive_create_new_drive_file', $node->nid);
+  }
+
+  // Show upload forms.
+  if (og_user_access('node', $node->nid, 'upload files to drive', $user, FALSE, TRUE) || user_access('administer group drive settings')) {
+    module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
+    $content['upload'] = drupal_get_form('og_drive_upload_drive_file', $node->nid);
+  }
+
+  // Show synchronize form.
+  if (og_user_access('node', $node->nid, 'administer own group drive settings', $user) || user_access('administer group drive settings')) {
+    module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
+    $content['sync'] = drupal_get_form('og_drive_synchronize_files_form', $node->nid);
+  }
+
+  return $content;
+}
+
+/**
+ * Page callback.
+ * Show the user settings form.
+ */
+function og_drive_user_settings_tab($user) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
+  return drupal_get_form('og_drive_register_email', $user); 
+}
+
+/****************
+ * Drupal hooks *
+ ****************/
+
+/**
+ * Implements hook_permission().
+ */
+function og_drive_permission() {
+  return array(  
+    'administer group drive settings' => array(
+      'title' => t('Administer all group drives settings'),
+      'description' => t('Administer Google drive settings for a group node.  Allows all actions, 
+       including uploading files. Overrides Organic Group specific permissions.'),
+    ),
+    'change own drive account email address' => array(
+      'title' => t('Change own drive account email address'),
+      'description' => t('Lets the user change the email address associated with the Google drive account
+        with which files are shared.  Changing this value will unshare all the files from a previous account
+        and share them with the new account, a potentialy costly operation.  If you do not enable, admins who
+        can manage users and group drive settings will be able to update the email value for the user.'),
+    ),
+  );  
+}
+
+/**
+ * Implements hook_help.
+ */
+function og_drive_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#og_drive':
+      // Show the README.txt file.
+      return check_markup(file_get_contents(dirname(__FILE__) . "/README.txt"));
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function og_drive_theme($existing, $type, $theme, $path) {
+  return array(
+    'og_drive_doc_link' => array(
+      'variables' => array(
+        'Google_DriveFile' => '',
+      ),
+      'file' => 'theme/og_drive.theme.inc',
+    ),
+    'og_drive_doc_list' => array(
+      'variables' => array(
+        'links' => array(),
+        'gid' => NULL,
+        'delete_access' => FALSE,
+      ),
+      'file' => 'theme/og_drive.theme.inc',
+    ),
+  );  
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function og_drive_node_delete($node) {
+  if (og_is_group('node', $node)) {
+    og_drive_delete_drive($node->nid);
+  }
+}
+
+/**
+ * Implements hook_user_delete().
+ */
+function og_drive_user_delete($account) {
+  og_drive_delete_drive_email($account->uid);
+}
+
+/**
+ * Implements hook_user_cancel().
+ */
+function og_drive_user_cancel($edit, $account, $method) {
+  og_drive_delete_drive_email($account->uid);
+}
+
+/**
+ * Implements hook_user_update().
+ * Disable drive sharing when account is blocked, enable when unblocked.
+ */
+function og_drive_user_update(&$edit, $account, $category) {
+  // Blocking the user, unshare the files.
+  if ($edit['status'] == 0 && $edit['original']->status == 1) {
+    og_drive_delete_all_user_permissions($account->uid); 
+  }
+  // Unblocking the user, share the files.
+  elseif ($edit['status'] == 1 && $edit['original']->status == 0) {
+    og_drive_share_all_groups_files($account->uid);
+  }
+}
+
+/************
+ * OG hooks *
+ ************/
+
+/**
+ * Implements hook_og_permission().
+ */
+function og_drive_og_permission() {
+  return array(
+    'administer own group drive settings' => array(
+      'title' => t('Administer own group drive settings'),
+      'description' => t('Allow users to manage the group settings.'),
+    ),
+    'create drive file' => array(
+      'title' => t('Create drive file'),
+      'description' => t('Allow users to create new drive files of the Google drive file types (docs, forms, spreadsheets, etc.)'),
+    ),
+    'upload files to drive' => array(
+      'title' => t('Upload files to og drive'),
+      'description' => t('Allows users to upload any kind of files to group drives.'),
+    ),
+    'delete drive files' => array(
+      'title' => t('Delete drive files'),
+      'description' => t('Allows users to delete and thus unshare any file in the group drive.'),
+    ),
+    'access group drive content' => array(
+      'title' => t('Access group drive'),
+      'description' => t('Let user access the drive content.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_og_membership_insert().
+ * Share all group drive files with the new user.
+ */
+function og_drive_og_membership_insert($og_membership) {
+  // Share drive files with user.
+  $creds = new OgDriveCredentials($og_membership->gid);
+  // If the group is enabled and the user has a registered google account address.
+  if ($creds->isEnabled() && $email_address = og_drive_get_user_email($og_membership->etid)) {
+    og_drive_share_all_files($og_membership->etid, $og_membership->gid);
+  }
+}
+
+/**
+ * Implements hook_og_membership_delete().
+ */
+function og_drive_og_membership_delete($og_membership) {
+  // Share drive files with user.
+  $creds = new OgDriveCredentials($og_membership->gid);
+  // If the group is enabled and the user has a registered google account address.
+  if ($creds->isEnabled() && $email_address = og_drive_get_user_email($og_membership->etid)) {
+    og_drive_unshare_all_files($og_membership->etid, $og_membership->gid);
+  }
+}
+
+/***************************
+ * Goodle drive management *
+ ***************************/
+
+/**
+ * Share all a group's drive files with a user.
+ * param $uid
+ *   The Drupal user id with which to share the files.
+ * param $gid
+ *   The group node id for which the files will be shared. 
+ */
+function og_drive_share_all_files($uid, $gid) {
+  try {
+    $drive = new OgDriveService($gid);  
+    $users = array($uid => og_drive_get_user_email($uid));
+    $files = $drive->getItems();
+    $drive->createUserPermissions($users, $files);
+  }
+  catch (Exception $e) {
+    og_drive_log_exception($e, t('There was a problem sharing the files for group !gid and user !uid', array('!gid' => $gid, '!uid' => $uid)));
+  }
+}
+
+/**
+ * Share (create permissions) all the files for a group to all user members.
+ * param $gid
+ *   The group node id whose files to share to all members.
+ */
+function og_drive_share_all_users_files($gid) {
+  try {
+    $users = og_drive_get_user_members($gid);
+    $drive = new OgDriveService($gid);  
+    $files = $drive->getItems();
+    $drive->createUserPermissions($users, $files);
+  }
+  catch (Exception $e) {
+    og_drive_log_exception($e, t('There was a problem sharing the files for group !gid', array('!gid' => $gid)));
+  }
+}
+
+/**
+ * Share (create permissions) all the files of all the groups of which one given user is a member.
+ * param $uid
+ *   The drupal user id with which to share the files.
+ */
+function og_drive_share_all_groups_files($uid) {
+  // Get the group IDs of all the groups a user is an approved member of.
+  if ($gids = og_drive_get_user_groups($uid)) {
+    foreach($gids as $gid) {
+      // Test that the group is connected to a google drive account.
+      if (og_drive_group_has_drive($gid)) {
+        og_drive_share_all_files($uid, $gid);
+      }
+    }
+  }
+}
+
+/**
+ * Unshare (delete permissions) all the files in a group drive for a given user.
+ * param $uid:
+ *  The Drupal user id with whom to share the files.
+ * param $gid:
+ *  The group node id for which the files will be shared. 
+ */
+function og_drive_unshare_all_files($uid, $gid) {
+  if (OgDriveCredentials::groupHasDrive($gid)) {
+    try {
+      $drive = new OgDriveService($gid);  
+      $users = array($uid);
+      $drive->deleteUserPermissions($users);
+    }
+    catch (Exception $e) {
+      og_drive_log_exception($e, t('There was a problem deleting permissions for group id !gid and user !uid', array('!gid' => $gid, '!uid' => $uid)));
+    }
+  }
+}
+
+/**
+ * Unshare (delete permissions) all the files for one group for all user members.
+ * param $gid
+ *   The group node id whose files to unshare for all members.
+ */
+function og_drive_unshare_all_users_files($gid) {
+  $users = og_drive_get_user_members($gid);
+  foreach ($users as $uid) {
+    og_drive_unshare_all_files($uid, $gid);
+  }
+}
+
+/**
+ * Unshare (delete permissions) all the files of all the groups of which one given user is a member.
+ * Delete all permissions in all drives for one user.
+ * param $uid
+ *   The drupal user id with which to share the files.
+ */
+function og_drive_delete_all_user_permissions($uid) {
+  if ($gids = og_drive_get_user_groups($uid)) {
+    foreach($gids as $gid) {
+      if (og_drive_group_has_drive($gid)) {
+        og_drive_unshare_all_files($uid, $gid);
+      }
+    }
+  }
+}
+
+/**
+ * Delete a group drive.
+ * Delete all Google drive credentials and remove all permissions from group members.
+ * This will clear all the database tables and remove all drive file permissions for all users.
+ */
+function og_drive_delete_drive($gid) {
+  // Unshare all the files and delete the drive.
+  if (OgDriveCredentials::groupHasDrive($gid)) {
+    try {
+      // Delete the drive file permissions.
+      $service = new OgDriveService($gid);
+      $service->deleteDrive();
+      // Delete local file data.
+      og_drive_delete_all_group_files($gid);
+      drupal_set_message(t('The organic group drive has been deleted.  All permissions to files have been removed.  
+        You may also want to "Disconect from drive" the app from the Google account previously associated with 
+        this group.'));
+    }
+    catch (Exception $e) {
+      og_drive_log_exception($e, t('There was a problem deleting the drive for group id !gid', array('!gid' => $gid)));
+    }
+  }
+  else {
+    // Delete any settings row.
+    $creds = new OgDriveCredentials($gid);
+    $creds->delete();
+  } 
+}
+
+/**
+ * Synchonize local group file data with drive.
+ * Share new files and purge stale local data.
+ */
+function og_drive_synchronize_files($gid) {
+  try {
+    $service = new OgDriveService($gid);
+    $service->updateLocalFileData();
+  }
+  catch(Exception $e) {
+    og_drive_log_exception($e, t('There was a problem synchronizing the Drive files for group !gid', array('!gid' => $gid)));
+  }
+}
+
+/**
+ * Test that a group has an associated Google drive account.
+ */
+function og_drive_group_has_drive($gid) {
+  $res = db_query('SELECT authorization_code FROM {og_drive_group_settings} WHERE gid = :gid', array(':gid' => $gid)); 
+  if ($res->rowCount() > 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/*************************************************
+ * User Google account email address management. *
+ *************************************************/
+
+/**
+ * Get a given user's Google account email address.
+ */
+function og_drive_get_user_email($uid) {
+  return db_select('og_drive_user_value', 'oduv')
+    ->fields('oduv', array('email_address'))
+    ->condition('uid', $uid)
+    ->execute()->fetchField();
+}
+
+/**
+ * Get multiple users' Google account email address.
+ * @param $uids
+ *   array of Drupal user ids.
+ * @return
+ *   keyed array of user ids and email values array(23 => 'max@gmail.com').
+ */
+function og_drive_get_users_emails($uids) {
+  return db_select('og_drive_user_value', 'oduv')
+    ->fields('oduv')
+    ->condition('uid', $uids, 'IN')
+    ->execute()->fetchAllKeyed(0, 1);
+}
+
+/**
+ * Insert an email address associated with a Google account for a given user.
+ */
+function og_drive_update_drive_email($uid, $email_address) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  _og_drive_update_email_value($uid, $email_address);
+}
+
+/**
+ * Delete an email address associated with a Google account for a given user.
+ * Remove all permissions associated with that account.
+ */
+function og_drive_delete_drive_email($uid) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  _og_drive_delete_email_value($uid);
+  // Remove all associated file permissions.
+  og_drive_delete_all_user_permissions($uid);
+}
+
+/***************************
+ * Local files management. *
+ ***************************/
+
+/**
+ * Create a new file and share with all group members.
+ * @param $gid
+ * @param $title
+ * @param $mimeType
+ */
+function og_drive_create_new_file($gid, $title, $mimeType, $data = FALSE) {
+  try {
+    $service = new OgDriveService($gid);
+    $file = $service->createNewFile($title, $mimeType, $data);
+    // Exctract the Google_DriveFile object values required for the db row.
+    $schema = drupal_get_schema_unprocessed('og_drive', 'og_drive_files');
+    $db_fields = array_flip(array_keys($schema['fields']));  
+    $values = array_intersect_key((array)$file, $db_fields);
+    $values['gid'] = $gid;
+    global $user;
+    $values['uid'] = $user->uid;
+    // Save the file info locally.
+    og_drive_update_file($values);
+    drupal_set_message(t('The file "!title" has been created', array('!title' => $title)));
+
+    // Share the file with all the group members.
+    $uids = og_drive_get_user_members($gid);
+    $users = og_drive_get_users_emails($uids);
+    $service->createUserPermissions($users , array($file));    
+  }
+  catch (Exception $e) {
+    og_drive_log_exception($e, t('There was a problem creating the new file')); 
+  }
+}
+
+/**
+ * Get all the table rows that represent a file item.
+ */
+function og_drive_get_files($gid) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  return _og_drive_get_files($gid);
+}
+
+/**
+ * Insert of update file values.
+ */
+function og_drive_update_file($values) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  $values['title'] = substr($values['title'], 0, 255);
+  return _og_drive_update_file($values);
+}
+
+/**
+ * Delete a file from the drive.
+ */
+function og_drive_delete_drive_file($gid, $fid) {
+  try {
+    $service = new OgDriveService($gid);
+    $service->deleteFile($fid);
+    og_drive_delete_files($fid);
+    drupal_set_message(t('The file has been deleted.'));
+  }
+  catch (Exception $e) {
+    og_drive_log_exception($e, t('There was a problem deleting the file.')); 
+  }
+}
+
+
+/**
+ * Delete local file data.
+ * @param $ids
+ *   single file id or array of file ids.
+ */
+function og_drive_delete_files($ids) {
+  if (! is_array($ids)) {
+    $ids = array($ids);
+  }
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  _og_drive_delete_files($ids);
+  og_drive_delete_files_permissions($ids);
+}
+
+/**
+ * Delete all group files.
+ */
+function og_drive_delete_all_group_files($gid) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  return _og_drive_delete_all_group_files($gid);
+}
+
+/**
+ * Delete file permission local data.
+ * @param
+ *  a file id or an array of file ids.
+ */
+function og_drive_delete_files_permissions($fids) {
+  if (! is_array($fids)) {
+    $fids = array($fids);
+  }
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  _og_drive_delete_files_permissions($fids);
+}
+  
+/**
+ * Get all the permission ids associated with one file.
+ * @param $fid
+ *   Google_DriveFile id
+ * @return
+ *   array of Google_Permission ids.
+ */
+function og_drive_get_file_permissions($fid) {
+  module_load_include('inc', 'og_drive', 'includes/og_drive.db');
+  return _og_drive_get_file_permissions($fid);
+}
+
+/**
+ * Update the permission role for all users on all drive file for one group.
+ */
+function og_drive_update_role($gid, $role) {
+  try {
+    $drive = new OgDriveService($gid);
+    $drive->updateUsersPermissions($role);
+    drupal_set_message(t('The access permission has been changed to "!role"', array('!role' => $role)));
+  }
+  catch (Exception $e) {
+    og_drive_log_exception($e, t('There was a problem updating the permission roles.')); 
+  }
+}
+
+/********************************
+ * Group membership management. *
+ ********************************/
+
+/**
+ * Get member user ids of a group.
+ * @param $gid
+ *   Organic Group node id.
+ * @return
+ *   array of Drupal user ids that comprise a group membership for the argued group node id.
+ */
+function og_drive_get_user_members($gid) {
+  return db_select("og_membership", "ogm")
+    ->condition("ogm.gid", $gid)
+    ->condition('ogm.entity_type', 'user')
+    ->fields("ogm", array("etid"))
+    ->execute()->fetchCol();
+}
+
+/**
+ * Get group node ids for which a given user is a member.
+ * @return
+ *   array of node id.
+ */
+function og_drive_get_user_groups($uid) {
+  $entities = og_get_groups_by_user(user_load($uid));
+  return $entities ? array_keys($entities['node']) : FALSE;
+}
+
+/**
+ * Log errors and provide user feedback.
+ * @param $e
+ *   A caugth Exception object.
+ * @param $context_message
+ *   Message provided by the context where the exception occured.
+ *   Will be shown to the user and logged.
+ */
+function og_drive_log_exception($e, $context_message) {
+  $error_vars = array('!message' => $e->getMessage());
+  watchdog('og_drive',  $context_message .' Exception: !message ', $error_vars, WATCHDOG_ERROR);
+  drupal_set_message($context_message . ' ' . t('Consult the error logs for more information.'));
+}
+
+/**
+ * Example code
+ */
+/*
+function og_drive_dev_example_code() {
+  // Update some fields from the working table.
+  $schema = drupal_get_schema_unprocessed('og_drive');
+  $schema = $schema['og_drive_group_settings'];
+  $fields['drive_permission_rw'] = $schema['fields']['drive_permission_rw'];
+  $fields['drive_permission_upload'] = $schema['fields']['drive_permission_upload'];
+  foreach ($fields as $name => $def) {
+    db_add_field('og_drive_group_settings', $name, $def, array());
+  }
+
+  // Reinstall a table after modifying the schema.
+  db_drop_table('og_drive_permissions');
+  $schema = drupal_get_schema_unprocessed('og_drive', 'og_drive_permissions');
+  db_create_table('og_drive_permissions', $schema);
+}
+*/
