@@ -8,6 +8,7 @@ dependencies[] = features
 dependencies[] = list
 dependencies[] = message_digest
 dependencies[] = oa_messages_digest
+dependencies[] = oa_notifications
 dependencies[] = options
 features[features_api][] = api:2
 features[field_base][] = message_subscribe_email
