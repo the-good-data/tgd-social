@@ -1,0 +1,7 @@
+name = TGD Devel
+description = Development tools for TGD Social. Do not enable on Production sites.
+core = 7.x
+package = TheGoodData
+version = 7.x-1.0
+project = tgd_devel
+features[features_api][] = api:2

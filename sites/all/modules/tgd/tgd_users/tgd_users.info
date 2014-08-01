@@ -1,0 +1,7 @@
+name = TGD Users
+description = Users and roles configuration for TGD Social
+core = 7.x
+package = TheGoodData
+version = 7.x-1.0
+project = tgd_users
+features[features_api][] = api:2
