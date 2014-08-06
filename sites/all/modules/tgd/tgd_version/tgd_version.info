@@ -1,0 +1,6 @@
+name = TGD Version
+description = Update scripts for TGD Social. Just enable and let it sit there.
+core = 7.x
+package = TheGoodData
+version = 7.x-1.0
+project = tgd_social

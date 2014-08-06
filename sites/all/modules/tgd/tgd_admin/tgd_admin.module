@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TGD Admin feature.
+ */
+
+include_once 'tgd_admin.features.inc';

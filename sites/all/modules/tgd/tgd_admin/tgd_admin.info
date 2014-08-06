@@ -1,0 +1,12 @@
+name = TGD Admin
+description = Administration pages and utils for TGD Social
+core = 7.x
+package = TheGoodData
+version = 7.x-1.0
+project = tgd_admin
+dependencies[] = oa_admin
+features[features_api][] = api:2
+features[features_override_items][] = views_view.oa_admin_views_node
+features[features_overrides][] = views_view.oa_admin_views_node.display|default|display_options|fields|views_bulk_operations|vbo_operations|action::clone_action_clone
+features[features_overrides][] = views_view.oa_admin_views_node.display|default|display_options|fields|views_bulk_operations|vbo_operations|action::pathauto_node_update_action
+features[features_overrides][] = views_view.oa_admin_views_node.display|default|display_options|fields|views_bulk_operations|vbo_operations|action::system_message_action
