@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TGD UI feature.
+ */
+
+include_once 'tgd_ui.features.inc';
