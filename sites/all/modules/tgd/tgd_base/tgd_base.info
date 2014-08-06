@@ -41,6 +41,5 @@ features[taxonomy][] = corporate_subareas
 features[taxonomy][] = data_subareas
 features[taxonomy][] = people_subareas
 features[taxonomy][] = product_subareas
-features[variable][] = variable_realm_list_og
 features_exclude[dependencies][features] = features
 features_exclude[dependencies][taxonomy] = taxonomy
