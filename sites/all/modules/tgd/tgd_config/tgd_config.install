@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Provides update and install hooks for tgd_config.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * @see oa_config_install().
+ */
+function tgd_config_install() {
+  tgd_config_ensure_default_group_rids();
+}
+
+function tgd_config_ensure_default_group_rids() {
+  foreach (array('oa_space', 'oa_group') as $bundle) {
+    if ($roles = og_roles('node', $bundle)) {
+      if ($rid = array_search(OG_ADMINISTRATOR_ROLE, $roles)) {
+        variable_set('og_group_manager_default_rids_node_' . $bundle, array($rid => $rid));
+      }
+    }
+  }
+}
