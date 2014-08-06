@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TGD Content feature.
+ */
+
+include_once 'tgd_content.features.inc';

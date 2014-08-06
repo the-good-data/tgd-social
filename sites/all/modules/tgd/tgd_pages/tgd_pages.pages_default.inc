@@ -201,7 +201,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '126',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '135',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '15',
       ),
       'more_link' => 1,
@@ -467,7 +467,8 @@ function tgd_pages_default_page_manager_pages() {
     );
     $pane->cache = array();
     $pane->style = array(
-      'settings' => NULL,
+      'settings' => array(),
+      'style' => 'oa_styles_oa_pane',
     );
     $pane->css = array();
     $pane->extras = array();
@@ -525,7 +526,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '126',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '18',
       ),
       'more_link' => 1,
@@ -614,37 +615,6 @@ function tgd_pages_default_page_manager_pages() {
     $display->content['new-30111d06-20ed-4b3f-bdff-22e9cb4d8727'] = $pane;
     $display->panels['contentcolumn2'][1] = 'new-30111d06-20ed-4b3f-bdff-22e9cb4d8727';
     $pane = new stdClass();
-    $pane->pid = 'new-db389465-6c69-49c4-acf4-e4bd253dd367';
-    $pane->panel = 'sidebar';
-    $pane->type = 'views_panes';
-    $pane->subtype = 'oa_event_list-oa_events_upcoming_small';
-    $pane->shown = TRUE;
-    $pane->access = array();
-    $pane->configuration = array(
-      'exposed' => array(
-        'og_group_ref_target_id' => '',
-        'og_group_ref_target_id_mine' => 0,
-        'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => 'All',
-      ),
-      'items_per_page' => '10',
-      'view_settings' => 'fields',
-      'header_type' => 'none',
-      'view_mode' => 'teaser',
-    );
-    $pane->cache = array();
-    $pane->style = array(
-      'settings' => array(),
-      'style' => 'oa_styles_oa_pane',
-    );
-    $pane->css = array();
-    $pane->extras = array();
-    $pane->position = 0;
-    $pane->locks = array();
-    $pane->uuid = 'db389465-6c69-49c4-acf4-e4bd253dd367';
-    $display->content['new-db389465-6c69-49c4-acf4-e4bd253dd367'] = $pane;
-    $display->panels['sidebar'][0] = 'new-db389465-6c69-49c4-acf4-e4bd253dd367';
-    $pane = new stdClass();
     $pane->pid = 'new-cc810b13-7cc9-47de-82e9-9c904969856d';
     $pane->panel = 'sidebar';
     $pane->type = 'views_panes';
@@ -678,15 +648,47 @@ function tgd_pages_default_page_manager_pages() {
     );
     $pane->cache = array();
     $pane->style = array(
-      'settings' => NULL,
+      'settings' => array(),
+      'style' => 'oa_styles_oa_pane',
+    );
+    $pane->css = array();
+    $pane->extras = array();
+    $pane->position = 0;
+    $pane->locks = array();
+    $pane->uuid = 'cc810b13-7cc9-47de-82e9-9c904969856d';
+    $display->content['new-cc810b13-7cc9-47de-82e9-9c904969856d'] = $pane;
+    $display->panels['sidebar'][0] = 'new-cc810b13-7cc9-47de-82e9-9c904969856d';
+    $pane = new stdClass();
+    $pane->pid = 'new-db389465-6c69-49c4-acf4-e4bd253dd367';
+    $pane->panel = 'sidebar';
+    $pane->type = 'views_panes';
+    $pane->subtype = 'oa_event_list-oa_events_upcoming_small';
+    $pane->shown = TRUE;
+    $pane->access = array();
+    $pane->configuration = array(
+      'exposed' => array(
+        'og_group_ref_target_id' => '',
+        'og_group_ref_target_id_mine' => 0,
+        'og_subspaces_view_all' => 0,
+        'oa_section_ref_target_id' => 'All',
+      ),
+      'items_per_page' => '10',
+      'view_settings' => 'fields',
+      'header_type' => 'none',
+      'view_mode' => 'teaser',
+    );
+    $pane->cache = array();
+    $pane->style = array(
+      'settings' => array(),
+      'style' => 'oa_styles_oa_pane',
     );
     $pane->css = array();
     $pane->extras = array();
     $pane->position = 1;
     $pane->locks = array();
-    $pane->uuid = 'cc810b13-7cc9-47de-82e9-9c904969856d';
-    $display->content['new-cc810b13-7cc9-47de-82e9-9c904969856d'] = $pane;
-    $display->panels['sidebar'][1] = 'new-cc810b13-7cc9-47de-82e9-9c904969856d';
+    $pane->uuid = 'db389465-6c69-49c4-acf4-e4bd253dd367';
+    $display->content['new-db389465-6c69-49c4-acf4-e4bd253dd367'] = $pane;
+    $display->panels['sidebar'][1] = 'new-db389465-6c69-49c4-acf4-e4bd253dd367';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
@@ -1174,7 +1176,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '126',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '135',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '16',
       ),
       'more_link' => 1,
@@ -1536,7 +1538,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '127',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '136',
+        'oa_section_ref_target_id' => 'All',
         'tid' => 'Harvesting',
       ),
       'more_link' => 1,
@@ -1861,7 +1863,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '127',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '',
+        'oa_section_ref_target_id' => 'All',
         'tid' => 'Processing',
       ),
       'more_link' => 1,
@@ -2186,7 +2188,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '127',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '',
+        'oa_section_ref_target_id' => 'All',
         'tid' => 'Securing',
       ),
       'more_link' => 1,
@@ -2511,7 +2513,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '127',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '136',
+        'oa_section_ref_target_id' => 'All',
         'tid' => 'Trading',
       ),
       'more_link' => 1,
@@ -2875,7 +2877,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '128',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '137',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '23',
       ),
       'more_link' => 1,
@@ -3202,7 +3204,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '128',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '137',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '26',
       ),
       'more_link' => 1,
@@ -3854,7 +3856,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '128',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '25',
       ),
       'more_link' => 1,
@@ -4216,7 +4218,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '129',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '132',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '13',
       ),
       'more_link' => 1,
@@ -4541,7 +4543,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '129',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '132',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '10',
       ),
       'more_link' => 1,
@@ -4866,7 +4868,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '129',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '132',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '11',
       ),
       'more_link' => 1,
@@ -5191,7 +5193,7 @@ function tgd_pages_default_page_manager_pages() {
         'og_group_ref_target_id' => '129',
         'og_group_ref_target_id_mine' => 0,
         'og_subspaces_view_all' => 0,
-        'oa_section_ref_target_id' => '132',
+        'oa_section_ref_target_id' => 'All',
         'tid' => '12',
       ),
       'more_link' => 1,
