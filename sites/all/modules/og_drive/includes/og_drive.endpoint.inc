@@ -8,19 +8,15 @@
 /**
  * Receive and store authorization code from Google.
  * Break down the query string into a key value pair array.
- * The state parameter contains the gid for the group being acted on. 
+ * The state parameter contains the gid for the group being acted on.
  * Obtain and store credentials (access token and refresh token) from Google.
  */
 function og_drive_endpoint() {
-  $data = array();
-  // Get the state and code params.
-  foreach (explode('&', $_SERVER['REDIRECT_QUERY_STRING']) as $key_value_pair) {
-    $exploded = explode('=', $key_value_pair);
-    $data[$exploded[0]] = $exploded[1]; 
-  }
+  // Get the state and code params from the query string.
+  $data = $_GET;
 
   // Get credentials for the group id represented by the state parameter.
-  try { 
+  try {
     // Test that the query parameters are present.
     if (! $data['state'] || ! $data['code']) {
       $t_params = array('@state' => $data['state'], '@code' => $data['code']);
@@ -43,5 +39,5 @@ function og_drive_endpoint() {
     watchdog('og_drive', 'Error authenticating the app for !gid : !message ', $error_vars, WATCHDOG_ERROR);
     drupal_set_message(t('There was a problem authenticating the app.  Look at the Drupal error logs for more information.'));
   }
-  drupal_goto('node/' . $data['state'] . '/og_drive_settings'); 
+  drupal_goto('node/' . $data['state'] . '/og_drive_settings');
 }
