@@ -1,8 +1,10 @@
 <?php
 /**
  * @file
- * Drupal needs this blank file.
+ * Code for the TGD Config feature.
  */
+
+include_once 'tgd_config.features.inc';
 
 /**
  * Implements hook_og_role_insert().

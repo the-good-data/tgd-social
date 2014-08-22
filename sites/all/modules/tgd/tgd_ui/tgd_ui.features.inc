@@ -50,7 +50,7 @@ function tgd_ui_default_panels_mini_alter(&$data) {
                                     <li><a href="https://pre.thegooddata.org/legal#terms">Terms of Use</a></li>
                                     <li><a href="https://pre.thegooddata.org/legal#privacy">Privacy & Cookies</a></li>
                                     <li><a href="https://pre.thegooddata.org/legal#rules">Company Rules</a></li>
-                                </ul>
+                                </ul>        
                                 <ul class="social">
                                     <li class="first">
                                         <a id="gooddata" href="//collaborate.thegooddata.org" class="exclude"></a>
@@ -71,6 +71,9 @@ function tgd_ui_default_panels_mini_alter(&$data) {
             'substitute' => TRUE,
           ),
           'cache' => array(),
+          'style' => array(
+            'settings' => NULL,
+          ),
           'css' => array(),
           'extras' => array(),
           'position' => 0,
@@ -86,16 +89,6 @@ function tgd_ui_default_panels_mini_alter(&$data) {
     unset($data['oa_footer_panel']->display->content['new-acef9208-6753-4fee-8b2b-834b2ed0909a']);
     unset($data['oa_footer_panel']->display->panels['column1']);
     unset($data['oa_footer_panel']->display->panels['column3']);
-  }
-  if (isset($data['oa_toolbar_panel'])) {
-    $data['oa_toolbar_panel']->display->content['new-3bd6fb98-8bec-48c8-9777-cf8850617d9f']->configuration = array(
-      'override_title' => 0,
-      'override_title_text' => '',
-    ); /* WAS: '' */
-    $data['oa_toolbar_panel']->display->content['new-bf0e9047-1f82-4bcf-bf9b-f97fe6748f41']->css = array(
-      'css_id' => '',
-      'css_class' => 'pull-right',
-    ); /* WAS: '' */
   }
 }
 
@@ -114,13 +107,14 @@ function tgd_ui_strongarm_alter(&$data) {
     user*:Notifications
     node/*/clone/confirm:View|Cancel,icon-remove
     node/*/edit:View|Cancel,icon-remove
+    node/*:Google drive content|Google drive
     View
     Edit,icon-pencil
-    Members,icon-user; /* WAS: user*:Edit|Edit profile,icon-pencil */
-    node/*/clone/confirm:View|Cancel,icon-remove
-    node/*/edit:View|Cancel,icon-remove
+    Members,icon-user'; /* WAS: 'user*:Edit|Edit profile,icon-pencil
+    node\/*\/clone/confirm:View|Cancel,icon-remove
+    node\/*\/edit:View|Cancel,icon-remove
     View
     Edit,icon-pencil
-    Members,icon-user';
+    Members,icon-user' */
   }
 }

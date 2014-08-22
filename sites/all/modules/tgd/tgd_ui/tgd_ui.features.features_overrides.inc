@@ -75,6 +75,9 @@ function tgd_ui_features_override_default_overrides() {
         'substitute' => TRUE,
       ),
       'cache' => array(),
+      'style' => array(
+        'settings' => NULL,
+      ),
       'css' => array(),
       'extras' => array(),
       'position' => 0,
@@ -89,22 +92,15 @@ function tgd_ui_features_override_default_overrides() {
   $overrides["panels_mini.oa_footer_panel.display|panels|contentmain"] = array(
     0 => 'new-4d26d0af-a79e-421d-9541-7c71cb36c3b1',
   );
-  $overrides["panels_mini.oa_toolbar_panel.display|content|new-3bd6fb98-8bec-48c8-9777-cf8850617d9f|configuration"] = array(
-    'override_title' => 0,
-    'override_title_text' => '',
-  );
-  $overrides["panels_mini.oa_toolbar_panel.display|content|new-bf0e9047-1f82-4bcf-bf9b-f97fe6748f41|css"] = array(
-    'css_id' => '',
-    'css_class' => 'pull-right',
-  );
 
   // Exported overrides for: variable
   $overrides["variable.chosen_minimum_multiple.value"] = 0;
   $overrides["variable.chosen_minimum_single.value"] = 0;
   $overrides["variable.contextual_tabs_extract.value"] = 'user*:Edit|Edit profile,icon-pencil
-  user/*:Notifications
+  user*:Notifications
   node/*/clone/confirm:View|Cancel,icon-remove
   node/*/edit:View|Cancel,icon-remove
+  node/*:Google drive content|Google drive
   View
   Edit,icon-pencil
   Members,icon-user';
