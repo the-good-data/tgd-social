@@ -81,7 +81,7 @@ More about installation profiles and distributions:
 DEPLOYMENT HOWTO
 ----------------
 
-Check the [Deployment Guide] at https://github.com/thegooddata/social/master/DEPLOY.md
+Check the [Deployment Guide] at https://github.com/thegooddata/social/blob/develop/DEPLOY.md
 
 APPEARANCE
 ----------
