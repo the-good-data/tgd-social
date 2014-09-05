@@ -78,6 +78,11 @@ More about installation profiles and distributions:
  * Develop your own installation profile or distribution:
    http://drupal.org/developing/distributions
 
+DEPLOYMENT HOWTO
+----------------
+
+Check the [Deployment Guide] at https://github.com/thegooddata/social/blob/develop/DEPLOY.md
+
 APPEARANCE
 ----------
 
