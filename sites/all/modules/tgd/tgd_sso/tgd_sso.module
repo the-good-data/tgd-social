@@ -1,0 +1,156 @@
+<?php
+/**
+ * @file
+ * TGD SSO Client module.
+ *
+ * Implementation notes
+ * - TGD - SSO - Use Cases and Implementation Proposal
+ *   https://docs.google.com/a/reyero.net/document/d/1eK_2apqFkPOPsIkQmuGISMAs8SQca1mrmL4GL0uTsVs/edit#
+ */
+
+use Drupal\tgd_sso\TGDClient;
+
+/**
+ * Define some end point paths
+ */
+define('TGD_SSO_PATH_LOGIN', 'sign-in');
+define('TGD_SSO_PATH_LOGOUT', 'user/logout');
+
+/**
+ * Shared cookie name.
+ */
+define('TGD_SSO_SHARED_COOKIE', 'PHPSESSID');
+
+/**
+ * Implements hook_init().
+ */
+function tgd_sso_init() {
+  global $user;
+
+  // First go for seamless authentication.
+  if ($tgdUser = tgd_sso_check_current_session()) {
+    // Ok, we've got a TGD user, check against current drupal user
+    tgd_sso_check_current_user($tgdUser);
+  }
+  elseif ($user->uid) {
+    // No user logged in, log out current user if any.
+
+    // @TODO Lot out current user, skip for site admins...?
+
+  }
+
+  list($id, $updated) = tgd_sso_client()->checkLogin()
+}
+
+/**
+ * Check whether user is logged into Webapp
+ *
+ * - Use shared cookie
+ *
+ * @param $user
+ *   Current Drupal user.
+ *
+ * @return TGDLogin|NULL
+ *   TGDUser with login data only.
+ *
+ */
+function tgd_sso_check_current_session() {
+  // Check shared cookie.
+  if (isset($_COOKIE[TGD_SSO_SHARED_COOKIE])) {
+    list($uid, $updated) = tgd_sso_client()->checkLogin($_COOKIE[TGD_SSO_SHARED_COOKIE]);
+    if ($uid) {
+      // Return partial TGDUser.
+      return new TGDUser(array('id' => $id, 'updated' => $updated, 'loaded' => FALSE));
+    }
+  }
+}
+
+/**
+ * Check tgd user against Drupal user
+ *
+ * @TODO
+ */
+function tgd_sso_check_current_user($tgdUser) {
+  global $user;
+
+  // Quick check for current logged in user.
+  if ($user->uid) {
+    && $user->tgd_uid == $tgdUser->uid)
+    tgd_sso_check_user_status($tgdUser, $user);
+  }
+
+  // First of all check user account is up to date.
+  $account = tgd_sso_check_user_status($tgdUser);
+
+  if ($account && $account->uid && $account->status) {
+
+  }
+  else {
+
+  }
+  if (!$user->uid) {
+    // Not logged in, needs to log in.
+    // But first, check user account is up to date.
+
+
+    if ($account) {
+
+    }
+  }
+}
+
+/**
+ * Che
+ */
+
+
+
+/**
+ * Implements hook_menu().
+ */
+function tgd_sso_menu() {
+  // @TODO Admin page
+  // @TODO Callback pages
+  // - edit profile
+  // - log out
+  // - log in
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function tgd_sso_menu_alter(&$items) {
+  // @TODO Replace Drupal user pages
+}
+
+/**
+ * Implements hook_user_load().
+ *
+ * @TODO Maybe better override entity loading callback.
+ */
+function tgd_sso_user_load($users) {
+
+}
+
+/**
+ * Get Client object.
+ *
+ * Client is statically cached so it can be reused withing the same request.
+ *
+ * @return \Drupal\tgd_sso\TGDClient
+ */
+function tgd_sso_client() {
+  static $client;
+
+  if (!isset$client) {
+    // First get HttpClient and params.
+    // @todo Check we've got all this, error if not.
+    $httpClient = http_client();
+    $baseUrl = variable_get_value('tgd_sso_base_url');
+    $authToken = variable_get_value('tgd_sso_auth_token');
+    $client = new TGDClient($baseUrl, $authToken, $httpClient);
+  }
+
+  return $client;
+}

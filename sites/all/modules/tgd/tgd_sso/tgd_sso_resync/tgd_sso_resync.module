@@ -1,0 +1,8 @@
+<?php
+/**
+ * @file
+ * Drupal Module: TGD SSO Resync
+ *
+ * @TODO
+ * Resync current OA users with TGD Webapp
+ */

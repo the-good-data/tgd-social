@@ -1,0 +1,9 @@
+name = TGD SSO
+description = SSO Client to connect against TGD Webapp
+core = 7.x
+package = TheGoodData
+version = 7.x-0.1
+project = tgd_ui
+dependencies[] = xautoload
+dependencies[] = variable
+dependencies[] = http_client
