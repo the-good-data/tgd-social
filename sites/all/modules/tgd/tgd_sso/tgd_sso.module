@@ -9,6 +9,8 @@
  */
 
 use Drupal\tgd_sso\TGDClient;
+use Drupal\tgd_sso\TGDUser;
+use Drupal\tgd_sso\TGDUserManager;
 
 /**
  * Define some end point paths
@@ -17,92 +19,38 @@ define('TGD_SSO_PATH_LOGIN', 'sign-in');
 define('TGD_SSO_PATH_LOGOUT', 'user/logout');
 
 /**
- * Shared cookie name.
- */
-define('TGD_SSO_SHARED_COOKIE', 'PHPSESSID');
-
-/**
  * Implements hook_init().
  */
 function tgd_sso_init() {
   global $user;
 
-  // First go for seamless authentication.
-  if ($tgdUser = tgd_sso_check_current_session()) {
+  // @TODO Rethink logic here
+
+  // Check if logged in with special user accounts first.
+  if ($user->uid && user_access('tgd sso local login')) {
+    // Ok, admin user logged in, move on...
+    $status = TRUE;
+  }
+  elseif ($tgdUser = tgd_sso_check_current_session()) {
+    // First go for seamless authentication.
     // Ok, we've got a TGD user, check against current drupal user
-    tgd_sso_check_current_user($tgdUser);
+    // and log in if needed.
+    $status = tgd_sso_check_current_user($tgdUser);
   }
   elseif ($user->uid) {
     // No user logged in, log out current user if any.
 
     // @TODO Lot out current user, skip for site admins...?
-
+    $status = FALSE;
   }
 
-  list($id, $updated) = tgd_sso_client()->checkLogin()
-}
-
-/**
- * Check whether user is logged into Webapp
- *
- * - Use shared cookie
- *
- * @param $user
- *   Current Drupal user.
- *
- * @return TGDLogin|NULL
- *   TGDUser with login data only.
- *
- */
-function tgd_sso_check_current_session() {
-  // Check shared cookie.
-  if (isset($_COOKIE[TGD_SSO_SHARED_COOKIE])) {
-    list($uid, $updated) = tgd_sso_client()->checkLogin($_COOKIE[TGD_SSO_SHARED_COOKIE]);
-    if ($uid) {
-      // Return partial TGDUser.
-      return new TGDUser(array('id' => $id, 'updated' => $updated, 'loaded' => FALSE));
-    }
+  // Something went really wrong, print access denied and get out!!
+  if (!$status) {
+    drupal_set_message(t('TGD SSO Authentication Error'), 'error');
+    drupal_access_denied();
+    exit();
   }
 }
-
-/**
- * Check tgd user against Drupal user
- *
- * @TODO
- */
-function tgd_sso_check_current_user($tgdUser) {
-  global $user;
-
-  // Quick check for current logged in user.
-  if ($user->uid) {
-    && $user->tgd_uid == $tgdUser->uid)
-    tgd_sso_check_user_status($tgdUser, $user);
-  }
-
-  // First of all check user account is up to date.
-  $account = tgd_sso_check_user_status($tgdUser);
-
-  if ($account && $account->uid && $account->status) {
-
-  }
-  else {
-
-  }
-  if (!$user->uid) {
-    // Not logged in, needs to log in.
-    // But first, check user account is up to date.
-
-
-    if ($account) {
-
-    }
-  }
-}
-
-/**
- * Che
- */
-
 
 
 /**
@@ -114,6 +62,16 @@ function tgd_sso_menu() {
   // - edit profile
   // - log out
   // - log in
+
+  // Admin pages
+  $items['admin/config/tgd/sso'] = array(
+    'title' => 'SSO Client',
+    'description' => 'Configure Single Sign On client',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('variable_group_form', 'tgd_sso'),
+    'access arguments' => array('administer site configuration'),
+    'weight' => -1,
+  );
   return $items;
 }
 
@@ -121,7 +79,25 @@ function tgd_sso_menu() {
  * Implements hook_menu_alter().
  */
 function tgd_sso_menu_alter(&$items) {
-  // @TODO Replace Drupal user pages
+  // @TODO Replace all Drupal user pages
+  if (variable_get('tgd_sso_local_disable')) {
+    module_load_include('inc', 'tgd_sso', 'tgd_sso.pages');
+    _tgd_sso_menu_alter($items);
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function akademia_base_permission() {
+  $permissions = array(
+    'tgd sso local login' => array(
+      'title' => t('Login with local user account'),
+      'description' => t('Allows logging in with local user accounts, without using SSO system.'),
+      'restrict access' => TRUE,
+    ),
+  );
+  return $permissions;
 }
 
 /**
@@ -130,7 +106,21 @@ function tgd_sso_menu_alter(&$items) {
  * @TODO Maybe better override entity loading callback.
  */
 function tgd_sso_user_load($users) {
+  TGDUserManager::loadMultipleUsers($users);
+}
 
+/**
+ * Implements hook_user_delete().
+ */
+function tgd_sso_user_update(&$edit, $account, $category) {
+  TGDUserManager::deleteUserMapping($account);
+}
+
+/**
+ * Implements hook_user_delete().
+ */
+function tgd_sso_user_delete($account) {
+  TGDUserManager::deleteUserMapping($account);
 }
 
 /**
@@ -154,3 +144,121 @@ function tgd_sso_client() {
 
   return $client;
 }
+
+/**
+ * Check whether user is logged into Webapp
+ *
+ * - Use shared cookie
+ *
+ * @return TGDUser|NULL
+ *   TGDUser with login data only.
+ */
+function tgd_sso_check_current_session() {
+  // Check shared cookie.
+  $cookie_name = variable_get('tgd_sso_shared_cookie', 'PHPSESSID');
+  if (isset($_COOKIE[$cookie_name])) {
+    list($uid, $updated) = tgd_sso_client()->checkLogin($_COOKIE[$cookie_name]);
+    if ($uid) {
+      // Return partial TGDUser.
+      return new TGDUser(array('id' => $id, 'updated' => $updated, 'loaded' => FALSE));
+    }
+  }
+}
+
+/**
+ * Check TGD user against current Drupal user
+ *
+ * @param Drupal\tgd_sso\TGDUser $user
+ *   Remote user
+ */
+function tgd_sso_check_current_user($tgdUser) {
+  global $user;
+
+  if ($user->uid) {
+    // User logged in, check it matches an is up to date.
+    if (TGDUserManager::checkDrupalUser($user, $tgdUser))  {
+      watchdog('tgd_user', 'User authenticated remotely');
+      return TRUE;
+    }
+    else {
+      tgd_log_error('Current logged in user not matching master user ID', $tgdUser);
+      return FALSE;
+    }
+  }
+  else {
+    // User not logged in. Do user log-in
+    $account = TGDUserManager::getDrupalUser($tgdUser)
+    if ($account && TGDUserManager::checkDrupalUser($account, $tgdUser)) {
+      watchdog('tgd_sso', 'Logging in remote user @id as Drupal user @uid', array(
+        '@id' => $tgdUser->id,
+        '@uid' => $account->uid,
+      ));
+      // WARNING: We are setting here global user object.
+      $user = $account;
+      user_login_finalize();
+    }
+    esle {
+      tgd_log_error('Cannot get Drupal user from remote user', $tgdUser);
+    }
+  }
+}
+
+/**
+ * Produce links to send user to master server.
+ *
+ * @param string $type
+ *   'login' | 'logout' | 'edit'
+ * @return array
+ *   Link array with 'text', 'path', 'options'.
+ *   It can be rendered with theme('link', $link)
+ */
+function tgd_sso_master_link($type, $text = NULL) {
+  $link = array(
+    'text' => $text,
+    'path' => '',
+    'options' => array(),
+  );
+  $link['options'] = array(
+    'external' => TRUE,
+    'absolute' => TRUE,
+    'base_url' => variable_get_value('tgd_sso_base_url'),
+  );
+  $link['options']['attributes']['class'] = array('tgd-sso-link', 'tgd-sso-' . $type);
+
+  // Now, depending on type.
+  switch ($type) {
+    case 'login':
+      $link['path'] = 'sign-in';
+      break;
+    case 'logout':
+      $link['path'] = 'user/logout';
+      break;
+    case 'view':
+      // @TODO Link to view user profile ?.
+      break;
+    case 'edit':
+      // @TODO Link to edit user profile ?.
+      break;
+  }
+
+  // Add return url.
+  $destination = drupal_get_destination();
+  // @TODO Q: Need url-encoding?
+  $link['options']['query']['next'] = url($destination['destination'], array('absolute' => TRUE);
+
+  return $link;
+}
+
+/**
+ * Error logging function.
+ */
+function tgd_log_error($message, $object = NULL) {
+  if ($object) {
+    $message .= ' [' . (string)$object . ']';
+  }
+  // @todo Replace by proper watchdogs in every case.
+  watchdog('tgd_sso', 'TGD SSO Error: !message', array('!message' => $message), WATCHDOG_ERROR);
+  // @todo Replace by human readable message.
+  drupal_set_message(t('TGD SSO Error: !message', array('!message' => $message)), 'error');
+}
+

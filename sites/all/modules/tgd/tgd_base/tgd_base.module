@@ -5,3 +5,30 @@
  */
 
 include_once 'tgd_base.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function tgd_sso_menu() {
+  // Menu items that are basically just menu blocks.
+  $items['admin/config/tgd'] = array(
+    'title' => 'The Good Data',
+    'description' => 'Configure TGD Social',
+    'position' => 'right',
+    'weight' => -20,
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+  $items['admin/config/akademia/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Configure main application settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('variable_group_form', 'akademia'),
+    'access arguments' => array('administer site configuration'),
+    'weight' => -1,
+  );
+
+  return $items;
+}
