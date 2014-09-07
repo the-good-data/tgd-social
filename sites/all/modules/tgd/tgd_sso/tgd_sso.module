@@ -79,8 +79,24 @@ function tgd_sso_menu() {
   );
   $items['admin/people/tgd_sso'] = array(
     'title' => 'TGD SSO',
-    'description' => 'Administer TGD SSO user mapping',
+    'description' => 'Administer TGD SSO',
     'page callback' => 'tgd_sso_admin_page_users',
+    'access arguments' => array('administer users'),
+    'file' => 'tgd_sso.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 50,
+  );
+  $items['admin/people/tgd_sso/overview'] = array(
+    'title' => 'User mappings',
+    'description' => 'View TGD SSO user mappings',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['admin/people/tgd_sso/operations'] = array(
+    'title' => 'Bulk update',
+    'description' => 'Import and update users from master system',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tgd_sso_admin_users_bulk_form'),
     'access arguments' => array('administer users'),
     'file' => 'tgd_sso.admin.inc',
     'type' => MENU_LOCAL_TASK,
@@ -120,9 +136,7 @@ function akademia_base_permission() {
  * @TODO Maybe better override entity loading callback.
  */
 function tgd_sso_user_load($users) {
-  if (variable_get('tgd_sso_local_enable')) {
-    TGDUserManager::loadMultipleUsers($users);
-  }
+  TGDUserManager::loadMultipleUsers($users);
 }
 
 /**

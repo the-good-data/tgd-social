@@ -21,20 +21,20 @@ function tgd_sso_schema() {
         'description' => 'Primary Key: Drupal Unique user ID.',
         'default' => 0,
       ),
-      'tgd_id' => array(
+      'id' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'description' => 'TGD Master Unique user ID.',
         'default' => 0,
       ),
-      'tgd_updated' => array(
+      'updated' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
         'description' => 'Timestamp for when user was last updated from Master.',
       ),
-      'tgd_status' => array(
+      'status' => array(
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,

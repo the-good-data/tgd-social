@@ -5,13 +5,14 @@
  */
 
 use Drupal\tgd_sso\TGDUserManager;
+use Drupal\tgd_sso\TGDUser;
 
 /**
  * Administer TGD Users.
  */
 function tgd_sso_admin_page_users() {
   $build['list'] = tgd_sso_user_mapping_list();
-  $build['admin'] = drupal_get_form('tgd_sso_admin_users_bulk_form');
+  //$build['admin'] = drupal_get_form('tgd_sso_admin_users_bulk_form');
   return $build;
 }
 
@@ -22,17 +23,17 @@ function tgd_sso_user_mapping_list() {
   // Build the sortable table header.
   $header = array(
     'uid' => array('data' => t('User'), 'field' => 'm.uid'),
-    'tgd_id' => array('data' => t('TGD Id'), 'field' => 'm.tgd_id'),
-    'tgd_status' => array('data' => t('TGD Status'), 'field' => 'm.tgd_status'),
-    'updated' => array('data' => t('Updated'), 'field' => 'm.tgd_updated', 'sort' => 'desc')
+    'tgd_id' => array('data' => t('TGD Id'), 'field' => 'm.id'),
+    'tgd_status' => array('data' => t('TGD Status'), 'field' => 'm.status'),
+    'updated' => array('data' => t('Updated'), 'field' => 'm.updated', 'sort' => 'desc')
   );
   $rows = array();
   foreach (tgd_sso_user_mapping_load_paged() as $mapping) {
     $rows[] = array(
       'uid' => theme('username', array('account' => user_load($mapping->uid))),
-      'tgd_id' => $mapping->tgd_id,
-      'tgd_status' => $mapping->tgd_status,
-      'tgd_updated' => format_date($mapping->tgd_updated, 'short'),
+      'tgd_id' => (int)$mapping->id,
+      'tgd_status' => (int)$mapping->status,
+      'tgd_updated' => format_date($mapping->updated, 'short'),
     );
   }
   $form['users'] = array(
@@ -65,11 +66,11 @@ function tgd_sso_user_mapping_load_paged() {
 function tgd_sso_admin_users_bulk_form($form, &$form_state) {
   $form['operation'] = array(
     '#title' => t('Select operation'),
-    '#type' => 'select',
+    '#type' => 'radios',
     '#options' => array(
        'synchronize' => t('Synchronize all existing user accounts'),
-       'import' => t('Import user accounts from SSO Master'),
-       'delete' => t('Delete all account mappings'),
+       'import' => t('Import new user accounts from SSO Master'),
+       'delete' => t('Delete all user account mappings (Not users)'),
      ),
      '#required' => TRUE,
   );
@@ -82,6 +83,22 @@ function tgd_sso_admin_users_bulk_form($form, &$form_state) {
       'update' => t('Update existing user accounts if match found'),
       'create' => t('Create new user accounts if no match found'),
     ),
+  );
+  $form['parameters'] = array(
+    '#title' => t('Import parameters'),
+    '#type' => 'fieldset',
+  );
+  $form['parameters']['start_user_id'] = array(
+    '#title' => t('From User Id'),
+    '#type' => 'textfield',
+    '#size' => 4,
+    '#default_value' => 1,
+  );
+  $form['parameters']['end_user_id'] = array(
+    '#title' => t('To User Id'),
+    '#type' => 'textfield',
+    '#size' => 4,
+    '#default_value' => 100,
   );
   $form['execute'] = array(
     '#type' => 'submit',
@@ -96,10 +113,17 @@ function tgd_sso_admin_users_bulk_form($form, &$form_state) {
 function tgd_sso_admin_users_bulk_form_submit($form, &$form_state) {
   $operation = $form_state['values']['operation'];
   $options = $form_state['values']['options'];
-
+  $params = $form_state['values'];
   switch ($operation) {
     case 'import':
-      $results = tgd_sso_admin_users_import($options);
+      $results = tgd_sso_admin_users_import($options, $params['start_user_id'], $params['end_user_id']);
+      break;
+    case 'synchronize':
+      $results = tgd_sso_admin_users_sync($options);
+      break;
+    case 'delete':
+      $deleted = db_delete(TGDUserManager::TABLE)->execute();
+      drupal_set_message(t('Deleted @count user mappings.', array('@count' => $deleted)));
       break;
     default:
       drupal_set_message(t('Operation not implemented yet.'), 'warning');
@@ -107,7 +131,7 @@ function tgd_sso_admin_users_bulk_form_submit($form, &$form_state) {
   }
 
   if (!empty($results)) {
-    drupal_set_message(t("Loaded @users remote users: Created @created, updated @updated, errors @errors", array(
+    drupal_set_message(t("Loaded @users users: Created @created, updated @updated, errors @errors", array(
       '@users' => $results['users'],
       '@created' => $results['created'],
       '@updated' => $results['updated'],
@@ -119,7 +143,7 @@ function tgd_sso_admin_users_bulk_form_submit($form, &$form_state) {
 /**
  * Import users from remote server.
  */
-function tgd_sso_admin_users_import($options, $limit = 10) {
+function tgd_sso_admin_users_import($options, $start_id = 1, $end_id = 10) {
   $client = tgd_sso_client();
   $count = array(
     'users' => 0,
@@ -127,27 +151,27 @@ function tgd_sso_admin_users_import($options, $limit = 10) {
     'updated' => 0,
     'errors' => 0,
   );
-  for ($id = 1; $id <= $limit; $id++) {
+  for ($id = $start_id; $id <= $end_id; $id++) {
     if ($tgdUser = $client->getUserById($id)) {
       $count['users']++;
       if ($account = tgd_sso_admin_users_find_local($tgdUser, $options)) {
         $variables = array(
-          '@drupal-user' => theme('username', array('account' => $account)),
+          '!drupal-user' => theme('username', array('account' => $account)),
           '@tgd-user' => $tgdUser->getLabel(),
         );
         if (!empty($options['update'])) {
-          drupal_set_message(t('Found existing user @drupal-user, updating from remote @tgd-user', $variables));
+          drupal_set_message(t('Found existing user !drupal-user, updating from remote @tgd-user', $variables));
           TGDUserManager::updateDrupalUser($account, $tgdUser);
           $count['updated']++;
         }
         else {
-          drupal_set_message(t('Found existing user @drupal-user, matching remote @tgd-user', $variables));
+          drupal_set_message(t('Found existing user !drupal-user, matching remote @tgd-user', $variables));
         }
       }
       elseif (!empty($options['create'])) {
         if (($account = TGDUserManager::getDrupalUser($tgdUser))) {
-          drupal_set_message(t('Created user @drupal-user, updating from remote @tgd-user', array(
-            '@drupal-user' => theme('username', array('account' => $account)),
+          drupal_set_message(t('Created user !drupal-user, updating from remote @tgd-user', array(
+            '!drupal-user' => theme('username', array('account' => $account)),
             '@tgd-user' => $tgdUser->getLabel(),
           )));
           $count['created']++;
@@ -170,20 +194,57 @@ function tgd_sso_admin_users_import($options, $limit = 10) {
 }
 
 /**
+ * Synchronize account data with remote data.
+ */
+function tgd_sso_admin_users_sync($options) {
+  $client = tgd_sso_client();
+  $count = array(
+    'users' => 0,
+    'created' => 0,
+    'updated' => 0,
+    'errors' => 0,
+  );
+  $result = db_select(TGDUserManager::TABLE, 'm')
+    ->fields('m', array())
+    ->execute()
+    ->fetchAll();
+  foreach ($result as $mapping) {
+    $account = user_load($mapping->uid);
+    $count['users']++;
+    $tgdUser = new TGDUser($mapping, $client);
+    if ($account && $tgdUser->load()) {
+      $success = TGDUserManager::checkDrupalUser($account, $tgdUser);
+    }
+    else {
+      $success = FALSE;
+    }
+    if (!$success) {
+      $count['errors']++;
+      drupal_set_message(t('Cannot update user !drupal-user', array(
+        '!drupal-user' => theme('username', array('account' => $account)),
+      )));
+    }
+  }
+  return $count;
+}
+
+/**
  * Find local user by different mapping options.
  */
 function tgd_sso_admin_users_find_local($tgdUser, $options) {
   if ($account = TGDUserManager::getDrupalUserById($tgdUser->id)) {
     return $account;
   }
-  elseif (!empty($options['map_mail']) && ($account = user_load_by_mail($tgdUser->email))) {
-    return $account;
+  $check = array();
+  if (!empty($options['map_mail'])) {
+    $check[] = 'mail';
   }
-  elseif (!empty($options['map_name']) && ($account = user_load_by_name($tgdUser->username))) {
-    return $account;
+  if (!empty($options['map_name'])) {
+    $check[] = 'name';
   }
-  else {
-    // No mapping found.
-    return NULL;
+  if ($check) {
+    return TGDUserManager::findMatchingDrupalUser($tgdUser, $check);
   }
+  // No mapping found
+  return NULL;
 }

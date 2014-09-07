@@ -63,7 +63,7 @@ class TGDUser {
    * Get user label: name (id)
    */
   public function getLabel() {
-    return "$this->name ($this->id)";
+    return "$this->username ($this->id)";
   }
 
   /**
@@ -83,9 +83,10 @@ class TGDUser {
    */
   public function load() {
     if (!isset($this->loaded)) {
-      $tgdUser = $this->tgdClient->getUserById($this->id);
-      if ($tgdUser) {
-        $this->setValues($tgdUser);
+      if (isset($this->tgdClient) && $tgdUser = $this->tgdClient->getUserById($this->id)) {
+        foreach (array('username', 'email', 'status', 'updated') as $field) {
+          $this->$field = $tgdUser->$field;
+        }
         $this->loaded = TRUE;
       }
       else {

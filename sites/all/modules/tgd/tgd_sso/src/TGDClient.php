@@ -58,7 +58,7 @@ class TGDClient {
    */
   public function getUserByToken($token) {
     if ($result = $this->getLoggedUserBySessionId($token)) {
-      return new TGDUser($result, $this);
+      return new TGDUser($result + array('loaded' => TRUE), $this);
     }
     else {
       return NULL;
@@ -73,7 +73,7 @@ class TGDClient {
   public function getUserById($user_id) {
     if ($result = $this->getUserInfoById($user_id)) {
       $this->logDebug('Got user data', $result);
-      return new TGDUser($result, $this);
+      return new TGDUser($result + array('loaded' => TRUE), $this);
     }
     else {
       return NULL;

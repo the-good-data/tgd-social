@@ -33,8 +33,8 @@ class TGDUserManager {
    *   TRUE if user is enabled and up to date.
    */
   public static function checkDrupalUser($drupalUser, $tgdUser) {
-    if ($drupalUser->tgd_user_id == $tgdUser->id) {
-      if ($tgdUser->updated > $drupalUser->tgd_user_updated) {
+    if ($drupalUser->tgd_user && $drupalUser->tgd_user->id == $tgdUser->id) {
+      if ($tgdUser->updated > $drupalUser->tgd_user->updated) {
         // Update Drupal user from master.
         return static::updateDrupalUser($drupalUser, $tgdUser);
       }
@@ -49,6 +49,10 @@ class TGDUserManager {
 
   /**
    * Get Drupal user for TGD user / create if not existing.
+   *
+   * @return object|NULL
+   *   Drupal user account if successful.
+   *   NULL otherwise.
    */
   public static function getDrupalUser($tgdUser) {
     if ($account = static::getDrupalUserById($tgdUser->id)) {
@@ -70,15 +74,23 @@ class TGDUserManager {
    */
   public static function createDrupalUser($tgdUser) {
     if ($tgdUser->load()) {
+      // Validate name, mail don't conflict with existing users.
+      if ($account = static::findMatchingDrupalUser($tgdUser)) {
+        static::logError('Found conflicting user account !drupal-user for @tgd-user', $account, $tgdUser);
+        return NULL;
+      }
+      // Ok, let's create user.
       $account = (object) array(
         'uid' => NULL,
-        'status' => 1
+        'status' => 0,
+        'pass' => user_password(),
+        'init' => $tgdUser->email,
       );
-      static::setUserMapping($account, $tgdUser);
+      static::doFieldMapping($account, $tgdUser);
       if ($account = user_save($account)) {
-        static::updateUserMapping($account);
+        static::updateUserMapping($account, $tgdUser);
         // Account created, log and return it.
-        static::log('Successfully created local user account @druapl-user for remote @tgd-user', $account, $tgdUser);
+        static::log('Successfully created local user account !drupal-user for remote @tgd-user', $account, $tgdUser);
         return $account;
       }
       else {
@@ -89,14 +101,37 @@ class TGDUserManager {
       // Cannot load full remote user.
       static::logError('Failed to load remote user @tgd-user', NULL, $tgdUser);
     }
+    return NULL;
   }
 
+  /**
+   * Find existing user
+   *
+   * @return object|null
+   *   Matching Drupal user if any.
+   */
+  public static function findMatchingDrupalUser($tgdUser, $check = array('name', 'mail')) {
+    foreach ($check as $field) {
+      switch ($field) {
+        case 'name':
+          $account = user_load_by_name($tgdUser->username);
+          break;
+        case 'mail':
+          $account = user_load_by_mail($tgdUser->email);
+          break;
+      }
+      if ($account) {
+        return $account;
+      }
+    }
+    return NULL;
+  }
 
   /**
    * Get Drupal user id by TGD Id.
    */
-  public static function getDrupalUserById($tgd_user_id) {
-    if ($mappings = static::loadUserMappings($id, 'tgd_id')) {
+  public static function getDrupalUserById($tgd_id) {
+    if ($mappings = static::loadUserMappings($tgd_id, 'id')) {
       $map = reset($mappings);
       return user_load($map->uid);
     }
@@ -118,7 +153,7 @@ class TGDUserManager {
     }
     else {
       // Remote user loading failed
-      static::logError('Cannot load remote user for @drupal-user', $drupalUser);
+      static::logError('Cannot load remote user for !drupal-user', $drupalUser);
       // @TODO Should we delete / disable local user?
       return FALSE;
     }
@@ -153,11 +188,11 @@ class TGDUserManager {
     $mapping = static::loadUserMappings(array_keys($users));
     foreach ($users as $uid => $user) {
       if (isset($mapping[$uid])) {
-        $user->tgd_user_id = $mapping[$uid]->tgd_id;
-        $user->tgd_user_updated = $mapping[$uid]->tgd_updated;
+        $tgdUser = new TGDUser($mapping[$uid]);
+        $user->tgd_user = $tgdUser;
       }
       else {
-        $user->tgd_user_id = 0;
+        $user->tgd_user = FALSE;
       }
     }
   }
@@ -166,8 +201,7 @@ class TGDUserManager {
    * Set Drupal user values from remote user.
    */
   protected static function doFieldMapping($drupalUser, $tgdUser) {
-    $drupalUser->tgd_user_id = $tgdUser->id;
-    $drupalUser->tgd_user_updated = $tgdUser->updated;
+    $drupalUser->tgd_user = $tgdUser;
     $drupalUser->name = $tgdUser->username;
     $drupalUser->mail = $tgdUser->email;
     $drupalUser->status = $tgdUser->canLogin() ? 1 : 0;
@@ -182,9 +216,9 @@ class TGDUserManager {
       ->key(array('uid' => $drupalUser->uid))
       ->fields(array(
           'uid' => $drupalUser->uid,
-          'tgd_id' => $tgdUser->id,
-          'tgd_updated' => $tgdUser->updated,
-          'tgd_status' => $tgdUser->status,
+          'id' => $tgdUser->id,
+          'updated' => $tgdUser->updated,
+          'status' => $tgdUser->status,
       ))
       ->execute();
   }
@@ -213,13 +247,6 @@ class TGDUserManager {
       ->fetchAllAssoc('uid');
   }
 
-  /**
-   * Load Drupal user by tgd
-   */
-  public static function getDrupalUserId($tgdId) {
-    // @todo
-
-  }
 
   /**
    * Log messages to user watchdog, display important ones.
@@ -227,10 +254,10 @@ class TGDUserManager {
   protected static function log($message, $drupalUser = NULL, $tgdUser = NULL, $level = WATCHDOG_INFO) {
     $variables = array();
     if ($drupalUser) {
-      $variables['@drupal-user'] = theme('username', array('account' => $drupalUser));
+      $variables['!drupal-user'] = theme('username', array('account' => $drupalUser));
     }
     if ($tgdUser) {
-      $variables['@tgd-user'] = (string)$tddUser;
+      $variables['@tgd-user'] = (string)$tgdUser;
     }
     watchdog('tgd_sso', $message, $variables, $level);
     if ($level <= WATCHDOG_WARNING) {
