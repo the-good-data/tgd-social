@@ -7,6 +7,8 @@
 namespace Drupal\tgd_sso;
 
 /**
+ * Manage storage for Drupal users, TGD mappings, etc...
+ *
  * This is a Drupal API.
  */
 class TGDUserManager {
@@ -31,8 +33,8 @@ class TGDUserManager {
    *   TRUE if user is enabled and up to date.
    */
   public static function checkDrupalUser($drupalUser, $tgdUser) {
-    if ($drupalUser->tgd_sso_id == $tgdUser->id) {
-      if ($tgdUser->updated > $drupalUser->tgd_sso_updated) {
+    if ($drupalUser->tgd_user_id == $tgdUser->id) {
+      if ($tgdUser->updated > $drupalUser->tgd_user_updated) {
         // Update Drupal user from master.
         return static::updateDrupalUser($drupalUser, $tgdUser);
       }
@@ -93,8 +95,8 @@ class TGDUserManager {
   /**
    * Get Drupal user id by TGD Id.
    */
-  public static function getDrupalUserById($id) {
-    if ($mappings = static::loadUserMappings($id, 'id')) {
+  public static function getDrupalUserById($tgd_user_id) {
+    if ($mappings = static::loadUserMappings($id, 'tgd_id')) {
       $map = reset($mappings);
       return user_load($map->uid);
     }
@@ -110,8 +112,8 @@ class TGDUserManager {
    */
   public static function updateDrupalUser($drupalUser, $tgdUser) {
     if ($tgdUser->load()) {
-      static::doUserMapping($drupalUser, $tgdUser);
-      static::updateUserMapping($drupalUser);
+      static::doFieldMapping($drupalUser, $tgdUser);
+      static::updateUserMapping($drupalUser, $tgdUser);
       return (boolean)$drupalUser->status;
     }
     else {
@@ -123,25 +125,18 @@ class TGDUserManager {
   }
 
   /**
-   * Load Drupal user
+   * Load Drupal user with TGD user data.
    */
-  public static function loadDrupalUser($drupalUser) {
-    if ($mapping = static::loadUserMapping($drupalUser)) {
-      $drupalUser->tgd_sso_id = $mapping->id;
-      $drupalUser->tgd_sso_updated = $mapping->updated;
-    }
-    else {
-      // No mapping for this user.
-      $drupalUser->tgd_sso_id = 0;
-    }
+  public static function loadDrupalUser($account) {
+    static::loadMultipleUsers(array($account->uid => $account));
   }
 
   /**
    * Update / delete Drupal user mapping.
    */
-  public static function updateUserMapping($drupalUser) {
-    if (!empty($drupalUser->tgd_sso_id)) {
-      return static::saveUserMapping($drupalUser);
+  protected static function updateUserMapping($drupalUser, $tgdUser) {
+    if ($tgdUser) {
+      return static::saveUserMapping($drupalUser, $tgdUser);
     }
     else {
       return static::deleteUserMapping($drupalUser);
@@ -158,8 +153,11 @@ class TGDUserManager {
     $mapping = static::loadUserMappings(array_keys($users));
     foreach ($users as $uid => $user) {
       if (isset($mapping[$uid])) {
-        $user->tgd_sso_id = $mapping[$uid]->id;
-        $user->tgd_sso_updated = $mapping[$uid]->updated;
+        $user->tgd_user_id = $mapping[$uid]->tgd_id;
+        $user->tgd_user_updated = $mapping[$uid]->tgd_updated;
+      }
+      else {
+        $user->tgd_user_id = 0;
       }
     }
   }
@@ -167,25 +165,26 @@ class TGDUserManager {
   /**
    * Set Drupal user values from remote user.
    */
-  public static function doUserMapping($drupalUser, $tgdUser) {
-    $drupalUser->tgd_sso_id = $tgdUser->id;
-    $drupalUser->tgd_sso_updated = $tgdUser->updated;
+  protected static function doFieldMapping($drupalUser, $tgdUser) {
+    $drupalUser->tgd_user_id = $tgdUser->id;
+    $drupalUser->tgd_user_updated = $tgdUser->updated;
     $drupalUser->name = $tgdUser->username;
     $drupalUser->mail = $tgdUser->email;
-    $drupalUser->status = $tgdUser->status === static::STATUS_ACTIVE ? 1 : 0;
+    $drupalUser->status = $tgdUser->canLogin() ? 1 : 0;
     return $drupalUser;
   }
 
   /**
    * Save Drupal user mapping.
    */
-  public static function saveUserMapping($drupalUser) {
+  protected static function saveUserMapping($drupalUser, $tgdUser) {
     return db_merge(static::TABLE)
       ->key(array('uid' => $drupalUser->uid))
       ->fields(array(
           'uid' => $drupalUser->uid,
-          'id' => $drupaluser->tgd_sso_id,
-          'updated' => $drupalUser->tgd_sso_updated,
+          'tgd_id' => $tgdUser->id,
+          'tgd_updated' => $tgdUser->updated,
+          'tgd_status' => $tgdUser->status,
       ))
       ->execute();
   }
@@ -194,7 +193,7 @@ class TGDUserManager {
    * Delete Drupal user mapping.
    */
   public static function deleteUserMapping($drupalUser) {
-    $uid = is_object($drupalUser) ? $drupalUser->uid : $drupalUser;
+    $drupalUser->tgd_user_id = 0;
     return db_delete(static::TABLE)
       ->key(array('uid' => $uid))
       ->execute();
@@ -202,8 +201,11 @@ class TGDUserManager {
 
   /**
    * Load Drupal user mapping.
+   *
+   * @return array
+   *   Objects with uid, tgd_user_id, tgd_updated
    */
-  public static function loadUserMappings($value, $field = 'uid') {
+  protected static function loadUserMappings($value, $field = 'uid') {
     return db_select(static::TABLE, 'u')
       ->fields('u')
       ->condition('u.' . $field, $value)

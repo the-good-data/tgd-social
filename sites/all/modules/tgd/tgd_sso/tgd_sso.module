@@ -11,6 +11,7 @@
 use Drupal\tgd_sso\TGDClient;
 use Drupal\tgd_sso\TGDUser;
 use Drupal\tgd_sso\TGDUserManager;
+use Drupal\tgd_sso\TGDLogger;
 
 /**
  * Define some end point paths
@@ -23,6 +24,10 @@ define('TGD_SSO_PATH_LOGOUT', 'user/logout');
  */
 function tgd_sso_init() {
   global $user;
+
+  if (!variable_get('tgd_sso_local_enable')) {
+    return;
+  }
 
   // @TODO Rethink logic here
 
@@ -72,6 +77,15 @@ function tgd_sso_menu() {
     'access arguments' => array('administer site configuration'),
     'weight' => -1,
   );
+  $items['admin/people/tgd_sso'] = array(
+    'title' => 'TGD SSO',
+    'description' => 'Administer TGD SSO user mapping',
+    'page callback' => 'tgd_sso_admin_page_users',
+    'access arguments' => array('administer users'),
+    'file' => 'tgd_sso.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 50,
+  );
   return $items;
 }
 
@@ -106,14 +120,18 @@ function akademia_base_permission() {
  * @TODO Maybe better override entity loading callback.
  */
 function tgd_sso_user_load($users) {
-  TGDUserManager::loadMultipleUsers($users);
+  if (variable_get('tgd_sso_local_enable')) {
+    TGDUserManager::loadMultipleUsers($users);
+  }
 }
 
 /**
  * Implements hook_user_delete().
  */
 function tgd_sso_user_update(&$edit, $account, $category) {
-  TGDUserManager::deleteUserMapping($account);
+  if (variable_get('tgd_sso_local_enable')) {
+    //TGDUserManager::updateUserMapping($account);
+  }
 }
 
 /**
@@ -133,13 +151,17 @@ function tgd_sso_user_delete($account) {
 function tgd_sso_client() {
   static $client;
 
-  if (!isset$client) {
+  if (!isset($client)) {
     // First get HttpClient and params.
     // @todo Check we've got all this, error if not.
     $httpClient = http_client();
     $baseUrl = variable_get_value('tgd_sso_base_url');
     $authToken = variable_get_value('tgd_sso_auth_token');
-    $client = new TGDClient($baseUrl, $authToken, $httpClient);
+    $logger = new TGDLogger(array(
+      'debug' => variable_get('tgd_sso_debug_enable'),
+      'callback' => 'tgd_sso_log_message',
+    ));
+    $client = new TGDClient($baseUrl, $authToken, $httpClient, $logger);
   }
 
   return $client;
@@ -157,11 +179,7 @@ function tgd_sso_check_current_session() {
   // Check shared cookie.
   $cookie_name = variable_get('tgd_sso_shared_cookie', 'PHPSESSID');
   if (isset($_COOKIE[$cookie_name])) {
-    list($uid, $updated) = tgd_sso_client()->checkLogin($_COOKIE[$cookie_name]);
-    if ($uid) {
-      // Return partial TGDUser.
-      return new TGDUser(array('id' => $id, 'updated' => $updated, 'loaded' => FALSE));
-    }
+    return tgd_sso_client()->getUserByToken($_COOKIE[$cookie_name]);
   }
 }
 
@@ -187,7 +205,7 @@ function tgd_sso_check_current_user($tgdUser) {
   }
   else {
     // User not logged in. Do user log-in
-    $account = TGDUserManager::getDrupalUser($tgdUser)
+    $account = TGDUserManager::getDrupalUser($tgdUser);
     if ($account && TGDUserManager::checkDrupalUser($account, $tgdUser)) {
       watchdog('tgd_sso', 'Logging in remote user @id as Drupal user @uid', array(
         '@id' => $tgdUser->id,
@@ -197,7 +215,7 @@ function tgd_sso_check_current_user($tgdUser) {
       $user = $account;
       user_login_finalize();
     }
-    esle {
+    else {
       tgd_log_error('Cannot get Drupal user from remote user', $tgdUser);
     }
   }
@@ -244,9 +262,35 @@ function tgd_sso_master_link($type, $text = NULL) {
   // Add return url.
   $destination = drupal_get_destination();
   // @TODO Q: Need url-encoding?
-  $link['options']['query']['next'] = url($destination['destination'], array('absolute' => TRUE);
+  $link['options']['query']['next'] = url($destination['destination'], array('absolute' => TRUE));
 
   return $link;
+}
+
+/**
+ * Logging callback.
+ */
+function tgd_sso_log_message($message, $args, $args_string, $severity) {
+  switch ($severity) {
+    case TGDLogger::ERROR:
+      $level = WATCHDOG_ERROR;
+      $type = 'error';
+      break;
+    case TGDLogger::WARNING:
+      $level = WATCHDOG_WARNING;
+      $type = 'warning';
+      break;
+    default:
+      $level = WATCHDOG_NOTICE;
+      $type = 'status';
+      break;
+  }
+  // Watchdog all.
+  watchdog('tgd_sso', $message . ($args ? '[' . $args_string . ']' : ''), array(), $level);
+  // Print only if debug mode and devel enabled.
+  if (function_exists('dpm') && variable_get('tgd_sso_debug_enable')) {
+    dpm($args, $message);
+  }
 }
 
 /**

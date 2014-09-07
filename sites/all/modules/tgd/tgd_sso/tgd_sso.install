@@ -1,0 +1,55 @@
+<?php
+
+/**
+ * @file
+ * TGD SSO Install file.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function tgd_sso_schema() {
+  // The table name here is plural, despite Drupal table naming standards,
+  // because "user" is a reserved word in many databases.
+  $schema['tgd_sso_user'] = array(
+    'description' => 'Stores user data.',
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary Key: Drupal Unique user ID.',
+        'default' => 0,
+      ),
+      'tgd_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'TGD Master Unique user ID.',
+        'default' => 0,
+      ),
+      'tgd_updated' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp for when user was last updated from Master.',
+      ),
+      'tgd_status' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'size' => 'tiny',
+        'description' => 'TGD Master user status: active(1) or blocked(0).',
+      ),
+    ),
+    'primary key' => array('uid'),
+    'foreign keys' => array(
+      'user' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+  );
+
+  return $schema;
+}

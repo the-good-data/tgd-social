@@ -11,6 +11,16 @@ namespace Drupal\tgd_sso;
  */
 class TGDUser {
 
+  // Normal status when user registers (cannot login)
+  const STATUS_APPLIED = -1;
+  const STATUS_EXPELLED = -2; // cannot login
+  const STATUS_DENIED = -3; // cannot login
+  const STATUS_LEFT = -4; // cannot login
+  // when admin manually marks user as pre-accepted (CAN LOGIN)
+  const STATUS_PRE_ACCEPTED = 1;
+  // when user has got his share and it is automatically marked as accepted (CAN LOGIN)
+  const STATUS_ACCEPTED = 2;
+
   /**
    * Remote user data, id, etc...
    * @todo Add proper docs
@@ -37,15 +47,29 @@ class TGDUser {
   /**
    * Construct from values..
    */
-  public function __construct($values, $tgdClient) {
+  public function __construct($values, $tgdClient = NULL) {
     $this->setValues($values);
     $this->tgdClient = $tgdClient;
   }
 
   /**
+   * Check whether user can log in, depending on status
+   */
+  public function canLogin() {
+    return $this->status == static::STATUS_PRE_ACCEPTED || $this->status == static::STATUS_ACCEPTED;
+  }
+
+  /**
+   * Get user label: name (id)
+   */
+  public function getLabel() {
+    return "$this->name ($this->id)";
+  }
+
+  /**
    * Set data values from object or array.
    */
-  public function setValues($values) {
+  public function setValues($data) {
     foreach ((array)$data as $name => $value) {
       $this->$name = $value;
     }
@@ -70,5 +94,18 @@ class TGDUser {
       }
     }
     return $this->loaded;
+  }
+
+  /**
+   * Magic toString for debugging purposes.
+   */
+  public function __toString() {
+    return implode(', ', array(
+      'id=' . (int)$this->id,
+      'name=' . check_plain($this->username),
+      'mail=' . check_plain($this->email),
+      'status=' . (int) $this->status,
+      'updated=' . format_date($this->updated, 'short'),
+    ));
   }
 }

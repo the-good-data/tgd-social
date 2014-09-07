@@ -8,9 +8,15 @@
  * Implements hook_variable_info().
  */
 function tgd_sso_variable_info($options) {
+  $variables['tgd_sso_local_enable'] = array(
+    'title' => t('Enable remote login', array(), $options),
+    'description' => t('Enable SSO login and user accounts. Do not enable until the system is properly configured and working.', array(), $options),
+    'type' => 'boolean',
+    'group' => 'tgd_sso',
+  );
   $variables['tgd_sso_local_disable'] = array(
     'title' => t('Disable local login', array(), $options),
-    'description' => t('Disable local login and user accounts. Do not enable untile the system is properly configured and working.', array(), $options),
+    'description' => t('Disable local login and user accounts. Do not disable until the system is properly configured and working.', array(), $options),
     'type' => 'boolean',
     'group' => 'tgd_sso',
   );
@@ -32,6 +38,12 @@ function tgd_sso_variable_info($options) {
     'description' => t('Shared cookie name for authentication', array(), $options),
     'type' => 'string',
     'default' => 'PHPSESSID',
+    'group' => 'tgd_sso',
+  );
+  $variables['tgd_sso_debug_enable'] = array(
+    'title' => t('Enable Debug', array(), $options),
+    'description' => t('Enable debug mode. All messages will be logged to watchdog and printed.', array(), $options),
+    'type' => 'boolean',
     'group' => 'tgd_sso',
   );
   return $variables;
