@@ -143,13 +143,15 @@ class TGDUserManager {
   /**
    * Update Drupal user.
    *
-   * @return
+   * @return boolean
+   *   True if operation successful.
    */
   public static function updateDrupalUser($drupalUser, $tgdUser) {
     if ($tgdUser->load()) {
       static::doFieldMapping($drupalUser, $tgdUser);
       static::updateUserMapping($drupalUser, $tgdUser);
-      return (boolean)$drupalUser->status;
+      user_save($drupalUser);
+      return TRUE;
     }
     else {
       // Remote user loading failed
@@ -165,6 +167,7 @@ class TGDUserManager {
   public static function loadDrupalUser($account) {
     static::loadMultipleUsers(array($account->uid => $account));
   }
+
 
   /**
    * Update / delete Drupal user mapping.

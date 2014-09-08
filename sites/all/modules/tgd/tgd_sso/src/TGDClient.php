@@ -144,6 +144,15 @@ class TGDClient {
   }
 
   /**
+   * Set logger.
+   *
+   * @param TGDLogger $logger
+   */
+  public function setLogger($logger) {
+    $this->logger = $logger;
+  }
+
+  /**
    * Log / print debug information.
    *
    * @TODO Properly handle debug levels.

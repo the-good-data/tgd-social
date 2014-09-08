@@ -6,6 +6,7 @@
 
 use Drupal\tgd_sso\TGDUserManager;
 use Drupal\tgd_sso\TGDUser;
+use Drupal\tgd_sso\TGDLogger;
 
 /**
  * Administer TGD Users.
@@ -70,12 +71,15 @@ function tgd_sso_admin_users_bulk_form($form, &$form_state) {
     '#options' => array(
        'synchronize' => t('Synchronize all existing user accounts'),
        'import' => t('Import new user accounts from SSO Master'),
-       'delete' => t('Delete all user account mappings (Not users)'),
      ),
      '#required' => TRUE,
   );
+  // Delete is too dangerous, only for debug mode.
+  if (variable_get('tgd_sso_debug_enable')) {
+    $form['operation']['#options']['delete'] = t('Delete all user account mappings (Not users)');
+  }
   $form['options'] = array(
-    '#title' => t('Options'),
+    '#title' => t('Import Options'),
     '#type' => 'checkboxes',
     '#options' => array(
       'map_mail' => t('Use existing mail addresses for account mapping'),
@@ -144,7 +148,7 @@ function tgd_sso_admin_users_bulk_form_submit($form, &$form_state) {
  * Import users from remote server.
  */
 function tgd_sso_admin_users_import($options, $start_id = 1, $end_id = 10) {
-  $client = tgd_sso_client();
+  $client = tgd_sso_admin_client();
   $count = array(
     'users' => 0,
     'created' => 0,
@@ -197,7 +201,7 @@ function tgd_sso_admin_users_import($options, $start_id = 1, $end_id = 10) {
  * Synchronize account data with remote data.
  */
 function tgd_sso_admin_users_sync($options) {
-  $client = tgd_sso_client();
+  $client = tgd_sso_admin_client();
   $count = array(
     'users' => 0,
     'created' => 0,
@@ -210,10 +214,12 @@ function tgd_sso_admin_users_sync($options) {
     ->fetchAll();
   foreach ($result as $mapping) {
     $account = user_load($mapping->uid);
+    dpm($account, 'account');
     $count['users']++;
     $tgdUser = new TGDUser($mapping, $client);
     if ($account && $tgdUser->load()) {
       $success = TGDUserManager::checkDrupalUser($account, $tgdUser);
+      $count['updated']++;
     }
     else {
       $success = FALSE;
@@ -248,3 +254,24 @@ function tgd_sso_admin_users_find_local($tgdUser, $options) {
   // No mapping found
   return NULL;
 }
+
+/**
+ * Get TGD Client for bulk operations, without too much logging.
+ */
+function tgd_sso_admin_client() {
+  $client = tgd_sso_client();
+  $client->setLogger(new TGDLogger(array(
+    'debug' => variable_get('tgd_sso_debug_enable'),
+    'callback' => 'tgd_sso_admin_log_message',
+  )));
+}
+
+/**
+ * Admin ogging callback.
+ */
+function tgd_sso_admin_log_message($message, $args, $args_string, $severity) {
+  // Log without printing, only errors.
+  $print = $severity == TGDLogger::ERROR;
+  tgd_sso_log_message($message, $args, $args_string, $severity, $print);
+}
+

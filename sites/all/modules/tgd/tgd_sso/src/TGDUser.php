@@ -83,7 +83,7 @@ class TGDUser {
    */
   public function load() {
     if (!isset($this->loaded)) {
-      if (isset($this->tgdClient) && $tgdUser = $this->tgdClient->getUserById($this->id)) {
+      if (isset($this->tgdClient) && ($tgdUser = $this->tgdClient->getUserById($this->id))) {
         foreach (array('username', 'email', 'status', 'updated') as $field) {
           $this->$field = $tgdUser->$field;
         }

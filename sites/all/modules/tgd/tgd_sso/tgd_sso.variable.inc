@@ -8,7 +8,7 @@
  * Implements hook_variable_info().
  */
 function tgd_sso_variable_info($options) {
-  $variables['tgd_sso_local_enable'] = array(
+  $variables['tgd_sso_remote_enable'] = array(
     'title' => t('Enable remote login', array(), $options),
     'description' => t('Enable SSO login and user accounts. Do not enable until the system is properly configured and working.', array(), $options),
     'type' => 'boolean',
@@ -24,7 +24,7 @@ function tgd_sso_variable_info($options) {
     'title' => t('Base URL', array(), $options),
     'description' => t('SSO master base URL without trailing slash.', array(), $options),
     'type' => 'string',
-    'default' => 'https://www.thegooddata.org',
+    'default' => 'https://thegooddata.org',
     'group' => 'tgd_sso',
   );
   $variables['tgd_sso_auth_token'] = array(

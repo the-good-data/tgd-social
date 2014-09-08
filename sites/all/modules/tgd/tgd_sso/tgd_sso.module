@@ -25,11 +25,12 @@ define('TGD_SSO_PATH_LOGOUT', 'user/logout');
 function tgd_sso_init() {
   global $user;
 
-  if (!variable_get('tgd_sso_local_enable')) {
+  if (!variable_get('tgd_sso_remote_enable') || drupal_is_cli() || $_GET['q'] == 'user/logout' || $_GET['q'] == 'user/login') {
     return;
   }
 
   // @TODO Rethink logic here
+  //debug("Init user, start uid: $user->uid");
 
   // Check if logged in with special user accounts first.
   if ($user->uid && user_access('tgd sso local login')) {
@@ -44,19 +45,23 @@ function tgd_sso_init() {
   }
   elseif ($user->uid) {
     // No user logged in, log out current user if any.
-
+    tgd_sso_do_terminate_session();
     // @TODO Lot out current user, skip for site admins...?
     $status = FALSE;
   }
+  else {
+    // Anonymous user, no remote session.
+    $status = TRUE;
+  }
+
+  //debug("Init user, end uid: $user->uid");
 
   // Something went really wrong, print access denied and get out!!
   if (!$status) {
     drupal_set_message(t('TGD SSO Authentication Error'), 'error');
     drupal_access_denied();
-    exit();
   }
 }
-
 
 /**
  * Implements hook_menu().
@@ -109,17 +114,15 @@ function tgd_sso_menu() {
  * Implements hook_menu_alter().
  */
 function tgd_sso_menu_alter(&$items) {
-  // @TODO Replace all Drupal user pages
-  if (variable_get('tgd_sso_local_disable')) {
-    module_load_include('inc', 'tgd_sso', 'tgd_sso.pages');
-    _tgd_sso_menu_alter($items);
-  }
+  // Replace all Drupal user pages
+  module_load_include('inc', 'tgd_sso', 'tgd_sso.pages');
+  _tgd_sso_menu_alter($items);
 }
 
 /**
  * Implements hook_permission().
  */
-function akademia_base_permission() {
+function tgd_sso_permission() {
   $permissions = array(
     'tgd sso local login' => array(
       'title' => t('Login with local user account'),
@@ -145,6 +148,15 @@ function tgd_sso_user_load($users) {
 function tgd_sso_user_update(&$edit, $account, $category) {
   if (variable_get('tgd_sso_local_enable')) {
     //TGDUserManager::updateUserMapping($account);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function tgd_sso_form_user_login_block_alter(&$form, $form_state, $form_id) {
+  if (variable_get('tgd_sso_remote_enabled')) {
+    $form += tgd_sso_build_link('login',  t('Log in using master server'));
   }
 }
 
@@ -206,33 +218,89 @@ function tgd_sso_check_current_session() {
 function tgd_sso_check_current_user($tgdUser) {
   global $user;
 
+  // Get / create Drupal user for remote user.
+  $account = TGDUserManager::getDrupalUser($tgdUser);
+
   if ($user->uid) {
     // User logged in, check it matches an is up to date.
-    if (TGDUserManager::checkDrupalUser($user, $tgdUser))  {
+    if ($user->uid != $account->uid) {
+      tgd_log_error('Current logged in user not matching master user ID', $tgdUser);
+      // Start new session anyway.
+      tgd_sso_do_start_session($account);
+      return TRUE;
+    }
+    elseif (TGDUserManager::checkDrupalUser($account, $tgdUser))  {
       watchdog('tgd_user', 'User authenticated remotely');
       return TRUE;
     }
     else {
-      tgd_log_error('Current logged in user not matching master user ID', $tgdUser);
+      tgd_log_error('Remote account authentication failed.');
       return FALSE;
     }
   }
   else {
     // User not logged in. Do user log-in
-    $account = TGDUserManager::getDrupalUser($tgdUser);
+    //$account = TGDUserManager::getDrupalUser($tgdUser);
     if ($account && TGDUserManager::checkDrupalUser($account, $tgdUser)) {
       watchdog('tgd_sso', 'Logging in remote user @id as Drupal user @uid', array(
         '@id' => $tgdUser->id,
         '@uid' => $account->uid,
       ));
-      // WARNING: We are setting here global user object.
-      $user = $account;
-      user_login_finalize();
+
+      tgd_sso_do_start_session($account);
+      return TRUE;
     }
     else {
-      tgd_log_error('Cannot get Drupal user from remote user', $tgdUser);
+      tgd_log_error('Cannot get Drupal user from remote server', $tgdUser);
     }
   }
+}
+
+/**
+ * Start session as new user.
+ */
+function tgd_sso_do_start_session($account) {
+  global $user;
+
+  // WARNING: We are setting here global user object.
+  $user = $account;
+  user_login_finalize();
+
+  drupal_set_message(t('Session started as !drupal-user', array(
+    '!drupal-user' => theme('username', array('account' => $account)),
+  )));
+}
+
+/**
+ * Terminate user session.
+ */
+function tgd_sso_do_terminate_session($account) {
+  global $user;
+
+  $variables['%name'] = $user->name;
+
+  watchdog('user', 'Session closed for %name.', $variables);
+  module_invoke_all('user_logout', $user);
+
+  // Destroy the current session, and reset $user to the anonymous user.
+  session_destroy();
+
+  drupal_set_message(t('Session closed for %name', $variables));
+}
+
+/**
+ * Build page link as renderable array.
+ */
+function tgd_sso_build_link($type, $text, $destination = NULL) {
+  $link = tgd_sso_master_link($type, $text, $destination);
+  $build['sso_link'] = array(
+    '#theme' => 'link',
+    '#text' => $link['text'],
+    '#path' => $link['path'],
+    '#options' => $link['options'],
+    '#weight' => 200,
+  );
+  return $build;
 }
 
 /**
@@ -240,11 +308,17 @@ function tgd_sso_check_current_user($tgdUser) {
  *
  * @param string $type
  *   'login' | 'logout' | 'edit'
+ *
+ * @param string $text
+ *   Link text
+ * @param $destination
+ *   Optional destination path
+ *
  * @return array
  *   Link array with 'text', 'path', 'options'.
  *   It can be rendered with theme('link', $link)
  */
-function tgd_sso_master_link($type, $text = NULL) {
+function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
   $link = array(
     'text' => $text,
     'path' => '',
@@ -253,38 +327,81 @@ function tgd_sso_master_link($type, $text = NULL) {
   $link['options'] = array(
     'external' => TRUE,
     'absolute' => TRUE,
-    'base_url' => variable_get_value('tgd_sso_base_url'),
+    //'base_url' => variable_get_value('tgd_sso_base_url'),
+    'html' => FALSE,
   );
   $link['options']['attributes']['class'] = array('tgd-sso-link', 'tgd-sso-' . $type);
 
-  // Now, depending on type.
-  switch ($type) {
-    case 'login':
-      $link['path'] = 'sign-in';
-      break;
-    case 'logout':
-      $link['path'] = 'user/logout';
-      break;
-    case 'view':
-      // @TODO Link to view user profile ?.
-      break;
-    case 'edit':
-      // @TODO Link to edit user profile ?.
-      break;
+  // Compute return url.
+  if (isset($destination)) {
+    $next = $destination;
+  }
+  elseif (isset($_GET['destination'])) {
+    $next = $_GET['destination'];
+  }
+  else {
+    $next = $_GET['q'];
   }
 
-  // Add return url.
-  $destination = drupal_get_destination();
+  // Now, depending on type.
+  $path = '';
+  switch ($type) {
+    case 'login':
+      $path = 'sign-in';
+      break;
+    case 'logout':
+      $path = 'user/logout';
+      break;
+    case 'register':
+      $path = 'apply';
+      break;
+    case 'view':
+    case 'password':
+    case 'edit':
+      $path = 'membership';
+      break;
+  }
+  $link['path'] = variable_get_value('tgd_sso_base_url') . '/' . $path;
   // @TODO Q: Need url-encoding?
-  $link['options']['query']['next'] = url($destination['destination'], array('absolute' => TRUE));
+  $link['options']['query']['next'] = url($next, array('absolute' => TRUE));
 
   return $link;
 }
 
 /**
+ * Redirect to link with proper destination.
+ *
+ * @param $link
+ *   Our link array.
+ */
+function tgd_sso_master_redirect($link) {
+  // We are doing a 302 redirect, right?
+  // @DEBUG:
+  watchdog('tgd_sso', 'Redirecting user to master server: @url', array(
+    '@url' => url($link['path'], $link['options'])
+  ));
+  // Destination in query string may override our goto destination.
+  if (isset($_GET['destination'])) {
+    unset($_GET['destination']);
+  }
+
+  // Not using drupal_goto, we have a safer version.
+  //drupal_goto($link['path'], $link['options']);
+
+  $url = url($link['path'], $link['options']);
+
+  header('Location: ' . $url, TRUE, $http_response_code);
+
+  // The "Location" header sends a redirect status code to the HTTP daemon. In
+  // some cases this can be wrong, so we make sure none of the code below the
+  // drupal_goto() call gets executed upon redirection.
+  drupal_exit($url);
+}
+
+/**
  * Logging callback.
  */
-function tgd_sso_log_message($message, $args, $args_string, $severity) {
+function tgd_sso_log_message($message, $args, $args_string, $severity, $print = TRUE) {
   switch ($severity) {
     case TGDLogger::ERROR:
       $level = WATCHDOG_ERROR;
@@ -302,7 +419,7 @@ function tgd_sso_log_message($message, $args, $args_string, $severity) {
   // Watchdog all.
   watchdog('tgd_sso', $message . ($args ? '[' . $args_string . ']' : ''), array(), $level);
   // Print only if debug mode and devel enabled.
-  if (function_exists('dpm') && variable_get('tgd_sso_debug_enable')) {
+  if ($print && function_exists('dpm') && variable_get('tgd_sso_debug_enable')) {
     dpm($args, $message);
   }
 }
