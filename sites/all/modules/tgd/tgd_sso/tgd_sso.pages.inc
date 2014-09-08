@@ -134,29 +134,20 @@ function tgd_sso_page_user_password() {
  * Replace registration page. Redirect.
  */
 function tgd_sso_page_user_view($account) {
-  if (tgd_sso_page_replace()) {
-    tgd_sso_page_redirect('view');
-  }
-  else {
-    $build = user_view_page($account);
-    $build += tgd_sso_build_link('edit', t('View account in master server'));
-    return $build;
-  }
+  $build = user_view_page($account);
+  $build += tgd_sso_build_link('view', t('View account in master server'));
+  return $build;
 }
 
 /**
- * Replace edit page. Redirect.
+ * Replace edit page. More access control, Redirect?.
+ *
+ * @TODO Manage user account edit form.
  */
-function tgd_sso_page_user_edit($form, $account) {
-  // @TODO Should we allow editing picture here?
-  if (tgd_sso_page_replace()) {
-    tgd_sso_page_redirect('edit');
-  }
-  else {
-    $form = drupal_get_form($form, $account);
-    $form += tgd_sso_build_link('edit', t('Edit account in master server'));
-    return $form;
-  }
+function tgd_sso_page_user_edit($form_name, $account = NULL) {
+  $form = drupal_get_form($form_name, $account);
+  $form += tgd_sso_build_link('edit', t('Edit account in master server'));
+  return $form;
 }
 
 /**

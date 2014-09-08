@@ -25,6 +25,7 @@ define('TGD_SSO_PATH_LOGOUT', 'user/logout');
 function tgd_sso_init() {
   global $user;
 
+  // Skip if remote login not enabled, or we are in some user paths.
   if (!variable_get('tgd_sso_remote_enable') || drupal_is_cli() || $_GET['q'] == 'user/logout' || $_GET['q'] == 'user/login') {
     return;
   }
@@ -154,10 +155,27 @@ function tgd_sso_user_update(&$edit, $account, $category) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
+function tgd_sso_form_user_login_alter(&$form, $form_state, $form_id) {
+  // @TODO Manage login form.
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
 function tgd_sso_form_user_login_block_alter(&$form, $form_state, $form_id) {
   if (variable_get('tgd_sso_remote_enabled')) {
     $form += tgd_sso_build_link('login',  t('Log in using master server'));
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function tgd_sso_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+  $account = $form['#user'];
+
+  // @TODO Replace edit name, password, others for some users.
 }
 
 /**

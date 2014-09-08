@@ -6,6 +6,17 @@
  */
 
 /**
+ * Implements hook_install();
+ */
+function tgd_sso_install() {
+  // Increase module weight to run after other modules and alter user forms.
+  db_update('system')
+    ->fields(array('weight' => 9999))
+    ->condition('name', 'tgd_sso')
+    ->execute();
+}
+
+/**
  * Implements hook_schema().
  */
 function tgd_sso_schema() {
