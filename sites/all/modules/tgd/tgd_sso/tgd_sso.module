@@ -155,17 +155,28 @@ function tgd_sso_user_update(&$edit, $account, $category) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function tgd_sso_form_user_login_alter(&$form, $form_state, $form_id) {
-  // @TODO Manage login form.
+function tgd_sso_form_user_login_alter(&$form, &$form_state, $form_id) {
+  if (variable_get('tgd_sso_remote_enable')) {
+    // We don't want destination to be 'user/login'.
+    $destination = isset($_GET['destination']) ? NULL : '';
+    $form += tgd_sso_build_link('login',  t('Log in using master server'), $destination);
+  }
 }
 
 /**
  * Implements hook_form_FORM_ID_alter().
  */
 function tgd_sso_form_user_login_block_alter(&$form, $form_state, $form_id) {
-  if (variable_get('tgd_sso_remote_enabled')) {
-    $form += tgd_sso_build_link('login',  t('Log in using master server'));
+  // This will run on pages that display the login block but are not the login page.
+  if (variable_get('tgd_sso_local_disable')) {
+    // Disable login, password and submit button.
+    $form['name']['#access'] = FALSE;
+    $form['pass']['#access'] = FALSE;
+    $form['actions']['#access'] = FALSE;
+    $form['links']['#access'] = FALSE;
   }
+  // Add remote log-in link
+  tgd_sso_form_user_login_alter($form, $form_state, $form_id);
 }
 
 /**
@@ -173,10 +184,81 @@ function tgd_sso_form_user_login_block_alter(&$form, $form_state, $form_id) {
  */
 function tgd_sso_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
   global $user;
-  $account = $form['#user'];
 
+  // Only change if we don't allow local login.
+  if ($form['#user_category'] == 'account') {
+    $account = $form['#user'];
+    // The account settings move around in this form.
+    if (isset($form['account'])) {
+      $account_form = &$form['account'];
+    }
+    else {
+      $account_form = &$form;
+    }
+
+    $admin = user_access('administer users');
+
+    if (variable_get('tgd_sso_remote_enable')) {
+      $form['tgd_sso'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Remote Account Information'),
+        '#weight' => -10,
+        '#description' => t('This account is managed by the SSO system'),
+        '#collapsible' => TRUE,
+        '#collapsed' => !$admin, // Collapse for admins, they get to see more data...
+      );
+      // For admins only, display remote account data.
+      if ($tgdUser = TGDUserManager::getRemoteUser($account)) {
+        if ($loaded = $tgdUser->load()) {
+          $status = TGDUserManager::checkDrupalUser($account, $tgdUser);
+        }
+        $form['tgd_sso']['account'] = TGDUserManager::buildRemoteUser($tgdUser);
+        $form['tgd_sso'] += tgd_sso_build_link('edit', t('Edit master account'));
+      }
+      // Overall status.
+      if (!$tgdUser) {
+        $status_text = t('No remote account found.');
+      }
+      elseif (!$loaded) {
+        $status_text = t('Cannot load remote account');
+      }
+      elseif (!$status) {
+        $status_text = t('Account is not up to date');
+      }
+      elseif (!$tgdUser->canLogin()) {
+        $status_text = t('Account is blocked, cannot login');
+      }
+      else {
+        $status_text = t('Account is up to date and can login remotely');
+      }
+      $form['tgd_sso']['message'] = array(
+        '#type' => 'item',
+        '#title' => t('Sync status'),
+        '#markup' => $status_text,
+      );
+    }
+
+    if (variable_get('tgd_sso_local_disable') && !user_access('tgd sso local login', $account)) {
+      // This account cannot login locally, hide / disable fields depending on viewer.
+
+      $account_form['pass']['#access'] = FALSE;
+      $account_form['current_pass_required_values']['#access'] = FALSE;
+
+      if ($admin) {
+        $account_form['mail']['#disabled'] = TRUE;
+        $account_form['name']['#disabled'] = TRUE;
+      }
+      else {
+        // Hide completely for non administrators.
+        $account_form['mail']['#access'] = FALSE;
+        $account_form['name']['#access'] = FALSE;
+      }
+    }
+  }
   // @TODO Replace edit name, password, others for some users.
+  //dpm($account_form, __FUNCTION__);
 }
+
 
 /**
  * Implements hook_user_delete().
@@ -211,6 +293,7 @@ function tgd_sso_client() {
   return $client;
 }
 
+
 /**
  * Check whether user is logged into Webapp
  *
@@ -237,9 +320,13 @@ function tgd_sso_check_current_user($tgdUser) {
   global $user;
 
   // Get / create Drupal user for remote user.
-  $account = TGDUserManager::getDrupalUser($tgdUser);
+  $account = TGDUserManager::getDrupalUser($tgdUser, variable_get('tgd_sso_local_create', FALSE));
 
-  if ($user->uid) {
+  if (!$account) {
+    // No matching local account found.
+    return FALSE;
+  }
+  elseif ($user->uid) {
     // User logged in, check it matches an is up to date.
     if ($user->uid != $account->uid) {
       tgd_log_error('Current logged in user not matching master user ID', $tgdUser);
@@ -273,6 +360,7 @@ function tgd_sso_check_current_user($tgdUser) {
     }
   }
 }
+
 
 /**
  * Start session as new user.
@@ -386,6 +474,7 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
   return $link;
 }
 
+
 /**
  * Redirect to link with proper destination.
  *
@@ -394,6 +483,7 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
  */
 function tgd_sso_master_redirect($link) {
   // We are doing a 302 redirect, right?
+  $http_response_code = 302;
   // @DEBUG:
   watchdog('tgd_sso', 'Redirecting user to master server: @url', array(
     '@url' => url($link['path'], $link['options'])

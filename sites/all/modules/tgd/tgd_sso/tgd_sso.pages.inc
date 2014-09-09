@@ -23,12 +23,15 @@ function _tgd_sso_menu_alter(&$items) {
   $file_path = drupal_get_path('module', 'tgd_sso');
   $replace = array(
     'user' => 'tgd_sso_page_user',
+    'user/login' => 'tgd_sso_page_user_login',
     'user/logout' => 'tgd_sso_page_user_logout',
     'user/register' => 'tgd_sso_page_user_register',
     'user/password' => 'tgd_sso_page_user_password',
     'user/reset/%/%/%' => FALSE,
     'user/%user' => 'tgd_sso_page_user_view',
-    'user/%user/edit' => 'tgd_sso_page_user_edit',
+    'user/%user/view' => 'tgd_sso_page_user_view',
+    // Better don't mess with edit pages, OA produces tons of notices.
+    //'user/%user/edit' => 'tgd_sso_page_user_edit',
     'user/%user/cancel' => FALSE,
     'user/%user_category/edit/account' => FALSE ,
   );
@@ -67,17 +70,13 @@ function tgd_sso_page_user() {
  * @see user_page
  */
 function tgd_sso_page_user_login() {
-  // We don't want destination to be 'user/login'.
-  $destination = isset($_GET['destination']) ? NULL : '';
-
   if (tgd_sso_page_replace()) {
-    // Plain redirect, good bye!
+    // Plain redirect, see you!
     tgd_sso_page_redirect('login', '');
   }
   else {
-    $form = drupal_get_form('user_login');
-    $form += tgd_sso_build_link('login', t('Log in using master server'), $destination);
-    return $form;
+    // The form will be managed, see tgd_sso_form_user_login_alter().
+    return drupal_get_form('user_login');
   }
 
 }
@@ -136,6 +135,7 @@ function tgd_sso_page_user_password() {
 function tgd_sso_page_user_view($account) {
   $build = user_view_page($account);
   $build += tgd_sso_build_link('view', t('View account in master server'));
+  dpm($build, __FUNCTION__);
   return $build;
 }
 
@@ -157,6 +157,10 @@ function tgd_sso_page_user_edit($form_name, $account = NULL) {
  *   Our link array.
  */
 function tgd_sso_page_redirect($type, $destination = NULL) {
+  // We don't want destination to be 'user/login'.
+  if (!isset($destination)) {
+    $destination = isset($_GET['destination']) ? NULL : '';
+  }
   $link = tgd_sso_master_link($type, NULL, $destination);
   tgd_sso_master_redirect($link);
 }

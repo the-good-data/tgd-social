@@ -50,19 +50,80 @@ class TGDUserManager {
   /**
    * Get Drupal user for TGD user / create if not existing.
    *
+   * @param TGDUser $tgdUser
+   *   Remote user.
+   * @param boolean $create
+   *   Attempt to create new Drupal account if no match found.
+   *
    * @return object|NULL
    *   Drupal user account if successful.
    *   NULL otherwise.
    */
-  public static function getDrupalUser($tgdUser) {
+  public static function getDrupalUser($tgdUser, $create = FALSE) {
     if ($account = static::getDrupalUserById($tgdUser->id)) {
       // Existing account
       return $account;
     }
-    else {
+    elseif ($create) {
       // No local user, try to create it.
       return static::createDrupalUser($tgdUser);
     }
+    else {
+      return NULL;
+    }
+  }
+
+  /**
+   * Get TGD user for Drupal user.
+   *
+   * @return object|NULL
+   *   Remote user account if successful.
+   *   NULL otherwise.
+   */
+  public static function getRemoteUser($account) {
+    if ($mappings = static::loadUserMappings($account->uid, 'uid')) {
+      $map = reset($mappings);
+      return new TGDUser($map, tgd_sso_client());
+    }
+    else {
+      return NULL;
+    }
+  }
+
+  /**
+   * Build TGD user as renderable array
+   */
+  public static function buildRemoteUser($tgdUser) {
+    $loaded = $tgdUser->load();
+    $build['id'] = array(
+      '#type' => 'item',
+      '#title' => t('User Id'),
+      '#markup' => (int)$tgdUser->id,
+    );
+    if ($loaded) {
+      $build['name'] = array(
+        '#type' => 'item',
+        '#title' => t('User name'),
+        '#markup' => check_plain($tgdUser->username),
+      );
+      $build['mail'] = array(
+        '#type' => 'item',
+        '#title' => t('Mail'),
+        '#markup' => check_plain($tgdUser->email),
+      );
+    }
+    // @todo Make human readable..
+    $build['status'] = array(
+      '#type' => 'item',
+      '#title' => t('Status'),
+      '#markup' => (int)$tgdUser->status,
+    );
+    $build['updated'] = array(
+      '#type' => 'item',
+      '#title' => t('Updated'),
+      '#markup' => format_date($tgdUser->updated),
+    );
+    return $build;
   }
 
   /**
@@ -86,6 +147,10 @@ class TGDUserManager {
         'pass' => user_password(),
         'init' => $tgdUser->email,
       );
+      // @TODO: Set roles: Authenticated user?
+      $role = user_role_load(DRUPAL_AUTHENTICATED_RID);
+      $account->roles[$role->rid] = $role->name;
+
       static::doFieldMapping($account, $tgdUser);
       if ($account = user_save($account)) {
         static::updateUserMapping($account, $tgdUser);

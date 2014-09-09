@@ -264,6 +264,7 @@ function tgd_sso_admin_client() {
     'debug' => variable_get('tgd_sso_debug_enable'),
     'callback' => 'tgd_sso_admin_log_message',
   )));
+  return $client;
 }
 
 /**

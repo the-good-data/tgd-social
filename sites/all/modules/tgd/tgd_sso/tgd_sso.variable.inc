@@ -20,6 +20,12 @@ function tgd_sso_variable_info($options) {
     'type' => 'boolean',
     'group' => 'tgd_sso',
   );
+  $variables['tgd_sso_local_create'] = array(
+    'title' => t('Create new accounts', array(), $options),
+    'description' => t('If remote login enabled, create a new local user account when there is no matching one.', array(), $options),
+    'type' => 'boolean',
+    'group' => 'tgd_sso',
+  );
   $variables['tgd_sso_base_url'] = array(
     'title' => t('Base URL', array(), $options),
     'description' => t('SSO master base URL without trailing slash.', array(), $options),
