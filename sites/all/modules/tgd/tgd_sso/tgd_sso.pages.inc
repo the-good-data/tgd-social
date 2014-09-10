@@ -32,8 +32,8 @@ function _tgd_sso_menu_alter(&$items) {
     'user/%user/view' => 'tgd_sso_page_user_view',
     // Better don't mess with edit pages, OA produces tons of notices.
     //'user/%user/edit' => 'tgd_sso_page_user_edit',
-    'user/%user/cancel' => FALSE,
-    'user/%user_category/edit/account' => FALSE ,
+    'user/%user/cancel' => 'tgd_sso_page_user_cancel',
+    //'user/%user_category/edit/account' => FALSE ,
   );
   foreach ($replace as $path => $callback) {
     if ($callback) {
@@ -135,7 +135,6 @@ function tgd_sso_page_user_password() {
 function tgd_sso_page_user_view($account) {
   $build = user_view_page($account);
   $build += tgd_sso_build_link('view', t('View account in master server'));
-  dpm($build, __FUNCTION__);
   return $build;
 }
 
@@ -148,6 +147,19 @@ function tgd_sso_page_user_edit($form_name, $account = NULL) {
   $form = drupal_get_form($form_name, $account);
   $form += tgd_sso_build_link('edit', t('Edit account in master server'));
   return $form;
+}
+
+/**
+ * Replace cancel page.
+ */
+function tgd_sso_page_user_cancel($form_name, $account) {
+  if (tgd_sso_page_replace() && !user_access('administer users')) {
+    // Not admins, redirect to master site, come back to home page.
+    tgd_sso_page_redirect('cancel', NULL, '');
+  }
+  else {
+    return drupal_get_form($form_name, $account);
+  }
 }
 
 /**

@@ -296,8 +296,8 @@ class TGDUserManager {
    */
   public static function deleteUserMapping($drupalUser) {
     $drupalUser->tgd_user_id = 0;
-    return db_delete(static::TABLE)
-      ->key(array('uid' => $uid))
+    return db_delete(static::TABLE, 'u')
+      ->condition('u.uid', $uid)
       ->execute();
   }
 

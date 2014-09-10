@@ -464,6 +464,7 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
     case 'view':
     case 'password':
     case 'edit':
+    case 'cancel':
       $path = 'membership';
       break;
   }
