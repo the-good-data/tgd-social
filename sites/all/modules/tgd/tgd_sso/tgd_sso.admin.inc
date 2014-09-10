@@ -173,7 +173,7 @@ function tgd_sso_admin_users_import($options, $start_id = 1, $end_id = 10) {
         }
       }
       elseif (!empty($options['create'])) {
-        if (($account = TGDUserManager::getDrupalUser($tgdUser))) {
+        if (($account = TGDUserManager::getDrupalUser($tgdUser, TRUE))) {
           drupal_set_message(t('Created user !drupal-user, updating from remote @tgd-user', array(
             '!drupal-user' => theme('username', array('account' => $account)),
             '@tgd-user' => $tgdUser->getLabel(),
