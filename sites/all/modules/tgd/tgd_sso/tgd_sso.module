@@ -43,8 +43,6 @@ function tgd_sso_init() {
   }
   elseif ($user->uid) {
     // No user logged in, log out current user if any.
-    tgd_sso_do_terminate_session();
-    drupal_goto();
     $status = FALSE;
   }
   else {
@@ -52,9 +50,10 @@ function tgd_sso_init() {
     $status = TRUE;
   }
 
-  // Something went really wrong, print access denied and get out!!
-  if (!$status) {
-    drupal_access_denied();
+  // Something went wrong, log out current user if any
+  if (!$status && $user->uid) {
+    tgd_sso_do_terminate_session();
+    drupal_goto();
   }
 }
 
@@ -270,7 +269,7 @@ function tgd_sso_client() {
     $authToken = variable_get_value('tgd_sso_auth_token');
     $logger = new TGDLogger(array(
       'debug' => variable_get('tgd_sso_debug_enable'),
-      'callback' => 'tgd_sso_log_message',
+      'callback' => 'tgd_sso_log_callback',
     ));
     $client = new TGDClient($baseUrl, $authToken, $httpClient, $logger);
   }
@@ -314,34 +313,30 @@ function tgd_sso_check_current_user($tgdUser) {
   elseif ($user->uid) {
     // User logged in, check it matches an is up to date.
     if ($user->uid != $account->uid) {
-      tgd_log_error('Current logged in user not matching master user ID', $tgdUser);
+      tgd_sso_log('Current logged in user !drupal-user not matching master user: @tgd-user', $account, $tgdUser);
       // Start new session anyway.
       tgd_sso_do_start_session($account);
       return TRUE;
     }
     elseif (TGDUserManager::checkDrupalUser($account, $tgdUser))  {
-      watchdog('tgd_user', 'User authenticated remotely');
+      tgd_sso_log('User authenticated remotely !drupal-user, @tgd-user', $account, $tgdUser);
       return TRUE;
     }
     else {
-      tgd_log_error('Remote account authentication failed.');
+      tgd_sso_log_error('Remote account authentication failed. Cannot login as @tgd-user.', NULL, $tgdUser);
       return FALSE;
     }
   }
   else {
     // User not logged in. Do user log-in
-    //$account = TGDUserManager::getDrupalUser($tgdUser);
     if ($account && TGDUserManager::checkDrupalUser($account, $tgdUser)) {
-      watchdog('tgd_sso', 'Logging in remote user @id as Drupal user @uid', array(
-        '@id' => $tgdUser->id,
-        '@uid' => $account->uid,
-      ));
-
+      tgd_sso_log('Logging in remote user @tgd-user as Drupal user !drupal-user', $account, $tgdUser);
       tgd_sso_do_start_session($account);
       return TRUE;
     }
     else {
-      tgd_log_error('Cannot get Drupal user from remote server', $tgdUser);
+      tgd_log_error('Cannot login with user !drupal-user, from remote: @tgd-user', $account, $tgdUser);
+      return FALSE;
     }
   }
 }
@@ -495,7 +490,7 @@ function tgd_sso_master_redirect($link) {
 /**
  * Logging callback.
  */
-function tgd_sso_log_message($message, $args, $args_string, $severity, $print = TRUE) {
+function tgd_sso_log_callback($message, $args, $args_string, $severity, $print = TRUE) {
   switch ($severity) {
     case TGDLogger::ERROR:
       $level = WATCHDOG_ERROR;
@@ -519,15 +514,30 @@ function tgd_sso_log_message($message, $args, $args_string, $severity, $print = 
 }
 
 /**
+ * Log messages to user watchdog, display important ones.
+ */
+function tgd_sso_log($message, $drupalUser = NULL, $tgdUser = NULL, $level = WATCHDOG_INFO) {
+  $debug = variable_get('tgd_sso_debug_enable');
+  $variables = array();
+  if ($drupalUser) {
+    $variables['!drupal-user'] = theme('username', array('account' => $drupalUser));
+  }
+  if ($tgdUser) {
+    $variables['@tgd-user'] = $debug ? (string)$tgdUser : $tgdUser->getLabel();
+  }
+
+  watchdog('tgd_sso', $message, $variables, $level);
+
+  // Only user level messages if in debug mode.
+  if ($debug && $level >= WATCHDOG_WARNING) {
+    drupal_set_message('SSO DEBUG: ' . format_string($message, $variables), 'warning');
+  }
+}
+
+/**
  * Error logging function.
  */
-function tgd_log_error($message, $object = NULL) {
-  if ($object) {
-    $message .= ' [' . (string)$object . ']';
-  }
-  // @todo Replace by proper watchdogs in every case.
-  watchdog('tgd_sso', 'TGD SSO Error: !message', array('!message' => $message), WATCHDOG_ERROR);
-  // @todo Replace by human readable message.
-  drupal_set_message(t('TGD SSO Error: !message', array('!message' => $message)), 'error');
+function tgd_sso_log_error($message, $drupalUser = NULL, $tgdUser = NULL) {
+  tgd_sso_log($message, $drupalUser = NULL, $tgdUser = NULL, WATCHDOG_ERROR);
 }
 

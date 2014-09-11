@@ -322,17 +322,7 @@ class TGDUserManager {
    * Log messages to user watchdog, display important ones.
    */
   protected static function log($message, $drupalUser = NULL, $tgdUser = NULL, $level = WATCHDOG_INFO) {
-    $variables = array();
-    if ($drupalUser) {
-      $variables['!drupal-user'] = theme('username', array('account' => $drupalUser));
-    }
-    if ($tgdUser) {
-      $variables['@tgd-user'] = (string)$tgdUser;
-    }
-    watchdog('tgd_sso', $message, $variables, $level);
-    if ($level <= WATCHDOG_WARNING) {
-      drupal_set_message(format_string($message, $variables), 'warning');
-    }
+    tgd_sso_log($message, $drupalUser, $tgdUser, $level);
   }
 
   /**

@@ -262,7 +262,7 @@ function tgd_sso_admin_client() {
   $client = tgd_sso_client();
   $client->setLogger(new TGDLogger(array(
     'debug' => variable_get('tgd_sso_debug_enable'),
-    'callback' => 'tgd_sso_admin_log_message',
+    'callback' => 'tgd_sso_admin_log_callback',
   )));
   return $client;
 }
@@ -270,9 +270,9 @@ function tgd_sso_admin_client() {
 /**
  * Admin ogging callback.
  */
-function tgd_sso_admin_log_message($message, $args, $args_string, $severity) {
+function tgd_sso_admin_log_callback($message, $args, $args_string, $severity) {
   // Log without printing, only errors.
   $print = $severity == TGDLogger::ERROR;
-  tgd_sso_log_message($message, $args, $args_string, $severity, $print);
+  tgd_sso_log_callback($message, $args, $args_string, $severity, $print);
 }
 

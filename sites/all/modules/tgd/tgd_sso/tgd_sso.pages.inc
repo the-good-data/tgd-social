@@ -27,7 +27,7 @@ function _tgd_sso_menu_alter(&$items) {
     'user/logout' => 'tgd_sso_page_user_logout',
     'user/register' => 'tgd_sso_page_user_register',
     'user/password' => 'tgd_sso_page_user_password',
-    'user/reset/%/%/%' => FALSE,
+    'user/reset/%/%/%' => 'tgd_sso_user_pass_reset',
     'user/%user' => 'tgd_sso_page_user_view',
     'user/%user/view' => 'tgd_sso_page_user_view',
     // Better don't mess with edit pages, OA produces tons of notices.
@@ -173,6 +173,20 @@ function tgd_sso_page_user_cancel($form_name, $account) {
   }
   else {
     return drupal_get_form($form_name, $account);
+  }
+}
+
+/**
+ * Replace password reset page.
+ */
+function tgd_sso_user_pass_reset($form_name, $uid, $timestamp, $hashed_pass, $action = NULL) {
+  // This should allow local login for admins only
+  if (!tgd_sso_page_replace() || ($account = user_load($uid)) && user_access('tgd sso local login', $account)) {
+    return drupal_get_form($form_name, $uid, $timestamp, $hashed_pass, $action);
+  }
+  else {
+    drupal_set_message(t('This option is available for administrators only'), 'error');
+    drupal_access_denied();
   }
 }
 
