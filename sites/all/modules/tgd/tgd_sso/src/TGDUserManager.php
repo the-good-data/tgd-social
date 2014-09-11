@@ -141,17 +141,19 @@ class TGDUserManager {
         return NULL;
       }
       // Ok, let's create user.
-      $account = (object) array(
+      $account = entity_create('user', array(
         'uid' => NULL,
         'status' => 0,
         'pass' => user_password(),
         'init' => $tgdUser->email,
-      );
+        'timezone' => variable_get('date_default_timezone', ''),
+      ));
       // @TODO: Set roles: Authenticated user?
       $role = user_role_load(DRUPAL_AUTHENTICATED_RID);
       $account->roles[$role->rid] = $role->name;
 
       static::doFieldMapping($account, $tgdUser);
+
       if ($account = user_save($account)) {
         static::updateUserMapping($account, $tgdUser);
         // Account created, log and return it.

@@ -30,9 +30,6 @@ function tgd_sso_init() {
     return;
   }
 
-  // @TODO Rethink logic here
-  //debug("Init user, start uid: $user->uid");
-
   // Check if logged in with special user accounts first.
   if ($user->uid && user_access('tgd sso local login')) {
     // Ok, admin user logged in, move on...
@@ -47,7 +44,7 @@ function tgd_sso_init() {
   elseif ($user->uid) {
     // No user logged in, log out current user if any.
     tgd_sso_do_terminate_session();
-    // @TODO Lot out current user, skip for site admins...?
+    drupal_goto();
     $status = FALSE;
   }
   else {
@@ -55,11 +52,8 @@ function tgd_sso_init() {
     $status = TRUE;
   }
 
-  //debug("Init user, end uid: $user->uid");
-
   // Something went really wrong, print access denied and get out!!
   if (!$status) {
-    drupal_set_message(t('TGD SSO Authentication Error'), 'error');
     drupal_access_denied();
   }
 }
@@ -159,7 +153,7 @@ function tgd_sso_form_user_login_alter(&$form, &$form_state, $form_id) {
   if (variable_get('tgd_sso_remote_enable')) {
     // We don't want destination to be 'user/login'.
     $destination = isset($_GET['destination']) ? NULL : '';
-    $form += tgd_sso_build_link('login',  t('Log in using master server'), $destination);
+    $form += tgd_sso_build_link('login',  t('Start session'), $destination);
   }
 }
 
@@ -198,10 +192,10 @@ function tgd_sso_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
 
     $admin = user_access('administer users');
 
-    if (variable_get('tgd_sso_remote_enable')) {
+    if (variable_get('tgd_sso_remote_enable') && $admin) {
       $form['tgd_sso'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Remote Account Information'),
+        '#title' => t('TGD SSO Account Information'),
         '#weight' => -10,
         '#description' => t('This account is managed by the SSO system'),
         '#collapsible' => TRUE,
@@ -213,7 +207,9 @@ function tgd_sso_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
           $status = TGDUserManager::checkDrupalUser($account, $tgdUser);
         }
         $form['tgd_sso']['account'] = TGDUserManager::buildRemoteUser($tgdUser);
-        $form['tgd_sso'] += tgd_sso_build_link('edit', t('Edit master account'));
+        if ($user->uid == $account->uid) {
+          $form['tgd_sso'] += tgd_sso_build_link('edit', t('Edit account'));
+        }
       }
       // Overall status.
       if (!$tgdUser) {
@@ -238,27 +234,16 @@ function tgd_sso_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
       );
     }
 
-    if (variable_get('tgd_sso_local_disable') && !user_access('tgd sso local login', $account)) {
+    if (variable_get('tgd_sso_local_disable') && !$admin) {
       // This account cannot login locally, hide / disable fields depending on viewer.
-
       $account_form['pass']['#access'] = FALSE;
       $account_form['current_pass_required_values']['#access'] = FALSE;
-
-      if ($admin) {
-        $account_form['mail']['#disabled'] = TRUE;
-        $account_form['name']['#disabled'] = TRUE;
-      }
-      else {
-        // Hide completely for non administrators.
-        $account_form['mail']['#access'] = FALSE;
-        $account_form['name']['#access'] = FALSE;
-      }
+      $account_form['mail']['#access'] = FALSE;
+      $account_form['name']['#access'] = FALSE;
     }
   }
-  // @TODO Replace edit name, password, others for some users.
-  //dpm($account_form, __FUNCTION__);
-}
 
+}
 
 /**
  * Implements hook_user_delete().

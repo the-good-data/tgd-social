@@ -5,3 +5,12 @@
  */
 
 include_once 'tgd_users.features.inc';
+
+/**
+ * Implements hook_user_presave().
+ */
+function tgd_users_user_presave(&$edit, $account, $category) {
+  // Set display name = account name.
+  $wrapper = entity_metadata_wrapper('user', $account);
+  $wrapper->field_user_display_name->set($account->name);
+}

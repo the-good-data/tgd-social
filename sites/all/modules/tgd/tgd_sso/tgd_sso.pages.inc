@@ -21,7 +21,7 @@ require_once drupal_get_path('module', 'user') . '/user.pages.inc';
 function _tgd_sso_menu_alter(&$items) {
   // @TODO Replace all Drupal user pages
   $file_path = drupal_get_path('module', 'tgd_sso');
-  $replace = array(
+  $replace_list = array(
     'user' => 'tgd_sso_page_user',
     'user/login' => 'tgd_sso_page_user_login',
     'user/logout' => 'tgd_sso_page_user_logout',
@@ -31,13 +31,20 @@ function _tgd_sso_menu_alter(&$items) {
     'user/%user' => 'tgd_sso_page_user_view',
     'user/%user/view' => 'tgd_sso_page_user_view',
     // Better don't mess with edit pages, OA produces tons of notices.
-    //'user/%user/edit' => 'tgd_sso_page_user_edit',
+    'user/%user/edit' => array(
+      'page callback' => 'tgd_sso_page_user_edit',
+      //'type' => MENU_CALLBACK,
+    ),
     'user/%user/cancel' => 'tgd_sso_page_user_cancel',
     //'user/%user_category/edit/account' => FALSE ,
   );
-  foreach ($replace as $path => $callback) {
-    if ($callback) {
-      $items[$path]['page callback'] = $callback;
+  foreach ($replace_list as $path => $replace) {
+    if ($replace) {
+      // This can be a simple callback or a more complex array.
+      $replace = is_string($replace) ? array('page callback' => $replace) : $replace;
+      foreach ($replace as $name => $value) {
+        $items[$path][$name] = $value;
+      }
       $items[$path]['file'] = 'tgd_sso.pages.inc';
       $items[$path]['file path'] = $file_path;
     }
@@ -144,9 +151,16 @@ function tgd_sso_page_user_view($account) {
  * @TODO Manage user account edit form.
  */
 function tgd_sso_page_user_edit($form_name, $account = NULL) {
-  $form = drupal_get_form($form_name, $account);
-  $form += tgd_sso_build_link('edit', t('Edit account in master server'));
-  return $form;
+  if (tgd_sso_page_replace() && !user_access('administer users')) {
+    // Not admins, redirect to master site, come back to home page.
+    tgd_sso_page_redirect('edit', NULL, '');
+  }
+  else {
+    $form = drupal_get_form($form_name, $account);
+    //$form += tgd_sso_build_link('edit', t('Edit account in master server'));
+    return $form;
+  }
+
 }
 
 /**
