@@ -96,18 +96,12 @@ function tgd_ui_default_panels_mini_alter(&$data) {
  * Implements hook_strongarm_alter().
  */
 function tgd_ui_strongarm_alter(&$data) {
-  if (isset($data['chosen_minimum_multiple'])) {
-    $data['chosen_minimum_multiple']->value = 0; /* WAS: 'Always Apply' */
-  }
-  if (isset($data['chosen_minimum_single'])) {
-    $data['chosen_minimum_single']->value = 0; /* WAS: 'Always Apply' */
-  }
   if (isset($data['contextual_tabs_extract'])) {
     $data['contextual_tabs_extract']->value = 'user*:Edit|Edit profile,icon-pencil
     user*:Notifications
+    node/*:Google drive content|Google drive
     node/*/clone/confirm:View|Cancel,icon-remove
     node/*/edit:View|Cancel,icon-remove
-    node/*:Google drive content|Google drive
     View
     Edit,icon-pencil
     Members,icon-user'; /* WAS: 'user*:Edit|Edit profile,icon-pencil

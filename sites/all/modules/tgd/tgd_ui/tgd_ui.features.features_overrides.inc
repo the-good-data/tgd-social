@@ -94,13 +94,11 @@ function tgd_ui_features_override_default_overrides() {
   );
 
   // Exported overrides for: variable
-  $overrides["variable.chosen_minimum_multiple.value"] = 0;
-  $overrides["variable.chosen_minimum_single.value"] = 0;
   $overrides["variable.contextual_tabs_extract.value"] = 'user*:Edit|Edit profile,icon-pencil
   user*:Notifications
+  node/*:Google drive content|Google drive
   node/*/clone/confirm:View|Cancel,icon-remove
   node/*/edit:View|Cancel,icon-remove
-  node/*:Google drive content|Google drive
   View
   Edit,icon-pencil
   Members,icon-user';

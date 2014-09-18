@@ -24,5 +24,4 @@ features[variable][] = file_default_scheme
 features[variable][] = file_entity_file_upload_wizard_skip_scheme
 features[variable][] = og_context_negotiation_group_context
 features[variable][] = og_context_providers_weight_group_context
-features[variable][] = preprocess_css
 features[variable][] = variable_realm_list_og
