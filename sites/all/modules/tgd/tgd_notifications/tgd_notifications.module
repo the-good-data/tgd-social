@@ -4,6 +4,12 @@
  * Drupal needs this blank file.
  */
 
+// Define constant to avoid notices in oa_notifications
+// It's in oa_subspaces, throwing notices from oa_notifications.
+if (!defined('OA_PARENT_SPACE') && !module_exists('oa_subspaces')) {
+  define('OA_PARENT_SPACE', 'oa_parent_space');
+}
+
 /**
  * Implements hook_menu_alter().
  */
@@ -32,3 +38,142 @@ function tgd_notifications_message_digest_view_mode_alter(&$context) {
   }
   // Use theme_message_digest_row and theme_message_digest for further formatting.
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function tgd_notifications_form_oa_users_settings_form_alter(&$form, &$form_state) {
+  $account = $form_state['build_info']['args'][0];
+
+  // Hide per space preferences for all but admins
+  // @see oa_messages_build_message_notifications_table()
+  if (user_access('administer site configuration')) {
+    $form['oa_messages']['message_notifications']['#disabled'] = TRUE;
+    $form['oa_messages']['message_notifications']['message']['#markup'] = '<strong>' . t('Options overridden by single notification method.') . '</strong>';
+  }
+  else {
+    $form['oa_messages']['message_notifications']['#access'] = FALSE;
+  }
+
+  // Reuse notifications options from the form filter.
+  $all_notifications = $form['oa_messages']['message_notifications']['all_notifications'];
+  $method_options = $all_notifications['#options'];
+
+  // Add our form control.
+  $form['oa_messages']['tgd_notifications_method'] = array(
+    '#title' => t('Select notifications method'),
+    '#type' => 'radios',
+    '#options' => $method_options,
+    '#required' => TRUE,
+    '#default_value' => _tgd_notifications_default_method($account),
+  );
+
+  // Add our submit callback to run before others.
+  array_unshift($form['#submit'], 'tgd_notifications_form_oa_users_settings_form_submit');
+}
+
+/**
+ * Submit callback for previous form, handle overridden options, set all spaces.
+ */
+function tgd_notifications_form_oa_users_settings_form_submit(&$form, &$form_state) {
+  $account = $form_state['build_info']['args'][0];
+
+  // To avoid duplications, add values back for each group.
+  // Groups here are the ones the user has access to.
+  // @see oa_messages_oa_user_settings_form_submit().
+  $method = $form_state['values']['oa_messages']['tgd_notifications_method'];
+  $value = array($method => $method);
+  foreach ($form_state['values']['oa_messages']['message_notifications']['all_spaces'] as $nid => $space) {
+    $form_state['values']['oa_messages']['message_notifications']['all_spaces'][$nid]['methods'] = $value;
+  }
+}
+
+/**
+ * Implements hook_oa_user_settings_form_submit().
+ */
+function tgd_notifications_oa_user_settings_form_submit($form_state, $user) {
+  // Return value to be saved in $account->data
+  $data['tgd_notifications_method'] = $form_state['values']['oa_messages']['tgd_notifications_method'];
+
+  return $data;
+}
+
+/**
+ * Implements hook_og_membership_insert().
+ */
+function tgd_notifications_og_membership_insert($og_membership) {
+  if ($og_membership->entity_type == 'user' && ($account = user_load($og_membership->etid))) {
+    $gid = $og_membership->gid;
+    $method = _tgd_notifications_default_method($account);
+    $data = $account->data;
+    $types = array_keys(message_type_load());
+    $data['oa_messages']['message_notifications'][$gid] = array(
+      'methods' => array($method => $method),
+      'messages' => array_combine($types, $types),
+    );
+    user_save($account, array('data' => $data));
+  }
+}
+
+/**
+ * Implements hook_og_membership_update().
+ */
+function tgd_notifications_og_membership_update($og_membership) {
+  // Nothing for now...
+}
+
+/**
+ * Implements hook_og_membership_delete().
+ */
+function tgd_notifications_og_membership_delete($og_membership) {
+  if ($og_membership->entity_type == 'user' && ($account = user_load($og_membership->etid))) {
+    $gid = $og_membership->gid;
+    if (isset($account->data['oa_messages']['message_notifications'][$gid])) {
+      $data = $account->data;
+      unset($data['oa_messages']['message_notifications'][$gid]);
+      user_save($account, array('data' => $data));
+    }
+  }
+}
+
+/**
+ * Get user spaces.
+ */
+function _tgd_notifications_user_spaces($account) {
+  $list = array();
+  foreach (oa_messages_get_entity_groups($account->uid) as $space) {
+    $list[$space->nid] = $space;
+  }
+  return $list;
+}
+
+/**
+ * Get default notifier for account or the global one.
+ *
+ * To set the default notifier/s visit /config/system/message-subscribe
+ */
+function _tgd_notifications_default_method($account = NULL) {
+  static $notifier;
+
+  if (!isset($default)) {
+    $notifiers = oa_message_notifiers();
+    // Get notification method options.
+    foreach ($notifiers as $notifier) {
+      if ($notifier['default']) {
+        $default = $notifier['id'];
+        break;
+      }
+    }
+    if (!isset($default)) {
+      $default = 'none';
+    }
+  }
+  if (isset($account)) {
+    return isset($account->data['tgd_notifications_method']) ? $account->data['tgd_notifications_method'] : $default;
+  }
+  else {
+    return $default;
+  }
+}
+
+
