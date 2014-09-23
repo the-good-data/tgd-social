@@ -61,12 +61,6 @@ function tgd_sso_init() {
  * Implements hook_menu().
  */
 function tgd_sso_menu() {
-  // @TODO Admin page
-  // @TODO Callback pages
-  // - edit profile
-  // - log out
-  // - log in
-
   // Admin pages
   $items['admin/config/tgd/sso'] = array(
     'title' => 'SSO Client',

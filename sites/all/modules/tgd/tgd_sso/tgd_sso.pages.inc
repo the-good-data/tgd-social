@@ -19,7 +19,7 @@ require_once drupal_get_path('module', 'user') . '/user.pages.inc';
  * @see tgd_sso_menu_alter().
  */
 function _tgd_sso_menu_alter(&$items) {
-  // @TODO Replace all Drupal user pages
+  // Replace all Drupal user pages
   $file_path = drupal_get_path('module', 'tgd_sso');
   $replace_list = array(
     'user' => 'tgd_sso_page_user',
@@ -147,8 +147,6 @@ function tgd_sso_page_user_view($account) {
 
 /**
  * Replace edit page. More access control, Redirect?.
- *
- * @TODO Manage user account edit form.
  */
 function tgd_sso_page_user_edit($form_name, $account = NULL) {
   if (tgd_sso_page_replace() && !user_access('administer users')) {
