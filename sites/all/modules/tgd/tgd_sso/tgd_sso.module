@@ -123,8 +123,6 @@ function tgd_sso_permission() {
 
 /**
  * Implements hook_user_load().
- *
- * @TODO Maybe better override entity loading callback.
  */
 function tgd_sso_user_load($users) {
   TGDUserManager::loadMultipleUsers($users);
@@ -443,7 +441,7 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
       break;
   }
   $link['path'] = variable_get_value('tgd_sso_base_url') . '/' . $path;
-  // @TODO Q: Need url-encoding?
+  // Url-encoding will be done automatically.
   $link['options']['query']['next'] = url($next, array('absolute' => TRUE));
 
   return $link;
