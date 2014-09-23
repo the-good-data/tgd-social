@@ -10,6 +10,11 @@
 function tgd_permissions_og_features_default_permissions() {
   $permissions = array();
 
+  // Exported og permission: 'node:oa_group:access group drive content'
+  $permissions['node:oa_group:access group drive content'] = array(
+    'roles' => array(),
+  );
+
   // Exported og permission: 'node:oa_group:add user'
   $permissions['node:oa_group:add user'] = array(
     'roles' => array(
@@ -19,6 +24,11 @@ function tgd_permissions_og_features_default_permissions() {
 
   // Exported og permission: 'node:oa_group:administer group'
   $permissions['node:oa_group:administer group'] = array(
+    'roles' => array(),
+  );
+
+  // Exported og permission: 'node:oa_group:administer own group drive settings'
+  $permissions['node:oa_group:administer own group drive settings'] = array(
     'roles' => array(),
   );
 
@@ -34,6 +44,16 @@ function tgd_permissions_og_features_default_permissions() {
     'roles' => array(
       'administrator member' => 'administrator member',
     ),
+  );
+
+  // Exported og permission: 'node:oa_group:create drive file'
+  $permissions['node:oa_group:create drive file'] = array(
+    'roles' => array(),
+  );
+
+  // Exported og permission: 'node:oa_group:delete drive files'
+  $permissions['node:oa_group:delete drive files'] = array(
+    'roles' => array(),
   );
 
   // Exported og permission: 'node:oa_group:delete terms'
@@ -101,9 +121,7 @@ function tgd_permissions_og_features_default_permissions() {
 
   // Exported og permission: 'node:oa_group:subscribe without approval'
   $permissions['node:oa_group:subscribe without approval'] = array(
-    'roles' => array(
-      'non-member' => 'non-member',
-    ),
+    'roles' => array(),
   );
 
   // Exported og permission: 'node:oa_group:trash any content'
@@ -130,8 +148,18 @@ function tgd_permissions_og_features_default_permissions() {
     ),
   );
 
+  // Exported og permission: 'node:oa_group:upload files to drive'
+  $permissions['node:oa_group:upload files to drive'] = array(
+    'roles' => array(),
+  );
+
   // Exported og permission: 'node:oa_group:view trash bin'
   $permissions['node:oa_group:view trash bin'] = array(
+    'roles' => array(),
+  );
+
+  // Exported og permission: 'node:oa_space:access group drive content'
+  $permissions['node:oa_space:access group drive content'] = array(
     'roles' => array(),
   );
 
@@ -147,6 +175,11 @@ function tgd_permissions_og_features_default_permissions() {
     'roles' => array(),
   );
 
+  // Exported og permission: 'node:oa_space:administer own group drive settings'
+  $permissions['node:oa_space:administer own group drive settings'] = array(
+    'roles' => array(),
+  );
+
   // Exported og permission: 'node:oa_space:administer taxonomy'
   $permissions['node:oa_space:administer taxonomy'] = array(
     'roles' => array(
@@ -159,6 +192,16 @@ function tgd_permissions_og_features_default_permissions() {
     'roles' => array(
       'administrator member' => 'administrator member',
     ),
+  );
+
+  // Exported og permission: 'node:oa_space:create drive file'
+  $permissions['node:oa_space:create drive file'] = array(
+    'roles' => array(),
+  );
+
+  // Exported og permission: 'node:oa_space:delete drive files'
+  $permissions['node:oa_space:delete drive files'] = array(
+    'roles' => array(),
   );
 
   // Exported og permission: 'node:oa_space:delete terms'
@@ -255,6 +298,11 @@ function tgd_permissions_og_features_default_permissions() {
     'roles' => array(
       'administrator member' => 'administrator member',
     ),
+  );
+
+  // Exported og permission: 'node:oa_space:upload files to drive'
+  $permissions['node:oa_space:upload files to drive'] = array(
+    'roles' => array(),
   );
 
   // Exported og permission: 'node:oa_space:view trash bin'

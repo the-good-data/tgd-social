@@ -29,6 +29,15 @@ function tgd_permissions_user_default_permissions() {
     'module' => 'media_internet',
   );
 
+  // Exported permission: 'administer group drive settings'.
+  $permissions['administer group drive settings'] = array(
+    'name' => 'administer group drive settings',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'og_drive',
+  );
+
   // Exported permission: 'administer panelizer node oa_group content'.
   $permissions['administer panelizer node oa_group content'] = array(
     'name' => 'administer panelizer node oa_group content',
@@ -360,6 +369,15 @@ function tgd_permissions_user_default_permissions() {
       'editor' => 'editor',
     ),
     'module' => 'panels',
+  );
+
+  // Exported permission: 'change own drive account email address'.
+  $permissions['change own drive account email address'] = array(
+    'name' => 'change own drive account email address',
+    'roles' => array(
+      'administrator' => 'administrator',
+    ),
+    'module' => 'og_drive',
   );
 
   // Exported permission: 'create fieldable basic_file'.
