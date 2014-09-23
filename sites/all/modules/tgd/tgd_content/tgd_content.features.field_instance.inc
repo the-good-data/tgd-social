@@ -307,50 +307,6 @@ function tgd_content_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-oa_worktracker_task-og_vocabulary'
-  $field_instances['node-oa_worktracker_task-og_vocabulary'] = array(
-    'bundle' => 'oa_worktracker_task',
-    'default_value' => NULL,
-    'deleted' => 0,
-    'description' => '',
-    'display' => array(
-      'default' => array(
-        'label' => 'above',
-        'module' => 'og_vocab',
-        'settings' => array(
-          'concatenate' => FALSE,
-        ),
-        'type' => 'og_vocab',
-        'weight' => 14,
-      ),
-      'featured' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-      'teaser' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
-    ),
-    'entity_type' => 'node',
-    'field_name' => 'og_vocabulary',
-    'label' => 'OG vocabulary',
-    'required' => FALSE,
-    'settings' => array(
-      'user_register_form' => FALSE,
-    ),
-    'widget' => array(
-      'module' => 'og_vocab',
-      'settings' => array(),
-      'type' => 'og_vocab_complex',
-      'weight' => 7,
-    ),
-  );
-
   // Exported field_instance: 'node-poll-oa_section_ref'
   $field_instances['node-poll-oa_section_ref'] = array(
     'bundle' => 'poll',

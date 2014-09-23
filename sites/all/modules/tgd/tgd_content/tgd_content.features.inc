@@ -27,21 +27,6 @@ function tgd_content_field_default_field_instances_alter(&$data) {
     $data['node-oa_wiki_page-og_vocabulary']['display']['default']['label'] = 'inline'; /* WAS: 'above' */
     $data['node-oa_wiki_page-og_vocabulary']['display']['default']['settings']['concatenate'] = 1; /* WAS: FALSE */
   }
-  if (isset($data['node-oa_worktracker_task-field_oa_worktracker_assigned_to'])) {
-    $data['node-oa_worktracker_task-field_oa_worktracker_assigned_to']['widget']['weight'] = 2; /* WAS: 7 */
-  }
-  if (isset($data['node-oa_worktracker_task-field_oa_worktracker_priority'])) {
-    $data['node-oa_worktracker_task-field_oa_worktracker_priority']['widget']['weight'] = 4; /* WAS: 10 */
-  }
-  if (isset($data['node-oa_worktracker_task-field_oa_worktracker_task_status'])) {
-    $data['node-oa_worktracker_task-field_oa_worktracker_task_status']['widget']['weight'] = 3; /* WAS: 9 */
-  }
-  if (isset($data['node-oa_worktracker_task-field_oa_worktracker_task_type'])) {
-    $data['node-oa_worktracker_task-field_oa_worktracker_task_type']['widget']['weight'] = 5; /* WAS: 11 */
-  }
-  if (isset($data['node-oa_worktracker_task-oa_section_ref'])) {
-    $data['node-oa_worktracker_task-oa_section_ref']['widget']['weight'] = 1; /* WAS: 6 */
-  }
 }
 
 /**
@@ -113,9 +98,6 @@ function tgd_content_strongarm_alter(&$data) {
   if (isset($data['comment_oa_wiki_page'])) {
     $data['comment_oa_wiki_page']->value = 2; /* WAS: 0 */
   }
-  if (isset($data['node_options_oa_worktracker_task'])) {
-    unset($data['node_options_oa_worktracker_task']->value[1]);
-  }
 }
 
 /**
@@ -154,11 +136,11 @@ function tgd_content_flag_default_flags() {
     'show_on_teaser' => 1,
     'show_contextual_link' => FALSE,
     'i18n' => 0,
-    'api_version' => 2,
     'module' => 'tgd_content',
     'locked' => array(
       0 => 'name',
     ),
+    'api_version' => 2,
   );
   return $flags;
 
