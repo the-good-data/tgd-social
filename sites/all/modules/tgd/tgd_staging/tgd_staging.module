@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TGD Staging feature.
+ */
+
+include_once 'tgd_staging.features.inc';
