@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file
+ * TGD UI - Install file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function tgd_ui_install() {
+  db_update('system')
+    ->fields(array('weight' => 999))
+    ->condition('name', 'tgd_ui')
+    ->execute();
+}

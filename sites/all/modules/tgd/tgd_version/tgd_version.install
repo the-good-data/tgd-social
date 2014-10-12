@@ -21,4 +21,11 @@ function tgd_version_update_7001() {
   db_query("update {pathauto_state} set pathauto = 1 where entity_type = 'node'");
 }
 
+/**
+ * Set weight for tgd_ui module
+ */
+function tgd_version_update_7002() {
+  module_load_install('tgd_ui');
+  tgd_ui_install();
+}
 

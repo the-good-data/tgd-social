@@ -67,6 +67,9 @@ function tgd_notifications_form_oa_users_settings_form_alter(&$form, &$form_stat
     '#required' => TRUE,
     '#default_value' => _tgd_notifications_default_method($account),
   );
+  // Change groups to 'areas' in digest grouping options.
+  $form['oa_messages']['delivery']['digest_grouping']['#options']['group'] = t('Send one digest email per area');
+  $form['oa_messages']['delivery']['digest_grouping']['#options']['global'] = t('Send one combined digest email for all areas');
 
   // Add our submit callback to run before others.
   array_unshift($form['#submit'], 'tgd_notifications_form_oa_users_settings_form_submit');
