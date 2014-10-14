@@ -11,4 +11,6 @@ $conf['locale_custom_strings_en'][''] = array(
   'space'       => 'area',
   'Subscribed Spaces' => 'Subscribed Areas',
   'Public Spaces' => 'Public Areas',
+  'Subscribe to group' => 'Subscribe to area',
+  'Unsubscribe from group' => 'Unsubscribe from area',
 );
