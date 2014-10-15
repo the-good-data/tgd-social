@@ -8,7 +8,7 @@
 /**
  * The current system version.
  */
-define('VERSION', '7.31');
+define('VERSION', '7.32');
 
 /**
  * Core API compatibility.
@@ -2509,23 +2509,6 @@ function _drupal_bootstrap_page_header() {
  */
 function drupal_get_bootstrap_phase() {
   return drupal_bootstrap();
-}
-
-/**
- * Returns whether a simpletest is running or peparing to run.
- *
- * @param $set
- *   Set whether a test is running.
- *
- * @return
- *   TRUE if test is running, false otherwise.
- */
-function drupal_test_running($set = NULL) {
-  static $test_running = NULL;
-  if (isset($set)) {
-    $test_running = $set;
-  }
-  return isset($test_running) ? $test_running : (bool)drupal_valid_test_ua();
 }
 
 /**
