@@ -179,4 +179,12 @@ function _tgd_notifications_default_method($account = NULL) {
   }
 }
 
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function tgd_notifications_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/content_types';
+  }
+}
 
