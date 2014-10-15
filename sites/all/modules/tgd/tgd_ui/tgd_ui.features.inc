@@ -50,7 +50,7 @@ function tgd_ui_default_panels_mini_alter(&$data) {
                                     <li><a href="https://pre.thegooddata.org/legal#terms">Terms of Use</a></li>
                                     <li><a href="https://pre.thegooddata.org/legal#privacy">Privacy & Cookies</a></li>
                                     <li><a href="https://pre.thegooddata.org/legal#rules">Company Rules</a></li>
-                                </ul>        
+                                </ul>
                                 <ul class="social">
                                     <li class="first">
                                         <a id="gooddata" href="//collaborate.thegooddata.org" class="exclude"></a>
@@ -89,6 +89,41 @@ function tgd_ui_default_panels_mini_alter(&$data) {
     unset($data['oa_footer_panel']->display->content['new-acef9208-6753-4fee-8b2b-834b2ed0909a']);
     unset($data['oa_footer_panel']->display->panels['column1']);
     unset($data['oa_footer_panel']->display->panels['column3']);
+  }
+}
+
+/**
+ * Implements hook_panelizer_defaults_override_alter().
+ */
+function tgd_ui_panelizer_defaults_override_alter(&$data) {
+  if (isset($data['node:oa_discussion_post:default'])) {
+    $data['node:oa_discussion_post:default']->display->content['new-35d06055-8f3f-4790-b785-bb5d0d336ecb']->position = 2; /* WAS: 1 */
+    $data['node:oa_discussion_post:default']->display->content['new-3ce319e2-91c0-4ea6-8ad7-e71ec219a797'] = (object) array(
+          'pid' => 'new-3ce319e2-91c0-4ea6-8ad7-e71ec219a797',
+          'panel' => 'sidebar',
+          'type' => 'subscribe_group',
+          'subtype' => 'subscribe_group',
+          'shown' => TRUE,
+          'access' => array(),
+          'configuration' => array(
+            'context' => 'panelizer',
+            'override_title' => 0,
+            'override_title_text' => '',
+          ),
+          'cache' => array(),
+          'style' => array(
+            'settings' => NULL,
+          ),
+          'css' => array(),
+          'extras' => array(),
+          'position' => 1,
+          'locks' => array(),
+          'uuid' => '3ce319e2-91c0-4ea6-8ad7-e71ec219a797',
+        ); /* WAS: '' */
+    $data['node:oa_discussion_post:default']->display->content['new-5391a87c-2b91-4ee7-a17d-07a99957758b']->position = 3; /* WAS: 2 */
+    $data['node:oa_discussion_post:default']->display->panels['sidebar'][1] = 'new-3ce319e2-91c0-4ea6-8ad7-e71ec219a797'; /* WAS: 'new-35d06055-8f3f-4790-b785-bb5d0d336ecb' */
+    $data['node:oa_discussion_post:default']->display->panels['sidebar'][2] = 'new-35d06055-8f3f-4790-b785-bb5d0d336ecb'; /* WAS: 'new-5391a87c-2b91-4ee7-a17d-07a99957758b' */
+    $data['node:oa_discussion_post:default']->display->panels['sidebar'][3] = 'new-5391a87c-2b91-4ee7-a17d-07a99957758b'; /* WAS: '' */
   }
 }
 
