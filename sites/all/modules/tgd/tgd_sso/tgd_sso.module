@@ -411,6 +411,7 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
   $link['options']['attributes']['class'] = array('tgd-sso-link', 'tgd-sso-' . $type);
 
   // Compute return url.
+  $next_options = array('absolute' => TRUE);
   if (isset($destination)) {
     $next = $destination;
   }
@@ -418,7 +419,12 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
     $next = $_GET['destination'];
   }
   else {
-    $next = $_GET['q'];
+  	$next = $_GET['q'];
+
+  }
+  // For log-in links, add timestamp token for the page to get refreshed after login.
+  if ($type == 'login') {
+  	$next_options['query']['sso-login'] = REQUEST_TIME;
   }
 
   // Now, depending on type.
@@ -442,7 +448,7 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
   }
   $link['path'] = variable_get_value('tgd_sso_base_url') . '/' . $path;
   // Url-encoding will be done automatically.
-  $link['options']['query']['next'] = url($next, array('absolute' => TRUE));
+  $link['options']['query']['next'] = url($next, $next_options);
 
   return $link;
 }
