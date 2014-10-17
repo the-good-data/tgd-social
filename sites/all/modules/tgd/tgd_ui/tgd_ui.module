@@ -7,16 +7,6 @@
 include_once 'tgd_ui.features.inc';
 
 /**
- * Implements hook_menu_alter().
- */
-/*
-function tgd_ui_menu_alter(&$items) {
-  dpm($items['spaces']);
-  $items['spaces']['title'] = t('Areas');
-}
-*/
-
-/**
  * Preprocess function for the oa_breadcrumb.
  */
 function tgd_ui_preprocess_oa_breadcrumb(&$vars) {
