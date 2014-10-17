@@ -1,6 +1,12 @@
 <?php
 /**
  * @file
+ * Code for the TGD Drive feature.
+ */
+
+include_once 'tgd_drive.features.inc';
+/**
+ * @file
  * Drupal Module - TGD Drive
  */
 
