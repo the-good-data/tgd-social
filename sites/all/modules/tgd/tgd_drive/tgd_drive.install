@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * TGD Drive - Install file.
+ *
+ * Creates a table to link og_files to nodes.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function tgd_drive_schema() {
+  $schema['tgd_drive_files'] = array(
+    'description' => 'Store the file ids for a group drive.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The Google drive file id.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'nid' => array(
+        'description' => 'The node id.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'decription' => 'The node vid',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'nid' => array('nid'),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ *
+ * Convert existing google docs into document nodes.
+ */
+function tgd_drive_install() {
+	$count = 0;
+  $group_types = array(OA_SPACE_TYPE => OA_SPACE_TYPE);
+  $all_spaces_ids = oa_core_get_public_spaces($group_types);
+  foreach ($all_spaces_ids as $gid) {
+  	foreach (og_drive_get_files($gid) as $file) {
+  		$node = tgd_drive_create_new_document($file, $gid);
+  		$count++;
+  	}
+  }
+  drupal_set_message(t("Created @count new documents for all Google Docs", array('@count' => $count)));
+}

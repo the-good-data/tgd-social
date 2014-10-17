@@ -1,0 +1,148 @@
+<?php
+/**
+ * @file
+ * Drupal Module - TGD Drive
+ */
+
+// Node type to link files to.
+define('TGD_DRIVE_NODE_TYPE', 'oa_wiki_page');
+
+/**
+ * Implements hook_menu_alter().
+ */
+function tgd_drive_menu_alter(&$items) {
+	// Replace og-drive path/s
+  $items['node/%node/og-drive-content']['page callback'] = 'tgd_drive_node_content_tab';
+  $items['node/%node/og-drive-content']['file'] = '/tgd_drive.pages.inc';
+  $items['node/%node/og-drive-content']['file path'] = drupal_get_path('module', 'tgd_drive');
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function tgd_drive_field_extra_fields() {
+  $extra['node'][TGD_DRIVE_NODE_TYPE] = array(
+    'form' => array(
+      'tgd_drive_file' => array(
+        'label' => t('Google Doc'),
+        'description' => t('Linked Google Doc'),
+        'weight' => -3,
+      ),
+    ),
+    'display' => array(
+      'tgd_drive_file' => array(
+        'label' => t('Google Doc'),
+        'description' => t('Linked Google Doc'),
+        'weight' => 0,
+      ),
+    ),
+  );
+
+  return $extra;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function tgd_drive_node_view($node, $view_mode, $langcode) {
+	$gid = tgd_base_node_get_gid($node) ;
+	if (!empty($node->tgd_drive)) {
+		$links = $node->tgd_drive;
+	  $node->content['tgd_drive_file'] = array(
+	  	'#theme' => 'og_drive_doc_list',
+	  	'#links' => $links,
+      '#gid' => $gid,
+      '#delete_access' => FALSE, //og_drive_allow_delete_files($gid),
+    );
+	}
+}
+
+/**
+ * Implements hook_node_load().
+ */
+function tgd_drive_node_load($nodes, $types) {
+  // Decide whether any of $types are relevant to our purposes.
+  if (in_array(TGD_DRIVE_NODE_TYPE, $types)) {
+    // Gather our extra data for each of these nodes.
+    $result = db_query('SELECT t.*, g.* FROM {tgd_drive_files} t LEFT JOIN {og_drive_files} g ON t.id = g.id WHERE t.nid IN(:nids)', array(
+    	':nids' => array_keys($nodes))
+    );
+    // Add our extra data to the node objects.
+    foreach ($result as $record) {
+      $nodes[$record->nid]->tgd_drive[$record->id] = $record;
+    }
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function tgd_drive_node_delete($node) {
+	// Delete files linked to node.
+	if (!empty($node->tgd_drive)) {
+		og_drive_delete_files(array_keys($node->tgd_drive));
+		db_delete('tgd_drive_files')
+		   ->condition('nid', $node->nid)
+			->execute();
+	}
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function tgd_drive_form_oa_wiki_page_node_form_alter(&$form, &$form_state) {
+
+}
+
+/**
+ * Link file to node.
+ *
+ * @param object $node
+ *   Node object
+ *
+ * @param Google_DriveFile $file
+ *   File to link to the node.
+ */
+function tgd_drive_save_node_file($node, $file) {
+	$node->tgd_drive[$file->id] = $file;
+	return db_insert('tgd_drive_files')
+	  ->fields(array(
+	    'id' => $file->id,
+	  	'nid' => $node->nid,
+	  	'vid' => $node->vid,
+	  ))
+	  ->execute();
+}
+
+/**
+ * Create new document with a linked file.
+ *
+ * @param Google_DriveFile $file
+ *
+ * @return object
+ *   Newly created node.
+ */
+function tgd_drive_create_new_document($file, $gid, $account = NULL, $description = '') {
+	$account = $account ? $account : $GLOBALS['user'];
+
+	$node = entity_create('node', array(
+	  'type' => TGD_DRIVE_NODE_TYPE,
+	  'uid' => $account->uid,
+	  'status' => 1,
+	));
+
+	$document = entity_metadata_wrapper('node', $node);
+  $document->title = $file->title;
+  if ($description) {
+  	$document->body->set(array('value' => $description));
+  }
+	$document->save();
+
+	// Link file to document
+	tgd_drive_save_node_file($node, $file);
+
+	// Assign node to group.
+	og_group('node', $gid, array('entity_type' => 'node', 'entity' => $node));
+
+	return $document;
+}

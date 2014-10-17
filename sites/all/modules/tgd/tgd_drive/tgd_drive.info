@@ -1,0 +1,8 @@
+name = TGD Drive
+description = Better Documents integration for OA and OA Drive Files 
+core = 7.x
+package = TheGoodData
+version = 7.x-1.0
+project = tgd_drive
+dependencies[] = tgd_base
+dependencies[] = og_drive

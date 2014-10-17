@@ -23,3 +23,10 @@ function tgd_base_menu() {
   );
   return $items;
 }
+
+/**
+ * Get group id (space) from node.
+ */
+function tgd_base_node_get_gid($node) {
+	return !empty($node->{OG_AUDIENCE_FIELD}) ? $node->{OG_AUDIENCE_FIELD}[LANGUAGE_NONE][0]['target_id'] : 0;
+}
