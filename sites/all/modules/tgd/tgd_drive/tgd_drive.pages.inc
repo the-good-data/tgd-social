@@ -49,7 +49,7 @@ function tgd_drive_node_content_tab($node) {
     '#theme' => 'og_drive_doc_list',
     '#links' => $links,
     '#gid' => $node->nid,
-    '#delete_access' => og_drive_allow_delete_files($node->nid),
+    '#delete_access' => user_access('administer site configuration'), // og_drive_allow_delete_files($node->nid),
   );
 
   // Show create upload forms.
