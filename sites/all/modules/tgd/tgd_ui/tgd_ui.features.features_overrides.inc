@@ -36,9 +36,7 @@ function tgd_ui_features_override_default_overrides() {
       'uuid' => '3ce319e2-91c0-4ea6-8ad7-e71ec219a797',
     );
   $overrides["panelizer_defaults.node:oa_discussion_post:default.display|content|new-5391a87c-2b91-4ee7-a17d-07a99957758b|position"] = 3;
-  $overrides["panelizer_defaults.node:oa_discussion_post:default.display|panels|sidebar|1"] = 'new-3ce319e2-91c0-4ea6-8ad7-e71ec219a797';
-  $overrides["panelizer_defaults.node:oa_discussion_post:default.display|panels|sidebar|2"] = 'new-35d06055-8f3f-4790-b785-bb5d0d336ecb';
-  $overrides["panelizer_defaults.node:oa_discussion_post:default.display|panels|sidebar|3"] = 'new-5391a87c-2b91-4ee7-a17d-07a99957758b';
+  $overrides["panelizer_defaults.node:oa_discussion_post:default.display|panels|sidebar|3"] = 'new-3ce319e2-91c0-4ea6-8ad7-e71ec219a797';
 
   // Exported overrides for: panels_mini
   $overrides["panels_mini.oa_footer_panel.display|content|new-39727060-3c1c-4478-ac3f-fa1a0800ad6f"]["DELETED"] = TRUE;
@@ -83,7 +81,7 @@ function tgd_ui_features_override_default_overrides() {
                                 <li><a href="https://pre.thegooddata.org/legal#terms">Terms of Use</a></li>
                                 <li><a href="https://pre.thegooddata.org/legal#privacy">Privacy & Cookies</a></li>
                                 <li><a href="https://pre.thegooddata.org/legal#rules">Company Rules</a></li>
-                            </ul>
+                            </ul>        
                             <ul class="social">
                                 <li class="first">
                                     <a id="gooddata" href="//collaborate.thegooddata.org" class="exclude"></a>

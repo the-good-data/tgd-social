@@ -160,7 +160,10 @@ function tgd_permissions_og_features_default_permissions() {
 
   // Exported og permission: 'node:oa_space:access group drive content'
   $permissions['node:oa_space:access group drive content'] = array(
-    'roles' => array(),
+    'roles' => array(
+      'administrator member' => 'administrator member',
+      'member' => 'member',
+    ),
   );
 
   // Exported og permission: 'node:oa_space:add user'
@@ -177,7 +180,9 @@ function tgd_permissions_og_features_default_permissions() {
 
   // Exported og permission: 'node:oa_space:administer own group drive settings'
   $permissions['node:oa_space:administer own group drive settings'] = array(
-    'roles' => array(),
+    'roles' => array(
+      'administrator member' => 'administrator member',
+    ),
   );
 
   // Exported og permission: 'node:oa_space:administer taxonomy'
@@ -196,12 +201,17 @@ function tgd_permissions_og_features_default_permissions() {
 
   // Exported og permission: 'node:oa_space:create drive file'
   $permissions['node:oa_space:create drive file'] = array(
-    'roles' => array(),
+    'roles' => array(
+      'administrator member' => 'administrator member',
+      'member' => 'member',
+    ),
   );
 
   // Exported og permission: 'node:oa_space:delete drive files'
   $permissions['node:oa_space:delete drive files'] = array(
-    'roles' => array(),
+    'roles' => array(
+      'administrator member' => 'administrator member',
+    ),
   );
 
   // Exported og permission: 'node:oa_space:delete terms'
@@ -282,6 +292,7 @@ function tgd_permissions_og_features_default_permissions() {
   // Exported og permission: 'node:oa_space:unsubscribe'
   $permissions['node:oa_space:unsubscribe'] = array(
     'roles' => array(
+      'administrator member' => 'administrator member',
       'member' => 'member',
     ),
   );
@@ -302,7 +313,10 @@ function tgd_permissions_og_features_default_permissions() {
 
   // Exported og permission: 'node:oa_space:upload files to drive'
   $permissions['node:oa_space:upload files to drive'] = array(
-    'roles' => array(),
+    'roles' => array(
+      'administrator member' => 'administrator member',
+      'member' => 'member',
+    ),
   );
 
   // Exported og permission: 'node:oa_space:view trash bin'
