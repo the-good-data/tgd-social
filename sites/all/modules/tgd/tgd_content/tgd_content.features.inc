@@ -37,39 +37,12 @@ function tgd_content_file_default_displays_alter(&$data) {
     $data['document__preview__file_field_file_default']->status = FALSE; /* WAS: TRUE */
     $data['document__preview__file_field_file_default']->weight = 0; /* WAS: 50 */
   }
-  if (isset($data['video__default__media_vimeo_image'])) {
-    $data['video__default__media_vimeo_image']->settings['image_style'] = 'panopoly_image_video'; /* WAS: 'large' */
-    $data['video__default__media_vimeo_image']->status = TRUE; /* WAS: 1 */
-  }
   if (isset($data['video__default__media_vimeo_video'])) {
-    $data['video__default__media_vimeo_video']->settings['protocol'] = '//'; /* WAS: '' */
-    $data['video__default__media_vimeo_video']->status = TRUE; /* WAS: 1 */
-  }
-  if (isset($data['video__media_large__media_vimeo_image'])) {
-    $data['video__media_large__media_vimeo_image']->status = TRUE; /* WAS: 1 */
-  }
-  if (isset($data['video__media_large__media_vimeo_video'])) {
-    $data['video__media_large__media_vimeo_video']->status = TRUE; /* WAS: 1 */
-  }
-  if (isset($data['video__media_original__media_vimeo_image'])) {
-    $data['video__media_original__media_vimeo_image']->status = TRUE; /* WAS: 1 */
-  }
-  if (isset($data['video__media_original__media_vimeo_video'])) {
-    $data['video__media_original__media_vimeo_video']->status = TRUE; /* WAS: 1 */
-  }
-  if (isset($data['video__media_preview__media_vimeo_image'])) {
-    $data['video__media_preview__media_vimeo_image']->status = TRUE; /* WAS: 1 */
+    $data['video__default__media_vimeo_video']->settings['protocol'] = '//'; /* WAS: 'https://' */
   }
   if (isset($data['video__preview__media_vimeo_image'])) {
     $data['video__preview__media_vimeo_image']->settings['image_style'] = 'panopoly_image_thumbnail'; /* WAS: 'media_thumbnail' */
-    $data['video__preview__media_vimeo_image']->status = TRUE; /* WAS: 1 */
-  }
-  if (isset($data['video__teaser__media_vimeo_image'])) {
-    $data['video__teaser__media_vimeo_image']->settings['image_style'] = 'panopoly_image_video'; /* WAS: 'large' */
-    $data['video__teaser__media_vimeo_image']->status = TRUE; /* WAS: 1 */
-  }
-  if (isset($data['video__teaser__media_vimeo_video'])) {
-    $data['video__teaser__media_vimeo_video']->status = TRUE; /* WAS: 1 */
+    $data['video__preview__media_vimeo_image']->weight = 2; /* WAS: 0 */
   }
 }
 

@@ -20,20 +20,9 @@ function tgd_content_features_override_default_overrides() {
   // Exported overrides for: file_display
   $overrides["file_display.document__preview__file_field_file_default.status"] = FALSE;
   $overrides["file_display.document__preview__file_field_file_default.weight"] = 0;
-  $overrides["file_display.video__default__media_vimeo_image.settings|image_style"] = 'panopoly_image_video';
-  $overrides["file_display.video__default__media_vimeo_image.status"] = TRUE;
   $overrides["file_display.video__default__media_vimeo_video.settings|protocol"] = '//';
-  $overrides["file_display.video__default__media_vimeo_video.status"] = TRUE;
-  $overrides["file_display.video__media_large__media_vimeo_image.status"] = TRUE;
-  $overrides["file_display.video__media_large__media_vimeo_video.status"] = TRUE;
-  $overrides["file_display.video__media_original__media_vimeo_image.status"] = TRUE;
-  $overrides["file_display.video__media_original__media_vimeo_video.status"] = TRUE;
-  $overrides["file_display.video__media_preview__media_vimeo_image.status"] = TRUE;
   $overrides["file_display.video__preview__media_vimeo_image.settings|image_style"] = 'panopoly_image_thumbnail';
-  $overrides["file_display.video__preview__media_vimeo_image.status"] = TRUE;
-  $overrides["file_display.video__teaser__media_vimeo_image.settings|image_style"] = 'panopoly_image_video';
-  $overrides["file_display.video__teaser__media_vimeo_image.status"] = TRUE;
-  $overrides["file_display.video__teaser__media_vimeo_video.status"] = TRUE;
+  $overrides["file_display.video__preview__media_vimeo_image.weight"] = 2;
 
   // Exported overrides for: file_type
   $overrides["file_type.audio.disabled"] = FALSE;

@@ -114,11 +114,14 @@ function tgd_ui_features_override_default_overrides() {
   $overrides["panels_mini.oa_footer_panel.display|content|new-acef9208-6753-4fee-8b2b-834b2ed0909a"]["DELETED"] = TRUE;
   $overrides["panels_mini.oa_footer_panel.display|layout"] = 'boxton';
   $overrides["panels_mini.oa_footer_panel.display|panel_settings|style_settings|contentmain"] = NULL;
-  $overrides["panels_mini.oa_footer_panel.display|panels|column1"]["DELETED"] = TRUE;
-  $overrides["panels_mini.oa_footer_panel.display|panels|column3"]["DELETED"] = TRUE;
+  $overrides["panels_mini.oa_footer_panel.display|panel_settings|style_settings|footer"]["DELETED"] = TRUE;
+  $overrides["panels_mini.oa_footer_panel.display|panel_settings|style_settings|middle"]["DELETED"] = TRUE;
+  $overrides["panels_mini.oa_footer_panel.display|panel_settings|style_settings|secondcolumn1"]["DELETED"] = TRUE;
+  $overrides["panels_mini.oa_footer_panel.display|panel_settings|style_settings|secondcolumn2"]["DELETED"] = TRUE;
   $overrides["panels_mini.oa_footer_panel.display|panels|contentmain"] = array(
     0 => 'new-4d26d0af-a79e-421d-9541-7c71cb36c3b1',
   );
+  $overrides["panels_mini.oa_footer_panel.display|panels|footer"]["DELETED"] = TRUE;
 
   // Exported overrides for: variable
   $overrides["variable.contextual_tabs_extract.value"] = 'user*:Edit|Edit profile,icon-pencil

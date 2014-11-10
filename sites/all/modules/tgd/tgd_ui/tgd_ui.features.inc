@@ -113,15 +113,18 @@ function tgd_ui_default_panels_mini_alter(&$data) {
           'locks' => array(),
           'uuid' => '4d26d0af-a79e-421d-9541-7c71cb36c3b1',
         ); /* WAS: '' */
-    $data['oa_footer_panel']->display->layout = 'boxton'; /* WAS: 'geary' */
+    $data['oa_footer_panel']->display->layout = 'boxton'; /* WAS: 'sutro_double' */
     $data['oa_footer_panel']->display->panel_settings['style_settings']['contentmain'] = NULL; /* WAS: '' */
     $data['oa_footer_panel']->display->panels['contentmain'] = array(
       0 => 'new-4d26d0af-a79e-421d-9541-7c71cb36c3b1',
     ); /* WAS: '' */
     unset($data['oa_footer_panel']->display->content['new-39727060-3c1c-4478-ac3f-fa1a0800ad6f']);
     unset($data['oa_footer_panel']->display->content['new-acef9208-6753-4fee-8b2b-834b2ed0909a']);
-    unset($data['oa_footer_panel']->display->panels['column1']);
-    unset($data['oa_footer_panel']->display->panels['column3']);
+    unset($data['oa_footer_panel']->display->panel_settings['style_settings']['footer']);
+    unset($data['oa_footer_panel']->display->panel_settings['style_settings']['middle']);
+    unset($data['oa_footer_panel']->display->panel_settings['style_settings']['secondcolumn1']);
+    unset($data['oa_footer_panel']->display->panel_settings['style_settings']['secondcolumn2']);
+    unset($data['oa_footer_panel']->display->panels['footer']);
   }
 }
 
