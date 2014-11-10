@@ -4,7 +4,6 @@ core = 7.x
 package = TheGoodData
 version = 7.x-1.0
 project = tgd_social
-dependencies[] = oa_dashboard
 dependencies[] = og_drive
 dependencies[] = tgd_admin
 dependencies[] = tgd_base
