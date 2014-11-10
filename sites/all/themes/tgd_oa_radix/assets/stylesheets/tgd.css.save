@@ -1,0 +1,92 @@
+/* Due date correction for the worktracker form*/
+.group-oa-worktracker-task-info .field-name-field-oa-worktracker-duedate label{
+    position: relative !important;
+}
+/* oa-pane title */
+.oa-pane .pane-title{
+    font-weight: normal;
+    background-image: none;
+}
+
+/* Home page's welcome message */
+#tgd-home-intro{
+    margin-top: 40px;
+    font-size: 2em;
+    line-height: 1.1em;
+    text-align:center;
+}
+
+/* Home page RSS feeds*/
+.pane-content .views-field-title{
+    font-size: 1.3em;
+}
+.pane-content .views-field-timestamp{
+    font-size : 0.8em;
+    color: #666;
+}
+.pane-content .views-field-description{
+    margin-bottom:20px;
+}
+
+/* "add your own content" panel */
+#add-your-content.panel-pane {
+    background-color:#ddd;
+}
+
+#add-your-content.panel-pane .pane-title{
+    text-align: center;
+    background-color: transparent;
+    background-image: none;
+}
+
+/* no results found text*/
+.no-results-found{
+    text-align: center;
+    margin: 30px 20px;
+    color: #666;
+    font-style:{
+    margin-bottom: 10px;
+}
+
+.oa-pane .pane-open-atrium-discussions-latest-replies{
+    padding-bottom:0px;
+}
+
+.oa-pane .pane-open-atrium-discussions-latest-replies .pane-content{
+    padding-top:0px;
+}
+
+.oa-pane .pane-open-atrium-discussions-latest-replies .pane-content .group-header{
+    margin-top:0px;
+}
+
+.oa-pane .pane-tgd-polls-polls-list .pane-content,
+.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content,
+.oa-pane .pane-oa-worktracker-task-list .pane-content,
+.oa-pane .pane-open-atrium-news-recent-documents-table .pane-content{
+    padding: 0px;
+}
+
+.oa-pane .pane-tgd-polls-polls-list .pane-content table,
+.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content table,
+.oa-pane .pane-oa-worktracker-task-list .pane-content table,
+.oa-pane .pane-open-atrium-news-recent-documents-table .pane-content table{
+    margin-bottom: 0px;
+}
+
+.latest-replies .latest-replies-row .reply-body p{
+    margin: 5px 10px;
+    font-size: 12px;
+}
+
+/* "laest replies" pager */
+.item-list .pager li{
+   margin : 0 0.5em 0.25em 0.5em;
+}
+
+/* vatars in oa-list */
+.oa-list .pull-left  img{
+    padding : 0px;
+    border-radius: 15px;
+    margin-right : 10px;
+}

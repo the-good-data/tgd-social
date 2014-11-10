@@ -1,0 +1,776 @@
+// TheGoodData main colours
+@tgd-blue : #8AC6EA;
+@tgd-blue-dark : darken(@tgd-blue, 15%);
+@tgd-blue-dark-hover : darken(@tgd-blue-dark, 35%);
+@tgd-yellow : #FCC34A;
+@tgd-yellow-dark : darken(@tgd-yellow, 15%);
+@tgd-yellow-dark-hover : darken(@tgd-yellow-dark, 35%);
+@tgd-red : #EA6654;
+@tgd-red-dark : darken(@tgd-red, 15%);
+@tgd-red-dark-hover : darken(@tgd-red-dark, 35%);
+@tgd-green : #72BC81;
+@tgd-green-dark : darken(@tgd-green, 15%);
+@tgd-green-dark-hover : darken(@tgd-green-dark, 35%);
+
+
+
+@color-sky: #e7f4fc;
+@color-link: #1C8CCF;
+@color-footer: #58646B;
+@color-gray-footer: #6f818d;
+@color-gray-license-background: #eee;
+@color-gray-license-shadow: #e4e4e4;
+@color-gray-license: #666;
+@color-dark-gray: #58646B;
+@color-gray: #7d7d7d;
+@color-navy-blue: #095779;
+@color-light-blue : #ECF4F8;
+
+@brown-text: #82734B;
+@dark-text: #4b4b4b;
+@navy-blue : #095779;
+@navy-blue-dark : #06445F;
+@dark-gray: #333;
+@light-blue : #E7F4FB;
+@light-yellow : #FAFAF3;
+@very-light-gray: #fbfbfb;
+@light-gray : #EFEFEF;
+@light-gray-off : #BFBFBF;
+@light-yellow: #F6F6E9;
+@gray-social-icons : #6E828D;
+@gray-text : #7D7D7D;
+@gray-text-header : #99ABB5;
+@gray-lines: #eee;
+@gray-lines-darker: #e0e0e0;
+@purple : #8E64BF;
+
+blue{
+    color: @tgd-blue;
+    dark{
+        color: @tgd-blue-dark;
+    }
+}
+
+red{
+    color: @tgd-red;
+    dark{
+        color: @tgd-red-dark;
+    }
+}
+
+green{
+    color: @tgd-green;
+    dark{
+        color: @tgd-green-dark;
+    }
+}
+
+yellow{
+    color: @tgd-yellow;
+    dark{
+        color: @tgd-yellow-dark;
+    }
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video{
+    font-family: ProximaNovaSoft-Regular;
+}
+
+/* Add a top margin to div#main, otherwise in the space pages the navigation menu would be right bellow trhe toolbar*/
+body #main{
+    margin-top: 46px !important;
+}
+
+/* Size of the header */
+#oa-navbar .panel-panel {
+    margin: 0;
+    min-height: 0;
+    padding: 0 20px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    .pane-oa-navigation{
+        background-color: #fff !important;
+    }
+}
+
+/* chevron-right icon */
+.navbar .brand .icon-chevron-right{
+    margin-left: 10px;
+}
+
+
+#oa-navbar .panel-panel .pane-oa-dashboard-oa-breadcrumb ul.oa_toolbar li.btn-group:after {
+    content: url("../images/menu-divider.png");
+    display: inline-block;
+    height: 42px;
+    width: 10px;
+}
+
+/* Footer */
+body #footer {
+    border-top: 1px solid #ccc;
+    box-shadow: 0px 4px 5px -5px rgba(0,0,0,0.5) inset;
+}
+
+
+.navbar-inverse .navbar-inner {
+    background-color: #999;
+    background-image: none;
+    background-repeat: repeat-x;
+    border-color: #72BC81;
+}
+
+.navbar-inverse #toolbar-menu-button, .navbar-inverse #oa-user-badge .user-badge{
+    color: #FFF;
+}
+
+.panel-pane {
+    .pane-content{
+        .navbar-inner{
+            background-color: #FAFAFA;
+            background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
+            background-repeat: repeat-x;
+            .nav{
+                > li{
+                    > a{
+                        color: #777;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.navbar{
+    margin-bottom: 0;
+}
+
+
+
+#oa-navbar ul.dropdown-menu ul li a:hover, 
+#oa-navbar ul.dropdown-menu ul li a:focus, 
+#oa-navbar ul.dropdown-menu ul li a.active, 
+ul.dropdown-menu ul li a:hover, 
+ul.dropdown-menu ul li a:focus, 
+ul.dropdown-menu ul li a.active, 
+.dropdown-menu ul li a:hover, 
+.dropdown-menu ul li a:focus, 
+.dropdown-menu ul li a.active {
+    background-color: #333;
+    background-image: none;
+    background-repeat: no-repeat;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+/* Rearrange the contextual tabs and IPE controls*/
+#contextual-tabs{
+    margin-top: -36px;
+}
+
+div#panels-ipe-control-container {
+    top: -145px;
+    right: -12px;
+    z-index: 1000;
+}
+
+/* Corrects the oa-pane issue TODO: find a fix for IE */
+.panel-panel-inner .oa-pane:not(.inner-pane){
+    border: 0px;
+}
+
+.oa-pane{
+    .pane-open-atrium-news-oa-recent-news{
+        .pane-content{
+            .oa-list{
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+    }
+    &.inner-pane{
+       box-shadow: 0px 3px 5px -4px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* The following two rules deal with the cases in which there's not enough items in a list view to show a pager. 
+When this happens, the output shows two lines one next to the other: one for the bottom border of the list last item, and the
+other, for the oa-pane bottom border. */
+.oa-pane table tr.views-row-last td{
+    border-bottom: 1px solid #fff;
+}
+
+/* Redefine rule for pager */
+.oa-pane .pager, body.page-node-edit #main .burr-flipped-sidebar-inner .pager, body.page-node-add #main .burr-flipped-sidebar-inner .pager {
+    border-top: 1px solid #DDDDDD;
+    margin-top: 0;
+    padding-top: 15px;
+}
+
+/* align "add content" command buttons*/
+.oa-command-buttons {
+    margin: 0 0 15px;
+    text-align: center;
+}
+
+/* Due date correction for the worktracker form*/
+.group-oa-worktracker-task-info .field-name-field-oa-worktracker-duedate label{
+    position: relative !important;
+}
+/* oa-pane title */
+.oa-pane .pane-title{
+    font-weight: normal;
+    background-image: none;
+}
+
+.views-field.views-field-title > a{
+    font-size: 14px;
+}
+
+/* Home page's welcome message */
+#tgd-home-intro{
+    font-size: 1.3em;
+    line-height: 1.1em;
+    text-align:center;
+}
+
+/* Home page RSS feeds*/
+.pane-content .views-field-title{
+    font-size: 1.3em;
+}
+.pane-content .views-field-timestamp{
+    font-size : 0.8em;
+    color: #666;
+}
+.pane-content .views-field-description{
+    margin-bottom:20px;
+}
+
+/* "add your own content" panel */
+#add-your-content.panel-pane {
+    background-color:#ddd;
+}
+
+#add-your-content.panel-pane .pane-title{
+    text-align: center;
+    background-color: transparent;
+    background-image: none;
+}
+
+/* date in recent activity pane 
+.field-content{
+    background-color: #eee;
+    border-radius: 7px;
+    padding: 2px 5px;
+}*/
+/* no results found text*/
+.no-results-found{
+    text-align: center;
+    margin: 30px 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.oa-pane.inner-pane{
+    margin-bottom: 10px;
+}
+
+.oa-pane .pane-open-atrium-discussions-latest-replies{
+    padding-bottom:0px;
+}
+
+.oa-pane .pane-content, 
+.oa-pane .pane-open-atrium-discussions-latest-replies .pane-content{
+    padding-top:0px;
+}
+
+.oa-pane .pane-open-atrium-discussions-latest-replies .pane-content .group-header{
+    margin-top:0px;
+}
+
+.oa-pane .pane-tgd-polls-polls-list .pane-content,
+.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content,
+.oa-pane .pane-oa-worktracker-task-list .pane-content,
+.oa-pane [class*="pane-open-atrium-news"]  .pane-content{
+    padding: 0px;
+}
+
+.oa-pane .pane-tgd-polls-polls-list .pane-content table,
+.oa-pane .pane-open-atrium-news-oa-recent-news .pane-content table,
+.oa-pane .pane-oa-worktracker-task-list .pane-content table,
+.oa-pane [class*="pane-open-atrium-news"] .pane-content table
+{
+    margin-bottom: 0px;
+}
+
+.oa-pane .pane-title{
+    background-color: #FFF;
+}
+
+.oa-pane tr.even, .oa-pane tr.odd{
+    background-color: #FFF;
+}
+
+.oa-pane table thead th {
+    background-color: #FFF;
+}
+
+.oa-pane .oa-list.well{
+    background-color: #FFF;
+}
+
+[class*="-column1-"] .oa-pane .pane-title, [class*="-column2-"] .oa-pane .pane-title{
+    border-bottom: 1px solid #e3e3e3;
+}
+
+.latest-replies .latest-replies-row .reply-body p{
+    margin: 5px 10px;
+    font-size: 12px;
+}
+
+/* "latest replies" pager */
+.item-list .pager li{
+   margin : 0 0.5em 0.25em 0.5em;
+}
+
+/* avatars in oa-list */
+.oa-list .pull-left  img{
+    padding : 0px;
+    border-radius: 15px;
+    margin-right : 10px;
+}
+
+/* titles in pane-content*/
+.pane-content .view-oa-worktracker .views-field-title{
+    font-size: 1em;
+}
+
+.group-header{
+    margin-top:0;
+}
+
+#recent-documents-table-long thead .views-field-title{
+    font-size :1em;
+}
+
+#recent-documents-table-long .views-field-title{
+    width : 20%;
+
+}
+
+#recent-documents-table-long .views-field-created{
+    width : 20%;
+}
+
+/* Colorizer */
+#data-space-pane .pane-title > a,
+#users-space-pane .pane-title > a,
+#corporate-space-pane .pane-title > a,
+#product-space-pane .pane-title > a{
+   color: white;
+   font-weight: bold;
+}
+
+
+
+#data-space-pane .pane-title{
+    background-color: #FCC636 !important;
+    background-image: none;
+}
+
+#corporate-space-pane .pane-title{
+    background-color: #9ACBEE !important;
+    background-image: none;
+}
+
+#users-space-pane .pane-title{
+    background-color: #7FBA77 !important;
+    background-image: none;
+}
+
+#product-space-pane .pane-title{
+    background-color: #E8604C !important;
+    background-image: none;
+}
+
+#data-space-pane .pane-title,
+#corporate-space-pane .pane-title,
+#users-space-pane .pane-title,
+#product-space-pane .pane-title{
+    border-radius: 0 0 0 0;
+    box-shadow: 0 3px 4px -2px rgba(0, 0, 0, 0.5) inset;
+}
+
+#oa-navbar .moscone-container.moscone-header{
+    margin-left: 0;
+}
+
+.navbar [class^="icon-"], .nav [class*=" icon-"] {
+    background-image: none;
+    background-position: 0 0;
+    background-repeat: repeat;
+    display: inline;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    height: auto;
+    line-height: normal;
+    margin-left: 0px;
+    margin-top: 0;
+    text-decoration: inherit;
+    vertical-align: baseline;
+    width: auto;
+    position: relative;
+    top: 1px;
+}
+
+.bartlett-flipped-column-content-region.bartlett-flipped-content-header{
+    margin-bottom: 0;
+}
+
+.poll > .vote-form {
+    text-align: left;
+    > .choices{
+        margin-left: 10px;
+    }
+    > input {
+        margin-top: 20px
+    }
+}
+
+/* media queries */
+@media (min-width: 1200px) {
+    .navbar-fixed-top .pane-oa-navigation{
+        width: 100%;
+    }
+    
+    .navbar-fixed-top .pane-oa-navigation > .pane-content {
+        width: 1170px;
+        margin: 0 auto;
+    }
+
+    .navbar-fixed-top > div > div > div:nth-of-type(3) > div.panel-panel-inner{
+        width: 1170px;
+        margin: 0 auto;
+        float: none;
+    }
+}
+
+/* task details */
+fieldset{
+    &#node_oa_worktracker_task_form_group_oa_worktracker_task_info{
+        > legend{
+            margin-bottom: 0px;
+        }
+
+        > .fieldset-wrapper{
+            margin-top: 40px;
+        }
+    }
+}
+
+
+.field-content {
+    &.tag li{
+        background: none repeat scroll 0 0 #999999;
+        border-radius: 10px;
+        color: #FFFFFF;
+        display: inline-block;
+        float: right;
+        font-size: smaller;
+        font-weight: bold;
+        line-height: 1.5em;
+        padding: 2px 10px 0;
+        list-style: none;
+        margin-left: 3px;
+    }
+}
+
+body.oa-login {
+    #main-wrapper{
+        background-image: url("../images/fields_sun1.png");
+        background-position: bottom center;
+        background-repeat: no-repeat;
+        background-color: #E7F4FC;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 20px;
+        padding-right:20px;
+        min-height: 100%;
+        #main{
+            margin-top: 0px !important;
+        }
+    }
+
+    #user-login-panel{
+        .oa-pane{
+            border-color: transparent;
+            top:20px;
+            .pane-title{
+                background-image: none;
+                background-color: transparent;
+            }
+            .panel-pane{
+                top: 0px;
+                background-color: transparent;
+                border-color: transparent;
+                h3{
+                    float: left;
+                    font-size: 66px;
+                    font-weight: normal;
+                    left: -252px;
+                    top: 5px;
+                    position: absolute;
+                    text-transform: uppercase;
+                    background-image: none;
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+    div.content {
+        background-image: none;
+        .oa-pane{
+            padding-top: 10px;
+            width: 35%;
+        }
+    }
+
+    div.region-content {
+        background-image: none;
+        background-position: 0 90px;
+        background-repeat: no-repeat;
+        margin-top: 20px;
+        min-height: 376px;
+    }
+    .form-actions{
+        background-color: transparent;
+    }
+}
+
+.remove-top-menu .bartlett-flipped-content-header {
+    display: none;
+}
+
+footer#footer {
+  padding-bottom: 100px;
+  ul {
+    padding:0;
+    margin: 0;
+    float: left;
+    margin-right: 6%;
+
+    li {
+      list-style: none;
+      color: @color-gray-footer;
+      
+      font-size: 0.875em;  
+      a {
+        color: @color-gray-footer;
+        font-size: .99em;
+        &:hover {
+          color:@tgd-blue;
+        }
+        &.red {
+          color: @tgd-red;
+        }
+      }
+    }
+
+    &.social {
+      width: 220px;
+      margin: 5px 0 0 0;
+      text-align: right;
+      li {
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 4px;
+        a {
+          display: block;
+          width: 32px;
+          height: 32px;
+          transition: opacity 0.5s;
+
+          &#reddit {
+            background: url(../images/social_icons.png) no-repeat -81px 0px;
+            &:hover {
+              background-position: -81px -32px;
+            }
+          }
+          &#twitter {
+            background: url(../images/social_icons.png) no-repeat -122px 0px;
+            &:hover {
+              background-position: -122px -32px;
+            }
+          }
+          &#wordpress {
+            background: url(../images/social_icons.png) no-repeat -41px 0px;
+            &:hover {
+              background-position: -41px -32px;
+            }
+          }
+          &#gooddata {
+            background: url(../images/social_icons.png) no-repeat -0px 0px;
+            &:hover {
+              background-position: 0px -32px;
+            }
+          }
+        }
+      }
+      em {
+        a {
+          display: block;
+          color: #6f818d;
+      
+          font-size: 0.75em;
+          font-weight: 700;
+          text-transform: uppercase;
+          font-style: normal;
+          text-align: right;
+          margin-top: 10px;  
+          margin-left: 4px;            
+        }
+      }
+    }
+  }
+
+  h4 {
+    color: @color-gray-footer;
+    
+    font-size: 0.875em;
+    text-transform: uppercase;
+    margin: 8px 0;
+  }
+  .footer {
+    background-color: @very-light-gray;
+    box-shadow: inset 0 1px 0 #fff;
+    padding: 20px 0 25px 0;
+  }
+
+  .license {
+    background-color: @color-gray-license-background;
+    box-shadow: inset 0 2px 0 @color-gray-license-shadow;
+    padding: 20px 0;
+    ul {
+      width: 525px;
+      float: none;
+      margin: 0 auto;
+      li {
+        display: block;
+        float: left;
+        &:first-child{
+          width: 348px;
+        }
+        &:last-child {
+          padding: 2px 0 5px 18px;
+          margin-top: 5px;
+          border-left: 1px solid #ddd;
+        }
+        img {
+          display: inline-block;
+          margin-top: 5px;
+          vertical-align: top;
+          &[alt=Timeless] {
+            margin-top:0;
+          }
+        }
+        p {
+          color: @color-gray-license;
+    
+          font-size: 0.85em;
+          display: inline-block;
+          width: 215px;
+          margin: 0 24px 0 17px;
+        }
+      }
+    }
+  }
+}
+
+/*******************************************************************************
+ * Media queries (footer)
+ ******************************************************************************/
+@media only screen and (max-width: 985px) { 
+    .footer ul{
+        width: 23.33%;
+        margin: 0 5%;
+        margin-bottom: 15px;
+    }
+}
+
+@media only screen and (max-width: 635px){
+    .footer ul{
+        width: 25.50%;
+        margin: 0 3%;
+        margin-bottom: 15px;
+    }
+}
+
+@media only screen and (max-width: 570px){
+    .footer ul{
+        width: 40%;
+        margin: 0 5%;
+        margin-bottom: 15px;
+    }
+}
+
+@media only screen and (max-width: 550px){
+    footer .license ul{
+        width: inherit;
+    }
+    footer .license ul li{
+        width: 85%;
+        margin: 0 auto;
+        float: none;
+        padding: 0 !important;
+        margin-left: 5px;
+    }
+    footer .license ul li:last-child{
+        margin-top: 30px;
+        border-left: none;
+    }
+    footer .license ul li a{
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+}
+@media only screen and (max-width: 450px){
+    footer .license ul li{
+        width: 100%;
+    }
+    footer .license li p{
+        width: 66%;
+        margin: 0 0 0 10px;
+    }
+    footer .license li p br{
+        display: none;
+    } 
+}
+
+@media only screen and (max-width: 379px){    
+    footer .license ul li p br{
+        display: none;
+    }
+    footer .license li:last-child{
+        width: 50%;
+        /*margin-left: 70px;*/
+    }
+
+}
+
+@media only screen and (max-width: 355px){
+    footer ul.social{
+        width: 154px;
+    }
+    footer ul.social li{
+        margin: 0 2px;
+    }
+}
+
+@media only screen and (max-width: 330px){  
+    .footer ul:nth-child(5){
+        margin-right: 0;
+    } 
+}
+
