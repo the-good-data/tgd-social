@@ -11,7 +11,6 @@ dependencies[] = oa_layouts
 dependencies[] = tgd_config
 features[features_api][] = api:2
 features[features_override_items][] = panelizer_defaults.node:oa_discussion_post:default
-features[features_override_items][] = panels_mini.oa_footer_panel
 features[features_override_items][] = variable.contextual_tabs_extract
 features[features_overrides][] = panelizer_defaults.node:oa_discussion_post:default.display|content|new-35d06055-8f3f-4790-b785-bb5d0d336ecb|position
 features[features_overrides][] = panelizer_defaults.node:oa_discussion_post:default.display|content|new-3ce319e2-91c0-4ea6-8ad7-e71ec219a797
