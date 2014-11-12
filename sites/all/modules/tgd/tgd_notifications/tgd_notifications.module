@@ -188,3 +188,12 @@ function tgd_notifications_ctools_plugin_directory($owner, $plugin_type) {
   }
 }
 
+/**
+ * Implements hook_form_alter()
+ */
+function tgd_notifications_form_alter(&$form, &$form_state, $form_id) {
+	// Remove notifications options.
+	if (!empty($form['#node_edit_form']) && isset($form['oa_notifications'])) {
+		$form['oa_notifications']['#access'] = FALSE;
+	}
+}
