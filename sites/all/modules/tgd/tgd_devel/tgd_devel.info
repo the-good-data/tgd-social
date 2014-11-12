@@ -5,3 +5,6 @@ package = TheGoodData
 version = 7.x-1.0
 project = tgd_devel
 features[features_api][] = api:2
+dependencies[] = field_ui
+dependencies[] = devel
+
