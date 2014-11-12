@@ -1,0 +1,27 @@
+<?php
+/**
+ * @file
+ * Code for the Open Atrium Home feature.
+ */
+
+include_once 'tgd_home.features.inc';
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function tgd_home_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools') {
+    return "plugins/$plugin_type";
+  }
+}
+
+/**
+ * Implements hook_theme()
+ */
+function tgd_home_theme() {
+  return array(
+    'tgd_home_default' => array(
+      'template' => 'tgd-home-default',
+    ),
+  );
+}

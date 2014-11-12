@@ -7,6 +7,7 @@ body #main{margin-top:46px !important}
 #oa-navbar .panel-panel{margin:0;min-height:0;padding:0 20px;-moz-box-sizing:border-box;box-sizing:border-box}#oa-navbar .panel-panel .pane-oa-navigation{background-color:#fff !important}
 #oa-navbar .navbar-inner .container .row:first-child{background-color:#fff !important;border-bottom:1px solid #49a6de;padding-bottom:6px}
 #oa-navbar .navbar-inner .container .pane-oa-navigation{border-bottom:none}
+#oa-navbar .navbar-inner .container .panel-panel .pane-oa-toolbar-oa-breadcrumb{float:left !important;border-bottom:none}
 .navbar .brand{float:left;display:block;padding:10px 20px 10px;margin-left:-20px;font-size:20px;font-weight:200;color:#333;text-shadow:0 1px 0 #fff;line-height:20px}
 .navbar .nav{position:relative;left:0;display:block;margin:0 10px 0 0}
 .navbar .nav>li{float:left;line-height:20px}
