@@ -21,6 +21,14 @@ function tgd_base_menu() {
     'file' => 'system.admin.inc',
     'file path' => drupal_get_path('module', 'system'),
   );
+  $items['admin/config/tgd/settings'] = array(
+    'title' => 'Mixed options',
+    'description' => 'Configure TGD',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('variable_group_form', 'tgd'),
+    'access arguments' => array('administer site configuration'),
+    'weight' => -10,
+  );
   return $items;
 }
 
