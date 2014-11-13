@@ -9,7 +9,6 @@ dependencies[] = tgd_admin
 dependencies[] = tgd_base
 dependencies[] = tgd_config
 dependencies[] = tgd_notifications
-dependencies[] = tgd_ui
 dependencies[] = tgd_users
 dependencies[] = tgd_version
 features[features_api][] = api:2

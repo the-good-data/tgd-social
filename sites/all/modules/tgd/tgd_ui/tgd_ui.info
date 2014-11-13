@@ -10,21 +10,5 @@ dependencies[] = oa_discussion
 dependencies[] = oa_layouts
 dependencies[] = tgd_config
 features[features_api][] = api:2
-features[features_override_items][] = panelizer_defaults.node:oa_discussion_post:default
-features[features_override_items][] = variable.contextual_tabs_extract
-features[features_overrides][] = panelizer_defaults.node:oa_discussion_post:default.display|content|new-35d06055-8f3f-4790-b785-bb5d0d336ecb|position
-features[features_overrides][] = panelizer_defaults.node:oa_discussion_post:default.display|content|new-3ce319e2-91c0-4ea6-8ad7-e71ec219a797
-features[features_overrides][] = panelizer_defaults.node:oa_discussion_post:default.display|content|new-5391a87c-2b91-4ee7-a17d-07a99957758b|position
-features[features_overrides][] = panelizer_defaults.node:oa_discussion_post:default.display|panels|sidebar|3
-features[features_overrides][] = panels_mini.oa_footer_panel.display|content|new-39727060-3c1c-4478-ac3f-fa1a0800ad6f
-features[features_overrides][] = panels_mini.oa_footer_panel.display|content|new-4d26d0af-a79e-421d-9541-7c71cb36c3b1
-features[features_overrides][] = panels_mini.oa_footer_panel.display|content|new-acef9208-6753-4fee-8b2b-834b2ed0909a
-features[features_overrides][] = panels_mini.oa_footer_panel.display|layout
-features[features_overrides][] = panels_mini.oa_footer_panel.display|panel_settings|style_settings|contentmain
-features[features_overrides][] = panels_mini.oa_footer_panel.display|panel_settings|style_settings|footer
-features[features_overrides][] = panels_mini.oa_footer_panel.display|panel_settings|style_settings|middle
-features[features_overrides][] = panels_mini.oa_footer_panel.display|panel_settings|style_settings|secondcolumn1
-features[features_overrides][] = panels_mini.oa_footer_panel.display|panel_settings|style_settings|secondcolumn2
-features[features_overrides][] = panels_mini.oa_footer_panel.display|panels|contentmain
-features[features_overrides][] = panels_mini.oa_footer_panel.display|panels|footer
-features[features_overrides][] = variable.contextual_tabs_extract.value
+
+

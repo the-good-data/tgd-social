@@ -75,4 +75,73 @@ function tgd_overrides_strongarm_alter(&$data) {
       'choice' => 0,
     ); /* WAS: '' */
   }
+  if (isset($data['comment_oa_wiki_page'])) {
+    $data['comment_oa_wiki_page']->value = 2; /* WAS: 0 */
+  }
+  if (isset($data['contextual_tabs_extract'])) {
+    $data['contextual_tabs_extract']->value = 'user*:Edit|Edit profile,icon-pencil
+    user*:Notifications
+    node/*:Google drive content|Google drive
+    node/*/clone/confirm:View|Cancel,icon-remove
+    node/*/edit:View|Cancel,icon-remove
+    View
+    Edit,icon-pencil
+    Members,icon-user'; /* WAS: 'user*:Edit|Edit profile,icon-pencil
+    node\/*\/clone/confirm:View|Cancel,icon-remove
+    node\/*\/edit:View|Cancel,icon-remove
+    View
+    Edit,icon-pencil
+    Members,icon-user' */
+  }
+}
+
+/**
+ * Implements hook_field_default_field_instances_alter().
+ */
+function tgd_overrides_field_default_field_instances_alter(&$data) {
+  if (isset($data['node-oa_wiki_page-field_oa_media'])) {
+    unset($data['node-oa_wiki_page-field_oa_media']['default_value']);
+  }
+  if (isset($data['node-oa_wiki_page-oa_other_spaces_ref'])) {
+    unset($data['node-oa_wiki_page-oa_other_spaces_ref']);
+  }
+  if (isset($data['node-oa_wiki_page-og_vocabulary'])) {
+    $data['node-oa_wiki_page-og_vocabulary']['display']['default']['label'] = 'inline'; /* WAS: 'above' */
+    $data['node-oa_wiki_page-og_vocabulary']['display']['default']['settings']['concatenate'] = 1; /* WAS: FALSE */
+  }
+}
+
+/**
+ * Implements hook_file_default_displays_alter().
+ */
+function tgd_overrides_file_default_displays_alter(&$data) {
+  if (isset($data['document__preview__file_field_file_default'])) {
+    $data['document__preview__file_field_file_default']->status = FALSE; /* WAS: TRUE */
+    $data['document__preview__file_field_file_default']->weight = 0; /* WAS: 50 */
+  }
+  if (isset($data['video__default__media_vimeo_video'])) {
+    $data['video__default__media_vimeo_video']->settings['protocol'] = '//'; /* WAS: 'https://' */
+  }
+  if (isset($data['video__preview__media_vimeo_image'])) {
+    $data['video__preview__media_vimeo_image']->settings['image_style'] = 'panopoly_image_thumbnail'; /* WAS: 'media_thumbnail' */
+    $data['video__preview__media_vimeo_image']->weight = 2; /* WAS: 0 */
+  }
+}
+
+/**
+ * Implements hook_file_default_types_alter().
+ */
+function tgd_overrides_file_default_types_alter(&$data) {
+  if (isset($data['audio'])) {
+    $data['audio']->disabled = FALSE; /* WAS: '' */
+  }
+  if (isset($data['document'])) {
+    $data['document']->disabled = FALSE; /* WAS: '' */
+  }
+  if (isset($data['image'])) {
+    $data['image']->disabled = FALSE; /* WAS: '' */
+  }
+  if (isset($data['video'])) {
+    $data['video']->disabled = FALSE; /* WAS: '' */
+  }
 }

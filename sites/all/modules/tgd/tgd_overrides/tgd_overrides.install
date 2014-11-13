@@ -7,9 +7,9 @@
 /**
  * Implements hook_install().
  */
-function tgd_ui_install() {
+function tgd_overrides_install() {
   db_update('system')
     ->fields(array('weight' => 999))
-    ->condition('name', 'tgd_ui')
+    ->condition('name', 'tgd_overrides')
     ->execute();
 }

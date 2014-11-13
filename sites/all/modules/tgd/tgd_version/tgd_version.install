@@ -22,10 +22,9 @@ function tgd_version_update_7001() {
 }
 
 /**
- * Set weight for tgd_ui module
+ * Set weight for tgd_ui module (Obsoleted)
  */
 function tgd_version_update_7002() {
-  module_load_install('tgd_ui');
-  tgd_ui_install();
+  // Removed module
 }
 

@@ -4,14 +4,6 @@
  * Code for the TGD UI feature.
  */
 
-include_once 'tgd_ui.features.inc';
 
-/**
- * Preprocess function for the oa_breadcrumb.
- */
-function tgd_ui_preprocess_oa_breadcrumb(&$vars) {
-  // Replace 'Spaces' by 'Areas'
-  if ($vars['space_url'] == '/spaces') {
-    $vars['space_label'] = t('Areas');
-  }
-}
+
+
