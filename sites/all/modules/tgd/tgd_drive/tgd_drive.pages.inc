@@ -53,12 +53,10 @@ function tgd_drive_node_content_tab($node) {
   );
 
   // Show create upload forms.
-  /*
   if (og_user_access('node', $node->nid, 'create drive file', $user, FALSE, TRUE) || user_access('administer group drive settings')) {
     module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
-    $content['create'] = drupal_get_form('og_drive_create_new_drive_file', $node->nid);
+    $content['create'] = drupal_get_form('tgd_drive_create_new_drive_file', $node->nid);
   }
-  */
   // Show upload forms.
   if (og_user_access('node', $node->nid, 'upload files to drive', $user, FALSE, TRUE) || user_access('administer group drive settings')) {
     module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
@@ -69,7 +67,7 @@ function tgd_drive_node_content_tab($node) {
   // Show synchronize form.
   if (og_user_access('node', $node->nid, 'administer own group drive settings', $user) || user_access('administer group drive settings')) {
     module_load_include('inc', 'og_drive', 'includes/og_drive.forms');
-    $content['sync'] = drupal_get_form('og_drive_synchronize_files_form', $node->nid);
+    $content['sync'] = drupal_get_form('tgd_drive_synchronize_files_form', $node->nid);
   }
 
   return $content;
@@ -89,6 +87,7 @@ function tgd_drive_upload_drive_file($form, $form_state, $gid) {
     'fieldset' => array(
       '#type' => 'fieldset',
       '#title' => t('Upload a file to the group drive'),
+      '#collapsible' => TRUE, '#collapsed' => TRUE,
       'file' => array(
         '#name' => 'file',
         //'#title' => t('Upload file'),
@@ -175,3 +174,55 @@ function tgd_drive_create_new_file($gid, $title, $mimeType, $data = FALSE) {
   return $file;
 }
 
+/**
+ * Form definition.  Create new drive file.
+ */
+function tgd_drive_create_new_drive_file($form, $state, $gid) {
+	$form = og_drive_create_new_drive_file($form, $state, $gid);
+	$form['fieldset']['title']['#weight'] = -20;
+	$form['fieldset']['description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('description'),
+    '#weight' => -10,
+  );
+	$form['fieldset']['#collapsible'] = TRUE;
+	$form['fieldset']['#collapsed'] = TRUE;
+	return $form;
+}
+
+/**
+ * Submit handler.  Create a new drive file.
+ */
+function tgd_drive_create_new_drive_file_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  $description = isset($values['description']) ? $values['description'] : '';
+
+  if ($file = tgd_drive_create_new_file($values['gid'], $values['title'], $values['mimeType'])) {
+  	global $user;
+  	tgd_drive_create_new_document($file, $values['gid'], $user, $description);
+  }
+}
+
+/**
+ * Form definition.
+ * Synchronize the local file data with the Google drive for one group.
+ * Share new files and purge stale local data.
+ *
+ * @see og_drive_synchronize_files_form()
+ */
+function tgd_drive_synchronize_files_form($form, $form_state, $gid) {
+  $form = og_drive_synchronize_files_form($form, $form_state, $gid);
+	$form['set']['#collapsible'] = TRUE;
+	$form['set']['#collapsed'] = TRUE;
+	return $form;
+}
+
+/**
+ * Submit handler.
+ * Synchronize the local file data with the Google drive for one group.
+ */
+function tgd_drive_synchronize_files_form_submit($form, &$form_state) {
+	$gid = $form_state['values']['gid'];
+  og_drive_synchronize_files($gid);
+  tgd_drive_synchronize_documents($gid);
+}
