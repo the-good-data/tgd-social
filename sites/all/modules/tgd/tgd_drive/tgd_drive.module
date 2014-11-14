@@ -120,7 +120,7 @@ function tgd_drive_oa_buttons_add_content_alter(&$buttons, $node) {
  *   Document node.
  */
 function tgd_drive_get_file_document($file) {
-	$nid = db_query('SELECT nid FROM {tgd_drive_file} WHERE id = :fid', array(':fid' => $file->id))->fetchField();
+	$nid = db_query('SELECT nid FROM {tgd_drive_files} WHERE id = :fid', array(':fid' => $file->id))->fetchField();
 	return $nid ? node_load($nid) : NULL;
 }
 
@@ -178,6 +178,51 @@ function tgd_drive_create_new_document($file, $gid, $account = NULL, $descriptio
 }
 
 /**
+ * Create a new file and share with all group members.
+ *
+ * Uses TgdDriveService to avoid sending emails to all members when sharing the file.
+ *
+ * @param $gid
+ * @param $title
+ * @param $mimeType
+ *
+ * @return Google_DriveFile|FALSE
+ *   New file created if successful, FALSE if not.
+ *   (id, title, description)
+ *
+ * @see og_drive_create_new_file().
+ */
+function tgd_drive_create_new_file($gid, $title, $mimeType, $data = FALSE) {
+  $file = FALSE;
+
+	try {
+    $service = new TgdDriveService($gid);
+    $file = $service->createNewFile($title, $mimeType, $data);
+    // Exctract the Google_DriveFile object values required for the db row.
+    $schema = drupal_get_schema_unprocessed('og_drive', 'og_drive_files');
+    $db_fields = array_flip(array_keys($schema['fields']));
+    $values = array_intersect_key((array)$file, $db_fields);
+    $values['gid'] = $gid;
+    global $user;
+    $values['uid'] = $user->uid;
+    // Save the file info locally.
+    og_drive_update_file($values);
+    drupal_set_message(t('The file "!title" has been created', array('!title' => $title)));
+
+    // Share the file with all the group members.
+    $uids = og_drive_get_user_members($gid);
+    $users = og_drive_get_users_emails($uids);
+    $service->createUserPermissions($users , array($file));
+
+  }
+  catch (Exception $e) {
+    og_drive_log_exception($e, t('There was a problem creating the new file'));
+  }
+
+  return $file;
+}
+
+/**
  * Synchronize documents with files
  *
  * @param $gid
@@ -195,6 +240,22 @@ function tgd_drive_synchronize_documents($gid) {
 	if ($created) {
 		drupal_set_message(t("Created @count new documents for all Google Docs", array('@count' => $created)));
 	}
+}
+
+/**
+ * Synchonize local group file data with drive.
+ * Share new files and purge stale local data.
+ *
+ * Use TgdDriveService instead of OgDriveService for not sending notifications emails.
+ */
+function tgd_drive_synchronize_files($gid) {
+  try {
+    $service = new TgdDriveService($gid);
+    $service->updateLocalFileData();
+  }
+  catch(Exception $e) {
+    og_drive_log_exception($e, t('There was a problem synchronizing the Drive files for group !gid', array('!gid' => $gid)));
+  }
 }
 
 /**

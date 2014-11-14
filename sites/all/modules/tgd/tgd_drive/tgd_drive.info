@@ -9,4 +9,5 @@ dependencies[] = oa_wiki
 dependencies[] = og_drive
 dependencies[] = tgd_base
 dependencies[] = tgd_overrides
+files[] = tgd_drive_service.class.inc
 features[features_api][] = api:2

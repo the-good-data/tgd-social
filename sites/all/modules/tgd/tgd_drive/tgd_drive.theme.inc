@@ -35,5 +35,5 @@ function theme_tgd_drive_doc_link($vars) {
   $drive_file->filemime = $drive_file->mimeType;
   $icon = theme('file_icon', array('file' => $drive_file));
   $url = $drive_file->alternateLink;
-  return $icon . l($drive_file->title, $url, array('attributes' => array('class' => 'og-drive-doc-link')));
+  return $icon . ' ' . l($drive_file->title, $url, array('attributes' => array('class' => 'og-drive-doc-link')));
 }
