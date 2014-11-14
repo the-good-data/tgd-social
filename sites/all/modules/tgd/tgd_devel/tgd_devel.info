@@ -7,4 +7,5 @@ project = tgd_devel
 features[features_api][] = api:2
 dependencies[] = field_ui
 dependencies[] = devel
+dependencies[] = admin_menu
 
