@@ -5,7 +5,7 @@ yellow{color:#fcc34a}yellow dark{color:#f5a804}
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{font-family:ProximaNovaSoft-Regular}
 body #main{margin-top:46px !important}
 #oa-navbar .panel-panel{margin:0;min-height:0;padding:0 20px;-moz-box-sizing:border-box;box-sizing:border-box}#oa-navbar .panel-panel .pane-oa-navigation{background-color:#fff !important}
-#oa-navbar .navbar-inner .container .row:first-child{background-color:#fff !important;border-bottom:1px solid #49a6de;padding-bottom:6px}
+#oa-navbar .navbar-inner .container .row:first-child{height:50px;background-color:#fff !important;border-bottom:1px solid #49a6de;padding-bottom:6px}
 #oa-navbar .navbar-inner .container .pane-oa-navigation{border-bottom:none}
 #oa-navbar .navbar-inner .container .panel-panel .pane-oa-toolbar-oa-breadcrumb{float:left !important;border-bottom:none}
 .navbar .brand{float:left;display:block;padding:10px 20px 10px;margin-left:-20px;font-size:20px;font-weight:200;color:#333;text-shadow:0 1px 0 #fff;line-height:20px}

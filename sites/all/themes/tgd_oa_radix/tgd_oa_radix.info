@@ -31,7 +31,7 @@ stylesheets[all][]     = assets/stylesheets/webfonts.css
 
 ; Javascript
 ;scripts[] = assets/javascripts/script.js
-scripts[] = assets/javascripts/colors.js
-scripts[] = assets/javascripts/spaces.js
+;scripts[] = assets/javascripts/colors.js
+;scripts[] = assets/javascripts/spaces.js
 
 
