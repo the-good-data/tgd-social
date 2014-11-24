@@ -21,7 +21,7 @@ body #footer{border-top:1px solid #ccc;box-shadow:0 4px 5px -5px rgba(0,0,0,0.5)
 .navbar{margin-bottom:0}
 #oa-navbar ul.dropdown-menu ul li a:hover,#oa-navbar ul.dropdown-menu ul li a:focus,#oa-navbar ul.dropdown-menu ul li a.active,ul.dropdown-menu ul li a:hover,ul.dropdown-menu ul li a:focus,ul.dropdown-menu ul li a.active,.dropdown-menu ul li a:hover,.dropdown-menu ul li a:focus,.dropdown-menu ul li a.active{background-color:#333;background-image:none;background-repeat:no-repeat;color:#fff;text-decoration:none}
 #contextual-tabs{margin-top:0}
-div#panels-ipe-control-container{top:-140px;right:-12px;z-index:1000}
+div#panels-ipe-control-container{top:-110px;right:-12px;z-index:1000}
 .panel-panel-inner .oa-pane:not(.inner-pane){border:0}
 .oa-pane .pane-open-atrium-news-oa-recent-news .pane-content .oa-list{margin-left:0;margin-right:0}
 .oa-pane.inner-pane{box-shadow:0 3px 5px -4px rgba(0,0,0,0.5)}
