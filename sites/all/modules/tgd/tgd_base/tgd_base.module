@@ -33,6 +33,13 @@ function tgd_base_menu() {
 }
 
 /**
+ * Implementation of hook_ctools_plugin_directory()
+ */
+function tgd_base_ctools_plugin_directory($module, $plugin) {
+  return 'plugins/' . $plugin;
+}
+
+/**
  * Get group id (space) from node.
  */
 function tgd_base_node_get_gid($node) {
