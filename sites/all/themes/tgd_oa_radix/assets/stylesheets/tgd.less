@@ -32,7 +32,7 @@
 @navy-blue-dark : #06445F;
 @dark-gray: #333;
 @light-blue : #E7F4FB;
-@light-yellow : #FAFAF3;
+/* @light-yellow : #FAFAF3; */
 @very-light-gray: #fbfbfb;
 @light-gray : #EFEFEF;
 @light-gray-off : #BFBFBF;
@@ -77,11 +77,18 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
 }
 
 /* Add a top margin to div#main, otherwise in the space pages the navigation menu would be right bellow trhe toolbar*/
+/*
 body #main{
     margin-top: 46px !important;
 }
+*/
+
+body #main{
+    margin-top: 10px !important;
+}
 
 /* Size of the header */
+/*
 #oa-navbar .panel-panel {
     margin: 0;
     min-height: 0;
@@ -92,8 +99,10 @@ body #main{
         background-color: #fff !important;
     }
 }
-
+ */
+ 
 /* OA update, white top bar and navbar style */
+/*
 #oa-navbar .navbar-inner .container {
   .row:first-child {
     height:50px;
@@ -109,9 +118,45 @@ body #main{
     border-bottom:none;
   }
 }
+*/
+#oa-navbar .navbar-inner .container-fluid {
+  .row:first-child {
+    background-color: #fff !important;
+    border-bottom: 1px solid #49a6de;
+  }
+  .row .panel-panel {
+    width:970px;
+    margin:auto;
+    float:none;
+  }
+  .pane-oa-navigation {
+    border-bottom:none;
+  } 
+  .panel-panel .pane-oa-toolbar-oa-breadcrumb {
+    float:left !important;
+    border-bottom:none;
+  }
+}
+
+#oa-navbar .navbar-inner .container-fluid .row .panel-panel {
+
+@media (min-width: 768px) {
+    width: 750px;
+}
+
+@media (min-width: 992px) {
+    width: 970px;
+}
+
+@media (min-width: 1200px) {
+    width: 1170px;
+}
+
+}
+
 
 /* OA Update, Sections nav bar */
-.navbar {
+#content .navbar {
   .brand {
     float: left;
     display: block;
@@ -132,6 +177,9 @@ body #main{
   .nav > li {
     float: left;
     line-height: 20px;
+    a {
+      padding-right:10px;
+    }
   }
 }
 
@@ -206,14 +254,15 @@ ul.dropdown-menu ul li a.active,
 
 /* Rearrange the contextual tabs and IPE controls*/
 #contextual-tabs{
-    margin-top: -36px;
+    margin-top: 0px;
 }
 
 div#panels-ipe-control-container {
-    top: -145px;
+    top: -140px;
     right: -12px;
     z-index: 1000;
 }
+
 
 /* Corrects the oa-pane issue TODO: find a fix for IE */
 .panel-panel-inner .oa-pane:not(.inner-pane){
