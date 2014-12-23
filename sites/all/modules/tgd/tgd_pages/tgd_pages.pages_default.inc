@@ -95,7 +95,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -420,7 +420,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -745,7 +745,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -1070,7 +1070,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -1432,7 +1432,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -1757,7 +1757,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -2082,7 +2082,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -2407,7 +2407,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -2771,7 +2771,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -3098,7 +3098,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -3423,7 +3423,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -3750,7 +3750,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -4112,7 +4112,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -4437,7 +4437,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -4762,7 +4762,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -5087,7 +5087,7 @@ function tgd_pages_default_page_manager_pages() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'bartlett_flipped';
+  $display->layout = 'radix_bartlett_flipped';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
