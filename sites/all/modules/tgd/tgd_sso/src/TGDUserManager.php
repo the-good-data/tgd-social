@@ -218,6 +218,7 @@ class TGDUserManager {
       static::doFieldMapping($drupalUser, $tgdUser);
       static::updateUserMapping($drupalUser, $tgdUser);
       user_save($drupalUser);
+      static::log('Updating local user account !drupal-user from remote @tgd-user', $drupalUser, $tgdUser);
       return TRUE;
     }
     else {

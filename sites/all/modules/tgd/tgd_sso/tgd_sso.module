@@ -333,7 +333,6 @@ function tgd_sso_check_current_user($tgdUser) {
   }
 }
 
-
 /**
  * Start session as new user.
  */
@@ -453,7 +452,6 @@ function tgd_sso_master_link($type, $text = NULL, $destination = NULL) {
   return $link;
 }
 
-
 /**
  * Redirect to link with proper destination.
  *
@@ -537,5 +535,47 @@ function tgd_sso_log($message, $drupalUser = NULL, $tgdUser = NULL, $level = WAT
  */
 function tgd_sso_log_error($message, $drupalUser = NULL, $tgdUser = NULL) {
   tgd_sso_log($message, $drupalUser = NULL, $tgdUser = NULL, WATCHDOG_ERROR);
+}
+
+/**
+ * Implements hook_cron().
+ */
+function tgd_sso_cron() {
+  // @todo Make this configurable. Default is check one user every hour.
+  if (($interval = variable_get_value('tgd_sso_check_interval')) && REQUEST_TIME - variable_get('tgd_sso_check_last_time', 0) > $interval) {
+    tgd_sso_check_user_list(variable_get_value('tgd_sso_check_number'));
+  }
+}
+
+/**
+ * Periodically check user status, find deleted ones, clean up.
+ *
+ * @param $number
+ *   Number of users to check.
+ */
+function tgd_sso_check_user_list($number = 1) {
+  // Select users that didn't access the site for the last hour
+  $query = db_select('users', 'u')
+    ->fields('u', array('uid'))
+    ->condition('u.uid', variable_get('tgd_sso_check_last_uid', 0), '>')
+    ->condition('u.access', REQUEST_TIME - 3600, '<')
+    ->orderBy('u.uid')
+    ->range(0, $number);
+
+  $check_list = $query->execute()->fetchCol();
+  foreach ($check_list as $uid) {
+    $account = user_load($uid);
+    if ($account && $tgdUser = TGDUserManager::getRemoteUser($account)) {
+      TGDUserManager::checkDrupalUser($account, $tgdUser);
+    }
+  }
+  if (!empty($uid)) {
+    variable_set('tgd_sso_check_last_uid', $uid);
+    variable_set('tgd_sso_check_last_time', REQUEST_TIME);
+  }
+  else {
+    // No users selected, set last uid to 0 to restart.
+    variable_del('tgd_sso_check_last_uid');
+  }
 }
 

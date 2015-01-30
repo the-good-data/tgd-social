@@ -46,6 +46,21 @@ function tgd_sso_variable_info($options) {
     'default' => 'PHPSESSID',
     'group' => 'tgd_sso',
   );
+  $variables['tgd_sso_check_interval'] = array(
+    'title' => t('Check interval', array(), $options),
+    'description' => t('Time interval for checking existing accounts (none to disable)', array(), $options),
+    'type' => 'time_interval',
+    'interval values' => array(0, 60, 180, 300, 600, 900, 1800, 2700, 3600, 10800, 21600, 32400, 43200, 86400),
+    'default' => 0,
+    'group' => 'tgd_sso',
+  );
+  $variables['tgd_sso_check_number'] = array(
+    'title' => t('Check number', array(), $options),
+    'description' => t('Number of user accounts to check on a cron run.', array(), $options),
+    'type' => 'number',
+    'default' => 1,
+    'group' => 'tgd_sso',
+  );
   $variables['tgd_sso_debug_enable'] = array(
     'title' => t('Enable Debug', array(), $options),
     'description' => t('Enable debug mode. All messages will be logged to watchdog and printed.', array(), $options),
