@@ -23,7 +23,7 @@ regions[primarytabs]  = Primary tabs
 ;stylesheets[all][]     = assets/stylesheets/font-awesome.min.css
 ;stylesheets[print][]   = assets/stylesheets/print.css
 stylesheets[all][]     = assets/stylesheets/tgd.css
-stylesheets[all][]     = assets/stylesheets/webfonts.css
+;stylesheets[all][]     = assets/stylesheets/webfonts.css
 
 ; CSS - Conditional
 ;stylesheets-conditional[IE 7][all][] = assets/stylesheets/ie7.css
