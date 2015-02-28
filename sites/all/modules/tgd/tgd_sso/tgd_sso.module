@@ -39,7 +39,7 @@ function tgd_sso_init() {
     // First go for seamless authentication.
     // Ok, we've got a TGD user, check against current drupal user
     // and log in if needed.
-    $status = tgd_sso_check_current_user($tgdUser);
+    $status = $tgdUser->canLogin() && tgd_sso_check_current_user($tgdUser);
   }
   elseif ($user->uid) {
     // No user logged in, log out current user if any.
@@ -298,8 +298,8 @@ function tgd_sso_check_current_user($tgdUser) {
   // Get / create Drupal user for remote user.
   $account = TGDUserManager::getDrupalUser($tgdUser, variable_get('tgd_sso_local_create', FALSE));
 
-  if (!$account) {
-    // No matching local account found.
+  if (!$account || !$account->status) {
+    // No matching local account found or account disabled.
     return FALSE;
   }
   elseif ($user->uid) {
