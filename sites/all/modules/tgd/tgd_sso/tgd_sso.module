@@ -39,7 +39,7 @@ function tgd_sso_init() {
     // First go for seamless authentication.
     // Ok, we've got a TGD user, check against current drupal user
     // and log in if needed.
-    $status = tgd_sso_check_current_user($tgdUser);
+    $status = $tgdUser->canLogin() && tgd_sso_check_current_user($tgdUser);
   }
   elseif ($user->uid) {
     // No user logged in, log out current user if any.
@@ -298,8 +298,8 @@ function tgd_sso_check_current_user($tgdUser) {
   // Get / create Drupal user for remote user.
   $account = TGDUserManager::getDrupalUser($tgdUser, variable_get('tgd_sso_local_create', FALSE));
 
-  if (!$account) {
-    // No matching local account found.
+  if (!$account || !$account->status) {
+    // No matching local account found or account disabled.
     return FALSE;
   }
   elseif ($user->uid) {
@@ -564,9 +564,8 @@ function tgd_sso_check_user_list($number = 1) {
 
   $check_list = $query->execute()->fetchCol();
   foreach ($check_list as $uid) {
-    $account = user_load($uid);
-    if ($account && $tgdUser = TGDUserManager::getRemoteUser($account)) {
-      TGDUserManager::checkDrupalUser($account, $tgdUser);
+    if ($account = user_load($uid)) {
+      tgd_sso_check_user_account($account);
     }
   }
   if (!empty($uid)) {
@@ -576,6 +575,23 @@ function tgd_sso_check_user_list($number = 1) {
   else {
     // No users selected, set last uid to 0 to restart.
     variable_del('tgd_sso_check_last_uid');
+  }
+}
+
+/**
+ * Check single user account, update if not up to date.
+ *
+ * @param object $account
+ *   Drupal user account
+ */
+function tgd_sso_check_user_account($account) {
+  $tgdUser = TGDUserManager::getRemoteUser($account);
+  if ($tgdUser && $tgdUser->load()) {
+    $result = TGDUserManager::checkDrupalUser($account, $tgdUser);
+  }
+  else {
+    // Log but don't do anything with the user, there may be only a connection error.
+    tgd_sso_log('Cannot load remote user for local user account !drupal-user', $account, $tgdUser, WATCHDOG_WARNING);
   }
 }
 
