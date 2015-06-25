@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the TGD Webform feature.
+ */
+
+include_once 'tgd_webform.features.inc';
