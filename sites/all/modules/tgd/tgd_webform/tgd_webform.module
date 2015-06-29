@@ -5,3 +5,86 @@
  */
 
 include_once 'tgd_webform.features.inc';
+
+/**
+ * Implements hook_fields_extra_fields().
+ */
+function tgd_webform_field_extra_fields() {
+  $extra['node']['webform'] = array(
+    'display' => array(
+      'webform_results_table' => array(
+        'label' => 'Results',
+        'description' => 'Results table taken from Anaylisis tab.',
+        'weight' => 100,
+      ),
+    ),
+  );
+  return $extra;
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function tgd_webform_node_view($node, $view_mode, $langcode) {
+  if (!variable_get('webform_node_' . $node->type, FALSE)) {
+    return;
+  }
+  // If webform enabled, do not show results.
+  if (isset($node->content['webform']) && !empty($node->content['webform']['#enabled'])) {
+    return;
+  }
+  // Get extrafield visibility to check before rendering fields.
+  $extra_fields = field_extra_fields_get_display('node', $node->type, $view_mode);
+
+  // Localidades / iconos
+  if (!empty($extra_fields['webform_results_table']) && $extra_fields['webform_results_table']['visible'] == TRUE) {
+    $node->content['webform_results_table'] = tgd_webform_node_view_results($node);
+  }
+}
+
+/**
+ * Return result analysis.
+ *
+ * @view webform_results_analysis().
+ */
+function tgd_webform_node_view_results($node) {
+  require_once drupal_get_path('module', 'webform') . '/includes/webform.report.inc';
+  //$content = webform_results_analysis($node);
+  //return array('#markup' => $content);
+
+  // Fake parameters
+  $analysis_component = NULL;
+  $sids = array();
+  $query = NULL;
+
+  $analysis = array(
+    '#theme' => array('webform_analysis__' . $node->nid, 'webform_analysis'),
+    '#node' => $node,
+    '#component' => $analysis_component,
+  );
+
+  // Add all the components to the analysis renderable array.
+  $components = isset($analysis_component) ? array($analysis_component['cid']) : webform_analysis_enabled_components($node);
+  foreach ($components as $cid) {
+    // Do component specific call.
+    $component = $node->webform['components'][$cid];
+    if ($data = webform_component_invoke($component['type'], 'analysis', $component, $sids, isset($analysis_component), $query)) {
+      drupal_alter('webform_analysis_component_data', $data, $node, $component);
+      $analysis['data'][$cid] = array(
+        '#theme' => array('webform_analysis_component__' . $node->nid . '__' . $cid, 'webform_analysis_component__' . $node->nid, 'webform_analysis_component'),
+        '#node' => $node,
+        '#component' => $component,
+        '#data' => $data,
+      );
+      $analysis['data'][$cid]['basic'] = array(
+        '#theme' => array('webform_analysis_component_basic__' . $node->nid . '__' . $cid, 'webform_analysis_component_basic__' . $node->nid, 'webform_analysis_component_basic'),
+        '#component' => $component,
+        '#data' => $data,
+      );
+    }
+  }
+
+  drupal_alter('webform_analysis', $analysis);
+
+  return $analysis;
+}
